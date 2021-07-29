@@ -1,0 +1,22 @@
+# This yaml file is used by the main pipeline to build the Stacks CLI
+# for each of the different platforms.
+
+parameters:
+  - name: platforms
+    type: object
+    default: {}
+
+steps:
+
+  # Iterate around the platforms that have been passed to the script
+  - ${{ each platform in parameters.platforms }}:
+
+    - task: Go@0
+      displayName: Build ${{ platform.os }}_${{ platform.arch }}
+      env:
+        GOOS: ${{ platform.os }}
+        GOARCH: ${{ platform.arch }}
+        file_extension: ${{ platform.file_extension }}
+      inputs:
+        command: build
+        arguments: -o $(OutputDir)/stacks-cli-${{ platform.os }}-${{ platform.arch }}-$(Build.BuildNumber)${{ platform.file_extension }}        

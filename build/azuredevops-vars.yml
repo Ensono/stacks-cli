@@ -1,0 +1,7 @@
+# This file holds the variables that will be consumed
+# by the build
+variables:
+  - name: GoVersion
+    value: 1.16.6
+  - name: OutputDir
+    value: bin

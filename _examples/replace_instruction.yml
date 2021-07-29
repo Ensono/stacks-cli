@@ -1,0 +1,25 @@
+git_repo: https://github.com/amido/stacks-dotnet.git
+git_ref: 2a810ec620360bb6d69c220abdf409bc6af349be
+local_path: src/netcore
+filename_replacement_paths:
+  - "/src"
+search_value: xxAMIDOxx.xxSTACKSxx
+folder_map:
+  - src: shared/README.md
+    dest: "./README.md"
+  - src: src/netcore/build/azDevops/azure/templates/steps/build/build-netcore.yml
+    dest: build/azDevops/azure/templates/steps/build/build-netcore.yml
+  - src: src/netcore/build/azDevops/azure/azure-pipelines-netcore-k8s.yml
+    dest: build/azDevops/azure/azure-pipelines-netcore-k8s.yml
+  - src: src/netcore/deploy/azure/app/kube
+    dest: deploy/azure/app/kube
+  - src: src/netcore/deploy/k8s/app/base_api-deploy.yml
+    dest: deploy/k8s/app/base_api-deploy.yml
+  - src: src/netcore/src
+    dest: src
+  - src: src/netcore/.gitattributes
+    dest: ".gitattributes"
+  - src: src/netcore/.gitignore
+    dest: ".gitignore"
+  - src: src/netcore/yamllint.conf
+    dest: yamllint.conf

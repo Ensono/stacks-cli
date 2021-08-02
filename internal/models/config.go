@@ -6,13 +6,23 @@ import "github.com/amido/stacks-cli/internal/constants"
 type Config struct {
 
 	// State if running in Interactive mode
-	Interactive bool `mapstructure:interactive`
+	Interactive bool `mapstructure:"interactive"`
 
 	// Version of the application
 	Version string
 
 	// Define the logging parameters
-	Log Log `mapstructure:log`
+	Log Log `mapstructure:"log"`
+
+	Directory Directory `mapstructure:"directory"`
+
+	Business  Business  `mapstructure:"business"`
+	Cloud     Cloud     `mapstructure:"cloud"`
+	Network   Network   `mapstructure:"network"`
+	Pipeline  string    `mapstructure:"pipeline"`
+	Project   []Project `mapstructure:"project"`
+	Stacks    Stacks    `mapstructure:"stacks"` // Holds the information about the projects in stacks
+	Terraform Terraform `mapstructure:"terraform"`
 }
 
 // GetVersion returns the current version of the application

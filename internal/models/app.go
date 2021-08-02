@@ -36,18 +36,18 @@ func (app *App) ConfigureLogging(logging Log) {
 
 	// set the format of the log messages
 	switch logging.Format {
-	case "text":
-		app.Logger.SetFormatter(&log.TextFormatter{
-			ForceColors:     logging.Colour,
-			FullTimestamp:   true,
-			TimestampFormat: constants.LoggingTimestamp,
-		})
-
-		app.Logger.SetOutput(colorable.NewColorableStdout())
 	case "json":
 		app.Logger.SetFormatter(&log.JSONFormatter{
 			TimestampFormat: constants.LoggingTimestamp,
 		})
+	default:
+		app.Logger.SetFormatter(&log.TextFormatter{
+			ForceColors:     logging.Colour,
+			FullTimestamp:   false,
+			TimestampFormat: constants.LoggingTimestamp,
+		})
+
+		app.Logger.SetOutput(colorable.NewColorableStdout())
 	}
 }
 

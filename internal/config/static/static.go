@@ -64,6 +64,24 @@ folder_map:
     dest: yamllint.conf
 `
 
+// The following static configuration sets the URLs to the repos for
+// the location of the repositories
+// This can be overriden by passing the configuration in as a configuration file
+// but this will be the default
+var stacks_frameworks = `
+  dotnet:
+    webapi: https://github.com/amido/stacks-dotnet
+    cqrs: https://github.com/amido/stacks-dotnet-cqrs
+    events: https://github.com/amido/stacks-dotnet-cqrs-events
+  java:
+    webapi: https://github.com/amido/stacks-java
+    cqrs: https://github.com/amido/stacks-java-cqrs
+    events: https://github.com/amido/stacks-java-cqrs-events
+  nodejs:
+    csr: https://github.com/amido/stacks-typescript-csr
+    ssr: https://github.com/amido/stacks-typescript-ssr
+`
+
 // Config byte parses static
 func Config(key string) []byte {
 	switch key {
@@ -73,7 +91,9 @@ func Config(key string) []byte {
 		return []byte(aks_azdo_ssr)
 	case "aks_azdo_netcore":
 		return []byte(aks_azdo_netcore)
-		// NOTE: add more mappings here
+	// NOTE: add more mappings here
+	case "stacks_frameworks":
+		return []byte(stacks_frameworks)
 	default:
 		return []byte(shared)
 	}

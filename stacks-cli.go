@@ -3,22 +3,23 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
-	"amido.com/stacks-cli/internal/helper"
-	"amido.com/stacks-cli/pkg/config"
-	"amido.com/stacks-cli/pkg/scaffold"
+	"github.com/amido/stacks-cli/cmd"
+	"github.com/amido/stacks-cli/internal/helper"
+	"github.com/amido/stacks-cli/pkg/config"
+	"github.com/amido/stacks-cli/pkg/scaffold"
 	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	app := InitApp()
-	err := app.Run(os.Args)
+	// app := InitApp()
+	// err := app.Run(os.Args)
 	// should exit here and only one possible route out
-	if err != nil {
-		log.Fatal(err)
-	}
+	// if err != nil {
+	//	log.Fatal(err)
+	// }
+	cmd.Execute()
 }
 
 // TODO: move this out to a helper AppInit

@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	"amido.com/stacks-cli/internal/config/static"
+	"github.com/amido/stacks-cli/internal/config/static"
 	"gopkg.in/yaml.v2"
 )
 

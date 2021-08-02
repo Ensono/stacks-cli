@@ -5,9 +5,9 @@ import (
 	"os"
 	"path"
 
-	"amido.com/stacks-cli/internal/helper"
-	"amido.com/stacks-cli/internal/util"
-	"amido.com/stacks-cli/pkg/config"
+	"github.com/amido/stacks-cli/internal/helper"
+	"github.com/amido/stacks-cli/internal/util"
+	"github.com/amido/stacks-cli/pkg/config"
 )
 
 // type Foo interface {

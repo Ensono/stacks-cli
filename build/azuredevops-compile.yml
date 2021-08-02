@@ -19,4 +19,4 @@ steps:
         file_extension: ${{ platform.file_extension }}
       inputs:
         command: build
-        arguments: -o $(OutputDir)/stacks-cli-${{ platform.os }}-${{ platform.arch }}-$(Build.BuildNumber)${{ platform.file_extension }}        
+        arguments: -ldflags "-X github.com/amido/stacks-cli/cmd.version=$(Build.BuildNumber)" -o $(OutputDir)/stacks-cli-${{ platform.os }}-${{ platform.arch }}-$(Build.BuildNumber)${{ platform.file_extension }}        

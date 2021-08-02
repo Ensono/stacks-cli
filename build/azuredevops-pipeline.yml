@@ -31,10 +31,22 @@ stages:
           arguments: -d
 
       # Run any Unit tests
-      - task: Go@0
+      - task: Bash@3
         displayName: Run Unit Tests
         inputs:
-          command: test
+          filePath: build/run_tests.sh
+          workingDirectory: $(Build.SourcesDirectory)
+
+      # Upload the tests and the coverage
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: JUnit
+          testResultsFiles: $(Build.SourcesDirectory)/build/tests/report.xml
+
+      - task: PublishCodeCoverageResults@1 
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: $(Build.SourcesDirectory)/build/tests/coverage.xml
 
       # Compile the code for the supported platforms
       - template: azuredevops-compile.yml

@@ -20,8 +20,7 @@ func main() {
 			Files:  []string{"foo", "bar"},
 			Values: map[string]string{"find": "replace"},
 		}}
-	sc := scaffold.New(conf)
-	err = sc.Run()
+	err = scaffold.New(conf).Run()
 	if err != nil {
 		log.Fatalf("%v\n\n", err.Error())
 	}

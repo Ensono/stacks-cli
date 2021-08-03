@@ -69,7 +69,7 @@ func initConfigFileFlow(confFile, replaceConf, sourceConf string) error {
 		return err
 	}
 
-	conf, err := config.Create(file)
+	conf, err := config.NewBytes(file)
 	if err != nil {
 		helper.ShowError(err)
 		return err

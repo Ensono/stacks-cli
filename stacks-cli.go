@@ -75,9 +75,7 @@ func initConfigFileFlow(confFile, replaceConf, sourceConf string) error {
 		return err
 	}
 
-	sc := scaffold.New(conf)
-
-	if err = sc.Run(); err != nil {
+	if err = scaffold.New(conf).Run(); err != nil {
 		return err
 	}
 

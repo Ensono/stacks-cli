@@ -1,20 +1,80 @@
 # sample yaml config
-project_name: "test-app-infra-only"
-project_type: "netcore"
-platform: "aks"
-deployment: "azdo"
-advanced_config: true
-cloud_region: "uksouth"
-cloud_resource_group: "string"
-business_company: "company"
-business_project: "project"
-business_domain: "core"
-business_component: "infra"
-sourcecontrol_repoType: "github"
-sourcecontrol_repoName: "Name-Of-Repo"
-sourceControl_repoUrl: "https://github/sample.git"
-terraform_backend_storage: "replace_terraform_backend_storage"
-terraform_backend_storagerg: "replace_terraform_backend_storage_rg"
-terraform_backend_storagecontainer: "replace_terraform_backend_storage_container"
-terraform_backend: 
-networking_base_domain: domain.replace.me
+project:
+- name: tigerfest
+  framework:
+    type: dotnet
+    option: webapi
+    version: latest
+  platform:
+    type: aks    
+  sourcecontrol:
+    type: github
+    url: https://github.com/russellseymour/my-new-project.git  
+
+pipeline: azdo
+
+cloud:
+  platform: azure
+  region: ukwest
+  group: a-new-resource-group
+
+business:
+  company: MyCompany
+  domain: core
+  component: infra
+
+terraform:
+  backend:
+    storage: adfsdafsdfsdf
+    group: Stacks-Ancillary-Resources
+    container: tfstate
+
+network:
+  base:
+    domain: mydomain.com
+
+stacks:
+  dotnet:
+    webapi: https://github.com/amido/stacks-dotnet-rjs
+git_repo: https://github.com/amido/stacks-dotnet.git
+git_ref: 2a810ec620360bb6d69c220abdf409bc6af349be
+---  
+local_path: src/netcore
+filename_replacement_paths:
+  - "/src"
+search_value: xxAMIDOxx.xxSTACKSxx
+folder_map:
+  - src: shared/README.md
+    dest: "./README.md"
+  - src: src/netcore/build/azDevops/azure/templates/steps/build/build-netcore.yml
+    dest: build/azDevops/azure/templates/steps/build/build-netcore.yml
+  - src: src/netcore/build/azDevops/azure/azure-pipelines-netcore-k8s.yml
+    dest: build/azDevops/azure/azure-pipelines-netcore-k8s.yml
+  - src: src/netcore/deploy/azure/app/kube
+    dest: deploy/azure/app/kube
+  - src: src/netcore/deploy/k8s/app/base_api-deploy.yml
+    dest: deploy/k8s/app/base_api-deploy.yml
+  - src: src/netcore/src
+    dest: src
+  - src: src/netcore/.gitattributes
+    dest: ".gitattributes"
+  - src: src/netcore/.gitignore
+    dest: ".gitignore"
+  - src: src/netcore/yamllint.conf
+    dest: yamllint.conf
+--- 
+- files: ["**/*.md"]
+  values: 
+    "project_type": ".NET Core REST API with CQRS"
+    "project_docs_url": "https://stacks.amido.com/docs/workloads/azure/backend/netcore/introduction_netcore"
+- files: ["**/*.cs", "**/*.sln", "**/Dockerfile", "**/*.csproj"]
+  values: 
+    "xxAMIDOxx": startCase(toLower(businessObj.company)).replace(/\s/gm, "") || "Company"
+    "xxSTACKSxx": startCase(toLower(businessObj.project)).replace(/\s/gm, "") || "Project"
+- files: ["**/azure-pipelines-netcore-k8s.yml"]
+  values:
+    "company: amido": "company: ${businessObj.company}"
+    "project: stacks": "project: ${businessObj.project}"
+    "domain: netcore-api": "domain: ${businessObj.domain}"
+    "self_repo: stacks-dotnet": "self_repo: ${scmObj.repoName}"
+    "self_generic_name: stacks-api": "self_generic_name: $(project)-$(domain)"

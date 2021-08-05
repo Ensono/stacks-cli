@@ -35,6 +35,7 @@ func (s *Scaffold) Run() error {
 
 // 1. determine action path based on input either API or config \n
 // 2. get base source \n
+// TODO: still
 // 3. generate replaceMap \n
 // 4. replace placeholders in given files
 // 5. copy to final output place
@@ -56,6 +57,8 @@ func (s *Scaffold) run() error {
 		// cleanUpNewDirOnError(s.Config.Output.NewPath)
 		return err
 	}
+
+	// Add additional config values from Repos
 
 	helper.TraceInfo(fmt.Sprintf("Cloned path %s\n\n", s.Config.Output.TmpPath))
 

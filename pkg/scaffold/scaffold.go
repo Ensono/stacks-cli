@@ -3,7 +3,6 @@ package scaffold
 import (
 	"fmt"
 	"os"
-	"path"
 
 	"github.com/amido/stacks-cli/internal/helper"
 	"github.com/amido/stacks-cli/internal/util"
@@ -13,7 +12,6 @@ import (
 // type Foo interface {
 // 	Write(string, string) (config.Config, error)
 // }
-
 type Scaffold struct {
 	Name   string // name of the processing template
 	Config *config.Config
@@ -29,7 +27,7 @@ func New(conf *config.Config) *Scaffold {
 // Runs the scaffolding process
 func (s *Scaffold) Run() error {
 	if err := s.run(); err != nil {
-		helper.ShowError(err)
+		helper.TraceError(err)
 		return err
 	}
 	return nil
@@ -37,47 +35,41 @@ func (s *Scaffold) Run() error {
 
 // 1. determine action path based on input either API or config \n
 // 2. get base source \n
+// TODO: still
 // 3. generate replaceMap \n
 // 4. replace placeholders in given files
 // 5. copy to final output place
 func (s *Scaffold) run() error {
-
-	tmpPath, err := os.MkdirTemp(s.Config.Output.TmpPath, "source")
-	if err != nil {
-		return err
-	}
 	// invoke all helper functions from here so defer will be closed automatically on block exit
-	defer os.RemoveAll(tmpPath)
+	defer os.RemoveAll(s.Config.Output.TmpPath)
 
 	pwd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 
-	helper.ShowInfo(fmt.Sprintf("Current Dir: %s\n", pwd))
+	helper.TraceInfo(fmt.Sprintf("Current Dir: %s\n", pwd))
 
-	s.Config.Output.TmpPath = tmpPath
-	s.Config.Output.ZipPath = fmt.Sprintf("%s/source.zip", tmpPath)
-	s.Config.Output.UnzipPath = path.Join(tmpPath, "wip", s.Config.Self.Specific.Localpath)
-
-	helper.ShowInfo(fmt.Sprintf("New Project Dir: %s\n", s.Config.Output.NewPath))
+	helper.TraceInfo(fmt.Sprintf("New Project Dir: %s\n", s.Config.Output.NewPath))
 
 	if err := util.GitClone(s.Config.Self.Specific.Gitrepo, s.Config.Self.Specific.Gitref, s.Config.Output.TmpPath, s.Config.Output.ZipPath); err != nil {
-		helper.ShowError(err)
+		helper.TraceError(err)
 		// cleanUpNewDirOnError(s.Config.Output.NewPath)
 		return err
 	}
 
-	helper.ShowInfo(fmt.Sprintf("Cloned path %s\n\n", s.Config.Output.TmpPath))
+	// Add additional config values from Repos
+
+	helper.TraceInfo(fmt.Sprintf("Cloned path %s\n\n", s.Config.Output.TmpPath))
 
 	strs, e3 := s.sortFileOperations()
 	if e3 != nil {
-		helper.ShowError(err)
+		helper.TraceError(err)
 		cleanUpNewDirOnError(s.Config.Output.NewPath)
 		return err
 	}
 
-	helper.ShowInfo(fmt.Sprintf("%s", strs))
+	helper.TraceInfo(fmt.Sprintf("%s", strs))
 
 	return nil
 }
@@ -104,5 +96,5 @@ func (s *Scaffold) sortFileOperations() ([]string, error) {
 // cleans up
 func cleanUpNewDirOnError(newDir string) {
 	os.RemoveAll(newDir)
-	helper.ShowWarning("Removed would be New Directory")
+	helper.ShowInfo("Removed would be New Directory")
 }

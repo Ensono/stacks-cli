@@ -69,15 +69,13 @@ func initConfigFileFlow(confFile, replaceConf, sourceConf string) error {
 		return err
 	}
 
-	conf, err := config.Create(file)
+	conf, err := config.NewBytes(file)
 	if err != nil {
 		helper.ShowError(err)
 		return err
 	}
 
-	sc := scaffold.New(conf)
-
-	if err = sc.Run(); err != nil {
+	if err = scaffold.New(conf).Run(); err != nil {
 		return err
 	}
 

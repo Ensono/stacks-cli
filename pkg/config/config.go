@@ -1,8 +1,8 @@
 package config
 
 // import (
-// 	"amido.com/scaffold/internal/util"
-// 	"amido.com/scaffold/pkg/scaffold"
+// 	"github.com/dnitsch/scaffold/internal/util"
+// 	"github.com/dnitsch/scaffold/pkg/scaffold"
 // )
 
 // func ReadSelfConfigFile(input scaffold.InputConfig) (*scaffold.SelfConfig, error) {
@@ -30,6 +30,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/amido/stacks-cli/internal/helper"
 	"gopkg.in/yaml.v2"
 )
 
@@ -62,6 +63,7 @@ type ReplaceConfig struct {
 	Values map[string]string `yaml:"values"`
 }
 
+
 type InputConfig struct {
 	ProjectName                      string `yaml:"project_name"`
 	ProjectType                      string `yaml:"project_type"`
@@ -91,9 +93,8 @@ type Config struct {
 	Replace *[]ReplaceConfig
 }
 
-// Create creates a config object based on user input or a config file
-func Create(data []byte) (*Config, error) {
-
+// Create creates a config object based on parsed input config
+func New(data InputConfig) (*Config, error) {
 	tmpPath, err := os.MkdirTemp("", "source")
 	if err != nil {
 		return nil, err
@@ -104,9 +105,32 @@ func Create(data []byte) (*Config, error) {
 		return nil, err
 	}
 
-	// helper.ShowInfo(fmt.Sprintf("Current Dir: %s\n", pwd))
+	selfConf, err := readSelfConfigFile(data)
+	if err != nil {
+		helper.TraceInfo("Failed to read self config")
+		return nil, err
+	}
 
-	// helper.ShowInfo(fmt.Sprintf("New Project Dir: %s\n", s.Config.Output.NewPath))
+	conf := Config{
+		Output: &OutputConfig{
+			NewPath:   fmt.Sprintf("%s/%s", pwd, data.ProjectName),
+			TmpPath:   tmpPath,
+			ZipPath:   fmt.Sprintf("%s/source.zip", tmpPath),
+			UnzipPath: path.Join(tmpPath, "wip", selfConf.Specific.Localpath),
+		},
+		Input: &data,
+		Self:  selfConf,
+	}
+
+	helper.TraceInfo(fmt.Sprintf("New Project Dir: %s\n", conf.Output.NewPath))
+
+	helper.TraceInfo(fmt.Sprintf("Temp Path: %s\n", conf.Output.TmpPath))
+
+	return &conf, err
+}
+
+// Create creates a config object based on bytes stream read from a config file
+func NewBytes(data []byte) (*Config, error) {
 
 	t := InputConfig{}
 
@@ -114,23 +138,8 @@ func Create(data []byte) (*Config, error) {
 		return nil, err
 	}
 
-	selfConf, err := readSelfConfigFile(t)
-	if err != nil {
-		return nil, err
-	}
-
-	conf := Config{
-		Output: &OutputConfig{
-			NewPath:   fmt.Sprintf("%s/%s", pwd, t.ProjectName),
-			TmpPath:   tmpPath,
-			ZipPath:   fmt.Sprintf("%s/source.zip", tmpPath),
-			UnzipPath: path.Join(tmpPath, "wip", selfConf.Specific.Localpath),
-		},
-		Input: &t,
-		Self:  selfConf,
-	}
-
-	return &conf, err
+	conf, err := New(t)
+	return conf, err
 }
 
 // readSelfConfigFile constructs self config for CLI based on bundle resources

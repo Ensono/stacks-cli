@@ -6,6 +6,7 @@
 *.yml
 !_examples/*.yml
 !build/*.yml
+!Taskfile.yml
 
 # built binary to publish
 bin/
@@ -27,3 +28,6 @@ bin/
 vendor/
 
 local/
+outputs/
+
+build/tests

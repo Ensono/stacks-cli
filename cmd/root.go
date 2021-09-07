@@ -9,6 +9,7 @@ import (
 	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/amido/stacks-cli/internal/models"
+	"github.com/amido/stacks-cli/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
@@ -21,7 +22,7 @@ var (
 	App models.App
 
 	// Config variable to hold the model after parsing
-	Config models.Config
+	Config config.Config
 
 	// Set a variable to hold the version number of the application
 	version string
@@ -115,19 +116,19 @@ func preRun(ccmd *cobra.Command, args []string) {
 	// Read in the static configuration for the stacks_frameworks
 	// This specifies the default location of repositories that contain the
 	// Amido Stacks projects. This can be overridden with a configuration file
-	frameworks := models.Stacks{}
+	frameworks := config.Stacks{}
 	data := static.Config("stacks_frameworks")
 	err := yaml.Unmarshal(data, &frameworks)
 	if err != nil {
 		log.Fatalf("Unable to parse static configuration: %v", err)
 	}
 
-	Config.Stacks = frameworks
+	Config.Input.Stacks = frameworks
 
 	// Set the default directories
 	// setDefaultDirectories()
 
-	err = viper.Unmarshal(&Config)
+	err = viper.Unmarshal(&Config.Input)
 	if err != nil {
 		log.Fatalf("Unable to read configuration into models: %v", err)
 	}
@@ -135,10 +136,10 @@ func preRun(ccmd *cobra.Command, args []string) {
 	// Configure application logging
 	// This is done after unmarshalling of the configuration so that the
 	// model values can be used rather than the strings from viper
-	App.ConfigureLogging(Config.Log)
+	App.ConfigureLogging(Config.Input.Log)
 
 	// Set the version of the app in the configuration
-	Config.Version = version
+	Config.Input.Version = version
 
 }
 

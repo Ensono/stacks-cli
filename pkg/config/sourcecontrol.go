@@ -1,4 +1,4 @@
-package models
+package config
 
 type SourceControl struct {
 	Type string `mapstructure:"type"`

@@ -1,4 +1,4 @@
-package models
+package config
 
 type TerraformBackend struct {
 	Storage       string `mapstructure:"storage"`

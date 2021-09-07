@@ -26,7 +26,7 @@ stages:
         displayName: Setting GO Version
         inputs:
           version: ${{ variables.GoVersion }}
-          gobin: /go/bin
+          goBin: /go/bin
 
       # Install Taskfile for the build to run
       - task: Bash@3

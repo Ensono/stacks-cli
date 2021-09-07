@@ -26,7 +26,6 @@ stages:
         displayName: Setting GO Version
         inputs:
           version: ${{ variables.GoVersion }}
-          goBin: /go/bin
 
       # Install Taskfile for the build to run
       - task: Bash@3
@@ -43,6 +42,7 @@ stages:
         inputs:
           targetType: inline
           script: |
+            export GOBIN=$HOME/go/bin
             export PATH=$PATH:$GOBIN
             task
         env:

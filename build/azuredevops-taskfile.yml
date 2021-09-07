@@ -34,7 +34,8 @@ stages:
           targetType: inline
           script: |
             wget https://github.com/go-task/task/releases/download/v${{ variables.TaskfileVersion }}/task_linux_amd64.tar.gz -O /tmp/task.tar.gz
-            tar zxf /tmp/task.tar.gz task -C /usr/local/bin
+            tar zxf /tmp/task.tar.gz task -C /usr/bin
+            ls -l /usr/bin/task
 
       # Run the tasks to build the application
       - task: Bash@3

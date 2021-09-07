@@ -1,5 +1,11 @@
 package config
 
+import (
+	"fmt"
+
+	"github.com/amido/stacks-cli/internal/constants"
+)
+
 // import (
 // 	"github.com/dnitsch/scaffold/internal/util"
 // 	"github.com/dnitsch/scaffold/pkg/scaffold"
@@ -25,25 +31,18 @@ package config
 // 	return &s, err
 // }
 
-import (
-	"fmt"
-	"os"
-	"path"
-
-	"github.com/amido/stacks-cli/internal/helper"
-	"gopkg.in/yaml.v2"
-)
-
 type TypeDetail struct {
-	Gitrepo                  string   `yaml:"git_repo"`
-	Gitref                   string   `yaml:"git_ref"`
-	Localpath                string   `yaml:"local_path"`
-	FilenameReplacementPaths []string `yaml:"filename_replacement_paths,omitempty"`
-	Searchvalue              string   `yaml:"search_value,omitempty"`
-	Foldermap                []struct {
-		Src  string `yaml:"src"`
-		Dest string `yaml:"dest"`
-	} `yaml:"folder_map"`
+	Gitrepo                  string    `yaml:"git_repo"`
+	Gitref                   string    `yaml:"git_ref"`
+	Localpath                string    `yaml:"local_path"`
+	FilenameReplacementPaths []string  `yaml:"filename_replacement_paths,omitempty"`
+	Searchvalue              string    `yaml:"search_value,omitempty"`
+	Foldermap                Foldermap `mapstructure:"folder_map"`
+}
+
+type Foldermap struct {
+	Src  string `mapstructure:"src"`
+	Dest string `mapstructure:"dest"`
 }
 
 type SelfConfig struct {
@@ -63,36 +62,31 @@ type ReplaceConfig struct {
 	Values map[string]string `yaml:"values"`
 }
 
-
-type InputConfig struct {
-	ProjectName                      string `yaml:"project_name"`
-	ProjectType                      string `yaml:"project_type"`
-	Platform                         string `yaml:"platform"`
-	Deployment                       string `yaml:"deployment"`
-	AdvancedcCnfig                   bool   `yaml:"advanced_config"`
-	CreateConfig                     bool   `yaml:"create_config"`
-	CloudRegion                      string `yaml:"cloud_egion"`
-	CloudResourcegroup               string `yaml:"cloud_resourceGroup"`
-	BusinessCompany                  string `yaml:"business_company"`
-	BusinessProject                  string `yaml:"business_project"`
-	BusinessDomain                   string `yaml:"business_domain"`
-	BusinessComponent                string `yaml:"business_component"`
-	SourcecontrolRepotype            string `yaml:"sourcecontrol_repo_type"`
-	SourcecontrolReponame            string `yaml:"sourcecontrol_repo_name"`
-	SourcecontrolRepourl             string `yaml:"sourcecontrol_repo_url"`
-	TerraformBackendStorage          string `yaml:"terraformBackendStorage"`
-	TerraformBackendStoragerg        string `yaml:"terraformBackendStorageRg"`
-	TerraformBackendStoragecontainer string `yaml:"terraformBackendStorageContainer"`
-	NetworkingBaseDomain             string `yaml:"networking_base_domain"`
-}
-
 type Config struct {
-	Input   *InputConfig
-	Self    *SelfConfig
-	Output  *OutputConfig
-	Replace *[]ReplaceConfig
+	Input   InputConfig
+	Self    SelfConfig
+	Output  OutputConfig
+	Replace []ReplaceConfig
 }
 
+// GetVersion returns the current version of the application
+// It will check to see uif the Version is empty, if it is, it will
+// set and identifiable local build version
+func (config *Config) GetVersion() string {
+	var version string
+
+	version = config.Input.Version
+
+	fmt.Println(version)
+
+	if version == "" {
+		version = constants.DefaultVersion
+	}
+
+	return version
+}
+
+/*
 // Create creates a config object based on parsed input config
 func New(data InputConfig) (*Config, error) {
 	tmpPath, err := os.MkdirTemp("", "source")
@@ -166,3 +160,4 @@ func readSelfConfigFile(input InputConfig) (*SelfConfig, error) {
 	// TODO: feat request allow overwrite of self config from outside (as long as it can be parsed back to a SelfConfig)
 	return &s, err
 }
+*/

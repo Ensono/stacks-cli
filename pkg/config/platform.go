@@ -1,4 +1,4 @@
-package models
+package config
 
 type Platform struct {
 	Type string `mapstructure:"type"`

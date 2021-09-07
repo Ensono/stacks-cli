@@ -1,9 +1,11 @@
-package models
+package config
 
-import "github.com/amido/stacks-cli/internal/constants"
+import (
+	"github.com/amido/stacks-cli/internal/models"
+)
 
 // Config is used to map the configuration onto the application models
-type Config struct {
+type InputConfig struct {
 
 	// State if running in Interactive mode
 	Interactive bool `mapstructure:"interactive"`
@@ -12,7 +14,7 @@ type Config struct {
 	Version string
 
 	// Define the logging parameters
-	Log Log `mapstructure:"log"`
+	Log models.Log `mapstructure:"log"`
 
 	Directory Directory `mapstructure:"directory"`
 
@@ -23,19 +25,4 @@ type Config struct {
 	Project   []Project `mapstructure:"project"`
 	Stacks    Stacks    `mapstructure:"stacks"` // Holds the information about the projects in stacks
 	Terraform Terraform `mapstructure:"terraform"`
-}
-
-// GetVersion returns the current version of the application
-// It will check to see uif the Version is empty, if it is, it will
-// set and identifiable local build version
-func (config *Config) GetVersion() string {
-	var version string
-
-	version = config.Version
-
-	if version == "" {
-		version = constants.DefaultVersion
-	}
-
-	return version
 }

@@ -1,4 +1,4 @@
-package models
+package config
 
 type Framework struct {
 	Type    string `mapstructure:"type"`

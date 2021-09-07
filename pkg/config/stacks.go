@@ -1,4 +1,4 @@
-package models
+package config
 
 type Stacks struct {
 	Dotnet Dotnet `mapstructure:"dotnet"`

@@ -1,4 +1,4 @@
-package models
+package config
 
 type Project struct {
 	Name          string        `mapstructure:"name"`

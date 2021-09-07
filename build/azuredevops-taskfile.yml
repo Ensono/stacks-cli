@@ -1,0 +1,67 @@
+# Azure DevOps pipeline file using Taskfile as the runner
+# This is so that the main build and tests can be run in the same way
+# on a local machine as well as in the CLI
+
+# Set the name which will define the build number
+name: 0.0$(Rev:.r)
+
+# Set the agent pool that is going to be used for the build
+pool:
+  vmImage: ubuntu-20.04
+
+variables:
+  - template: azuredevops-vars.yml
+
+stages:
+  - stage: Build
+
+    jobs:
+
+    - job: Build
+      steps:
+
+      # Ensure using correct version of Golang
+      # Required to perform the build of Stacks CLI
+      - task: GoTool@0
+        displayName: Setting GO Version
+        inputs:
+          version: ${{ variables.GoVersion }}
+
+      # Install Taskfile for the build to run
+      - task: Bash@3
+        displayName: Install Taskfile
+        inputs:
+          targetType: inline
+          script: |
+            wget https://github.com/go-task/task/releases/download/v${{ variables.TaskfileVersion }}/task_linux_amd64.tar.gz -O /tmp/task.tar.gz
+            tar zxf task.tar.gz task -C /usr/local/bin
+
+      # Run the tasks to build the application
+      - task: Bash@3
+        displayName: Build & Test
+        inputs:
+          targetType: inline
+          script: |
+            task
+        env:
+          BUILDNUMBER: $(Build.BuildNumber)
+          TEST_OUTPUT_DIR: $(Build.SourcesDirectory)/outputs/tests
+          OUTPUT_DIR: $(Build.SourcesDirectory)/outputs/bin
+
+      # Upload the tests and the coverage
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: JUnit
+          testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/report.xml
+
+      - task: PublishCodeCoverageResults@1 
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: $(Build.SourcesDirectory)/outputs/tests/coverage.xml
+
+      # Upload the binary files
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Binaries
+        inputs:
+          pathToPublish: $(Build.SourcesDirectory)/outputs/bin
+          artifactName: StacksCLI      

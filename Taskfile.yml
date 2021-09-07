@@ -1,0 +1,73 @@
+# https://taskfile.dev
+
+version: '3'
+
+env:
+  TEST_OUTPUT_DIR: outputs/tests
+  BUILDNUMBER: "100.98.99"
+  OUTPUT_DIR: outputs/bin
+
+vars:
+  REPORT_OUTPUT: report.xml
+  COVERAGE_REPORT: coverage.xml
+
+tasks:
+  default:
+    desc: Compile CLI and run tests
+    cmds:
+      - task: test
+      - task: compile
+
+  test:
+    desc: Run tests and reports
+    cmds:
+      - cmd: mkdir -p {{.TEST_OUTPUT_DIR}}
+      - task: test:execute
+      - task: test:reports
+      
+  test:execute:
+    desc: Run Unit Tests
+    dir: internal
+    cmds:
+      - go get github.com/jstemmer/go-junit-report
+      - go get github.com/axw/gocov/gocov
+      - go get github.com/AlekSi/gocov-xml
+      - go test ./... -v | go-junit-report > ../{{.TEST_OUTPUT_DIR}}/{{.REPORT_OUTPUT}}
+      - go test ./... -v -coverprofile=../{{.TEST_OUTPUT_DIR}}/cover.out
+
+  test:reports:
+    desc: Produce reports
+    cmds:
+      - gocov convert {{.TEST_OUTPUT_DIR}}/cover.out > {{.TEST_OUTPUT_DIR}}/cover.convert.out
+      - cat {{.TEST_OUTPUT_DIR}}/cover.convert.out | gocov-xml > {{.TEST_OUTPUT_DIR}}/{{.COVERAGE_REPORT}}
+      - rm {{.TEST_OUTPUT_DIR}}/*.out
+
+    # Ensure that the files are available for conversion
+    preconditions:
+      - sh: test -f {{.TEST_OUTPUT_DIR}}/cover.out
+        msg: "Coverage report does not exist: {{.TEST_OUTPUT_DIR}}/cover.out"
+
+  compile:cmd:
+    cmds:
+      - go build -ldflags "-X github.com/amido/stacks-cli/cmd.version={{.BUILDNUMBER}}" -o {{.OUTPUT_DIR}}/stacks-cli-{{.PLATFORM_OS}}-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}}
+  
+  compile:
+    desc: Compile supports platforms
+
+    deps:
+      - task: compile:cmd
+        vars:
+          PLATFORM_OS: windows
+          PLATFORM_ARCH: amd64
+          PLATFORM_EXTENSION: ".exe"
+      - task: compile:cmd
+        vars:
+          PLATFORM_OS: linux
+          PLATFORM_ARCH: amd64
+          PLATFORM_EXTENSION:
+      - task: compile:cmd
+        vars:
+          PLATFORM_OS: darwin
+          PLATFORM_ARCH: amd64
+          PLATFORM_EXTENSION:          
+      

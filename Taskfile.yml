@@ -32,8 +32,6 @@ tasks:
       - go install github.com/jstemmer/go-junit-report
       - go install github.com/axw/gocov/gocov
       - go install github.com/AlekSi/gocov-xml
-      - echo $GOBIN
-      - echo $GOPATH
       - find / -name go-junit-report
       - go test ./... -v | go-junit-report > ../{{.TEST_OUTPUT_DIR}}/{{.REPORT_OUTPUT}}
       - go test ./... -v -coverprofile=../{{.TEST_OUTPUT_DIR}}/cover.out

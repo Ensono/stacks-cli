@@ -43,7 +43,7 @@ stages:
         inputs:
           targetType: inline
           script: |
-            env
+            export PATH=$PATH:$GOBIN
             task
         env:
           BUILDNUMBER: $(Build.BuildNumber)

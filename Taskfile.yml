@@ -29,9 +29,11 @@ tasks:
     desc: Run Unit Tests
     dir: internal
     cmds:
-      - go get github.com/jstemmer/go-junit-report
-      - go get github.com/axw/gocov/gocov
-      - go get github.com/AlekSi/gocov-xml
+      - ls -l $GOPATH
+      - ls -l $GOBIN
+      - go install github.com/jstemmer/go-junit-report
+      - go install github.com/axw/gocov/gocov
+      - go install github.com/AlekSi/gocov-xml
       - go test ./... -v | go-junit-report > ../{{.TEST_OUTPUT_DIR}}/{{.REPORT_OUTPUT}}
       - go test ./... -v -coverprofile=../{{.TEST_OUTPUT_DIR}}/cover.out
 

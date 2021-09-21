@@ -5,6 +5,7 @@ This short guide will detail how to get up and running with Go and setup the loc
 === Install Go
 
 .Installing Go on different platforms
+[options="header"]
 |===
 | Platform | Package Manager | Command
 | Linux | - | `wget https://golang.org/dl/go1.16.6.linux-amd64.tar.gz -O golang.tar.gz \| sudo tar -C /usr/local/ -zxf golang.tar.gz`

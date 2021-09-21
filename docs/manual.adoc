@@ -2,6 +2,7 @@
 :pdf-theme: styles/theme.yml
 :doctype: book
 :notitle:
+:table-stripes: even
 
 = Stacks CLI Manual
 

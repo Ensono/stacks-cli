@@ -17,6 +17,7 @@ The following tables show the configuration options that are available at the ro
 The following options can be applied to any command within the Stacks CLI.
 
 .Global Options
+[options="header"]
 |===
 | Option | Environment Variable | Description | Default | Options |
 | `-c`, `--config` | AMIDOSTACKS_CONFIG | Path to the configuration file to use | | |
@@ -28,6 +29,7 @@ The following options can be applied to any command within the Stacks CLI.
 ==== Scaffold Options
 
 .Scaffold Options
+[options="header"]
 |===
 | Option | Environment Variable | Description | Default | Options |
 | `-n`, `--name` | AMIDOSTACKS_PROJECT_NAME | Name of the project to created | | |

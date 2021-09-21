@@ -1,8 +1,8 @@
-= Quick Start
+== Quick Start
 
 This short guide will detail how to get up and running with Go and setup the local environment.
 
-== Install Go
+=== Install Go
 
 .Installing Go on different platforms
 |===
@@ -13,7 +13,7 @@ This short guide will detail how to get up and running with Go and setup the loc
 | Windows | Winget | `winget install -e --id GoLang.Go`
 |===
 
-== Clone the `stacks-cli` repository
+=== Clone the `stacks-cli` repository
 
 Clone the repository to a location on disk, for example `C:\users\russell\workspaces\stacks\stacks-cli`.
 
@@ -24,13 +24,13 @@ cd ~/workspaces/stacks
 git clone git@github.com:amido/stacks-cli.git
 ----
 
-== Build the CLI
+=== Build the CLI
 
 The necessary packages will be downloaded and a binary created for the platform that the command is running on. In the examples below this has been run in a PowerShell terminal and in WSL.
 
 It is necessary to set the `GOPATH` environment variable so that the packages are installed into the correct location for app. It is recommended that the `GOPATH` is set to the parent directory of `stacks-cli`. This may cause problems if already using Go, in which case clone `stacks-cli` into the `GOPATH` already configured on the local machine.
 
-=== PowerShell
+==== PowerShell
 
 The `GOPATH` can be set globally or for the current session. It is recommended to set it globally. In this case the `GOPATH` would be set to `C:\users\russell\workspaces\stacks`
 
@@ -45,7 +45,7 @@ go get ./...
 go build
 ----
 
-### Linux (WSL)
+==== Linux (WSL)
 
 The `GOPATH` can be set globally or for the current session. It is recommended to set it globally. In this case the `GOPATH` would be set to `~/workspaces/stacks`
 

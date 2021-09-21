@@ -1,4 +1,9 @@
 :source-highlighter: rouge
+:pdf-theme: styles/theme.yml
+:doctype: book
+:notitle:
+
+= Stacks CLI Manual
 
 include::quickstart.adoc[]
 

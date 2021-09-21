@@ -5,6 +5,7 @@ A build pipeline file exists in `./build` that controls how the CLI is compiled 
 The build consists of three files:
 
 .Build files
+[options="header"]
 |===
 | Name | Description
 

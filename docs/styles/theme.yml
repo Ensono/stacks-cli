@@ -36,7 +36,13 @@ header:
     center:
       content: $header_recto_center_content
 
+# Define the heading styles
+heading:
+  font-color: fe6e69
+
 # Define the table style
 table:
+  caption:
+    side: bottom
   head:
-    background-color: #08c1a7
+    background_color: 08c1a7

@@ -13,13 +13,13 @@ import (
 
 // using this as an inspiration https://github.com/moby/moby/blob/master/daemon/graphdriver/copy/copy.go
 // CopyDirectory
-func CopyDirectory(scrDir, dest string) error {
-	entries, err := ioutil.ReadDir(scrDir)
+func CopyDirectory(srcDir, dest string) error {
+	entries, err := ioutil.ReadDir(srcDir)
 	if err != nil {
 		return err
 	}
 	for _, entry := range entries {
-		sourcePath := filepath.Join(scrDir, entry.Name())
+		sourcePath := filepath.Join(srcDir, entry.Name())
 		destPath := filepath.Join(dest, entry.Name())
 
 		fileInfo, err := os.Stat(sourcePath)
@@ -129,58 +129,61 @@ func CopySymLink(source, dest string) error {
 // Unzip will decompress a zip archive, moving all files and folders
 // within the zip file (parameter 1) to an output directory (parameter 2).
 // Returns all unzipped files (abs path)
-func UnzipClone(src string, dest string) ([]string, error) {
-
-	var filenames []string
+func Unzip(src, dest string) error {
 
 	r, err := zip.OpenReader(src)
 	if err != nil {
-		return filenames, err
+		return err
 	}
 	defer r.Close()
 
-	for _, f := range r.File {
+	// iterate around the files in the zip
+	for _, file := range r.File {
 
-		// Store filename/path for returning and using later on
-		fpath := filepath.Join(dest, f.Name)
+		// Determine the path for the current file
+		filePath := filepath.Join(dest, file.Name)
 
 		// Check for ZipSlip. More Info: http://bit.ly/2MsjAWE
-		if !strings.HasPrefix(fpath, filepath.Clean(dest)+string(os.PathSeparator)) {
-			return filenames, fmt.Errorf("%s: illegal file path", fpath)
+		if !strings.HasPrefix(filePath, filepath.Clean(dest)+string(os.PathSeparator)) {
+			return fmt.Errorf("%s: illegal file path", filePath)
 		}
 
-		filenames = append(filenames, fpath)
+		// if the file is a directory, create it
+		if file.FileInfo().IsDir() {
+			os.MkdirAll(filePath, os.ModePerm)
 
-		if f.FileInfo().IsDir() {
-			// Make Folder
-			os.MkdirAll(fpath, os.ModePerm)
+			// move onto the next iteration in the loop
 			continue
 		}
 
-		// Make File
-		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
-			return filenames, err
+		// Make the file
+		if err = os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
+			return err
 		}
 
-		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		// read the content of the current file so it can be set in the destination file
+		outFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 		if err != nil {
-			return filenames, err
+			return err
 		}
 
-		rc, err := f.Open()
+		// open the current file
+		rc, err := file.Open()
 		if err != nil {
-			return filenames, err
+			return err
 		}
 
+		// copy the content of the current to the new one
 		_, err = io.Copy(outFile, rc)
+		if err != nil {
+			return err
+		}
 
-		// Close the file without defer to close before next iteration of loop
+		// close the files
 		outFile.Close()
 		rc.Close()
 
-		if err != nil {
-			return filenames, err
-		}
 	}
-	return filenames, nil
+
+	return nil
 }

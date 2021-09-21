@@ -64,7 +64,7 @@ project:
     type: aks    
   sourcecontrol:
     type: github
-    url: https://github.com/russellseymour/my-new-project.git  
+    url: https://github.com/russellseymour/my-new-project.git
 
 pipeline: azdo
 
@@ -90,7 +90,7 @@ network:
 
 stacks:
   dotnet:
-    webapi: https://github.com/amido/stacks-dotnet-rjs
+    webapi: https://github.com/amido/stacks-dotnet
 ```
 
 Note that when using the configuration file it is possible to specify multiple projects to be configured. This allows several projects to be setup at the same time, without having to run the command multiple times. Each project will be created within the specified working directory.

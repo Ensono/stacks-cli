@@ -12,7 +12,6 @@ import (
 	"github.com/amido/stacks-cli/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -102,33 +101,19 @@ func initConfig() {
 
 	viper.AutomaticEnv() // read in environment variables that match
 
-	// if a configuration file is found, read it in
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using configuration file:", viper.ConfigFileUsed())
-	}
-
+	// Read  in the static configuration
 	stacks_config := strings.NewReader(string(static.Config("stacks_frameworks")))
 	viper.MergeConfig(stacks_config)
+
+	// if a configuration file is found, read it in
+	if err := viper.MergeInConfig(); err == nil {
+		fmt.Println("Using configuration file:", viper.ConfigFileUsed())
+	}
 }
 
 func preRun(ccmd *cobra.Command, args []string) {
 
-	// Read in the static configuration for the stacks_frameworks
-	// This specifies the default location of repositories that contain the
-	// Amido Stacks projects. This can be overridden with a configuration file
-	frameworks := config.Stacks{}
-	data := static.Config("stacks_frameworks")
-	err := yaml.Unmarshal(data, &frameworks)
-	if err != nil {
-		log.Fatalf("Unable to parse static configuration: %v", err)
-	}
-
-	Config.Input.Stacks = frameworks
-
-	// Set the default directories
-	// setDefaultDirectories()
-
-	err = viper.Unmarshal(&Config.Input)
+	err := viper.Unmarshal(&Config.Input)
 	if err != nil {
 		log.Fatalf("Unable to read configuration into models: %v", err)
 	}

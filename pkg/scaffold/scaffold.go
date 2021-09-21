@@ -1,12 +1,10 @@
 package scaffold
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/amido/stacks-cli/internal/helper"
-	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
 	"github.com/sirupsen/logrus"
 )
@@ -58,11 +56,12 @@ func (s *Scaffold) run() error {
 	for _, project := range s.Config.Input.Project {
 
 		// Determine the project path
-		project_path := s.setProjectPath(project.Name)
-		s.Logger.Infof("Project path: %s\n", project_path)
+		s.Config.Self.AddPath(project, s.setProjectPath(project.Name))
+		s.Logger.Infof("Project path: %s\n", s.Config.Self.GetPath(project))
+		s.Logger.Debugf("Project ID: %s", project.GetId())
 
 		// create the directory
-		err := os.MkdirAll(project_path, 0755)
+		err := os.MkdirAll(s.Config.Self.GetPath(project), 0755)
 		if err != nil {
 			break
 		}
@@ -70,33 +69,37 @@ func (s *Scaffold) run() error {
 
 	return err
 
-	s.Logger.Tracef("New Project Dir: %s\n", s.Config.Input.Directory.WorkingDir)
+	/*
+		s.Logger.Tracef("New Project Dir: %s\n", s.Config.Input.Directory.WorkingDir)
 
-	if err := util.GitClone(s.Config.Self.Specific.Gitrepo, s.Config.Self.Specific.Gitref, s.Config.Output.TmpPath, s.Config.Output.ZipPath); err != nil {
-		s.Logger.Trace(err.Error())
-		// cleanUpNewDirOnError(s.Config.Output.NewPath)
-		return err
-	}
+		// , s.Config.Output.ZipPath
+		if err := util.GitClone(s.Config.Self.Specific.Gitrepo, s.Config.Self.Specific.Gitref, s.Config.Output.TmpPath); err != nil {
+			s.Logger.Trace(err.Error())
+			// cleanUpNewDirOnError(s.Config.Output.NewPath)
+			return err
+		}
 
-	// Add additional config values from Repos
+		// Add additional config values from Repos
 
-	s.Logger.Tracef("Cloned path %s\n\n", s.Config.Output.TmpPath)
+		s.Logger.Tracef("Cloned path %s\n\n", s.Config.Output.TmpPath)
 
-	strs, e3 := s.sortFileOperations()
-	if e3 != nil {
-		s.Logger.Trace(err.Error())
-		cleanUpNewDirOnError(s.Config.Output.NewPath)
-		return err
-	}
+		strs, e3 := s.sortFileOperations()
+		if e3 != nil {
+			s.Logger.Trace(err.Error())
+			cleanUpNewDirOnError(s.Config.Output.NewPath)
+			return err
+		}
 
-	helper.TraceInfo(fmt.Sprintf("%s", strs))
+		helper.TraceInfo(fmt.Sprintf("%s", strs))
 
-	return nil
+		return nil
+	*/
 }
 
+/*
 func (s *Scaffold) sortFileOperations() ([]string, error) {
 
-	fileListArr, err := util.UnzipClone(s.Config.Output.ZipPath, s.Config.Output.UnzipPath)
+	fileListArr, err := util.Unzip(s.Config.Output.ZipPath, s.Config.Output.UnzipPath)
 	if err != nil {
 		return nil, err
 	}
@@ -105,6 +108,7 @@ func (s *Scaffold) sortFileOperations() ([]string, error) {
 
 	return fileListArr, nil
 }
+*/
 
 func (s *Scaffold) setProjectPath(name string) string {
 	project_path := filepath.Join(s.Config.Input.Directory.WorkingDir, name)

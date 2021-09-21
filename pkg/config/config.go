@@ -48,6 +48,8 @@ type Foldermap struct {
 type SelfConfig struct {
 	Shared   *TypeDetail
 	Specific *TypeDetail
+
+	ProjectPaths map[string]string
 }
 
 type OutputConfig struct {
@@ -84,6 +86,19 @@ func (config *Config) GetVersion() string {
 	}
 
 	return version
+}
+
+// SetPaths sets the current project path
+func (self *SelfConfig) AddPath(project Project, path string) {
+	if self.ProjectPaths == nil {
+		self.ProjectPaths = make(map[string]string)
+	}
+	self.ProjectPaths[project.GetId()] = path
+}
+
+// GetPath returns the path for the current project
+func (self *SelfConfig) GetPath(project Project) string {
+	return self.ProjectPaths[project.GetId()]
 }
 
 /*

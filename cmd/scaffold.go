@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
 
+	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/scaffold"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -144,6 +147,30 @@ func executeRun(ccmd *cobra.Command, args []string) {
 	err = os.RemoveAll(Config.Input.Directory.TempDir)
 	if err != nil {
 		App.Logger.Fatalf("Unable to remove temporary directory: %s", Config.Input.Directory.TempDir)
+	}
+
+	// iterate around the projects that have been specified
+	for _, project := range Config.Input.Project {
+
+		App.Logger.Infof("Setting up project: %s\n", project.Name)
+
+		// Create the temporary and working directories for the current project
+		projectTempDir := filepath.Join(Config.Input.Directory.TempDir, project.Name)
+		// projectDir := filepath.Join(Config.Input.Directory.WorkingDir, project.Name)
+
+		// Clone the target repository into the temp directory
+		err := util.GitClone(
+			Config.Input.Stacks.GetSrcURL(project.Framework.GetMapKey()),
+			project.SourceControl.Ref,
+			projectTempDir,
+		)
+
+		if err == nil {
+			fmt.Println("clones")
+		}
+
+		// copy the contents of the temporary project dir to the working directory
+		util.CopyDirectory(filepath.Join(projectTempDir, "*"), Config.Self.GetPath(project))
 	}
 
 }

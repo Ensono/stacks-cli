@@ -3,9 +3,11 @@
 version: '3'
 
 env:
-  TEST_OUTPUT_DIR: outputs/tests
   BUILDNUMBER: "100.98.99"
-  OUTPUT_DIR: outputs/bin
+  OUTPUT_DIR: outputs
+  OUTPUT_TEST_DIR: "{{.OUTPUT_DIR}}/tests"
+  OUTPUT_BIN_DIR: "{{.OUTPUT_DIR}}/bin"
+  OUTPUT_DOCS_DIR: "{{.OUTPUT_DIR}}/docs"
 
 vars:
   REPORT_OUTPUT: report.xml
@@ -18,10 +20,15 @@ tasks:
       - task: test
       - task: compile
 
+  clean:
+    desc: Clean out old any old builds
+    cmds:
+      - rm -rf {{.OUTPUT_DIR}}
+
   test:
     desc: Run tests and reports
     cmds:
-      - cmd: mkdir -p {{.TEST_OUTPUT_DIR}}
+      - cmd: mkdir -p {{.OUTPUT_TEST_DIR}}
       - task: test:execute
       - task: test:reports
       
@@ -32,24 +39,24 @@ tasks:
       - go install github.com/jstemmer/go-junit-report
       - go install github.com/axw/gocov/gocov
       - go install github.com/AlekSi/gocov-xml
-      - go test ./... -v | go-junit-report > ../{{.TEST_OUTPUT_DIR}}/{{.REPORT_OUTPUT}}
-      - go test ./... -v -coverprofile=../{{.TEST_OUTPUT_DIR}}/cover.out
+      - go test ./... -v | go-junit-report > ../{{.OUTPUT_TEST_DIR}}/{{.REPORT_OUTPUT}}
+      - go test ./... -v -coverprofile=../{{.OUTPUT_TEST_DIR}}/cover.out
 
   test:reports:
     desc: Produce reports
     cmds:
-      - gocov convert {{.TEST_OUTPUT_DIR}}/cover.out > {{.TEST_OUTPUT_DIR}}/cover.convert.out
-      - cat {{.TEST_OUTPUT_DIR}}/cover.convert.out | gocov-xml > {{.TEST_OUTPUT_DIR}}/{{.COVERAGE_REPORT}}
-      - rm {{.TEST_OUTPUT_DIR}}/*.out
+      - gocov convert {{.OUTPUT_TEST_DIR}}/cover.out > {{.OUTPUT_TEST_DIR}}/cover.convert.out
+      - cat {{.OUTPUT_TEST_DIR}}/cover.convert.out | gocov-xml > {{.OUTPUT_TEST_DIR}}/{{.COVERAGE_REPORT}}
+      - rm {{.OUTPUT_TEST_DIR}}/*.out
 
     # Ensure that the files are available for conversion
     preconditions:
-      - sh: test -f {{.TEST_OUTPUT_DIR}}/cover.out
-        msg: "Coverage report does not exist: {{.TEST_OUTPUT_DIR}}/cover.out"
+      - sh: test -f {{.OUTPUT_TEST_DIR}}/cover.out
+        msg: "Coverage report does not exist: {{.OUTPUT_TEST_DIR}}/cover.out"
 
   compile:cmd:
     cmds:
-      - go build -ldflags "-X github.com/amido/stacks-cli/cmd.version={{.BUILDNUMBER}}" -o {{.OUTPUT_DIR}}/stacks-cli-{{.PLATFORM_OS}}-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}}
+      - go build -ldflags "-X github.com/amido/stacks-cli/cmd.version={{.BUILDNUMBER}}" -o {{.OUTPUT_BIN_DIR}}/stacks-cli-{{.PLATFORM_OS}}-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}}
   
   compile:
     desc: Compile supports platforms
@@ -71,3 +78,12 @@ tasks:
           PLATFORM_ARCH: amd64
           PLATFORM_EXTENSION:          
       
+  docs:
+    desc: Generate a PDF of the current documentation
+
+    cmds:
+      - docker pull asciidoctor/docker-asciidoctor
+      - docker run --rm -v ${PWD}:/data asciidoctor/docker-asciidoctor asciidoctor-pdf -o "{{.DOCS_FILENAME}}" -D /data/{{.OUTPUT_DOCS_DIR}} /data/docs/manual.adoc
+
+    vars:
+      DOCS_FILENAME: "Stacks CLI Manual - {{.BUILDNUMBER}}.pdf"

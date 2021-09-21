@@ -1,4 +1,4 @@
-# Runtime Configuration
+== Runtime Configuration
 
 Configuration for the CLI can be performed in several ways:
 
@@ -8,25 +8,28 @@ Configuration for the CLI can be performed in several ways:
 
 Whe using a configuration file it is possible to setup more than one project.
 
-## Settings
+=== Settings
 
 The following tables show the configuration options that are available at the root level and the command level.
 
-### Global Options
+==== Global Options
 
 The following options can be applied to any command within the Stacks CLI.
 
+.Global Options
+|===
 | Option | Environment Variable | Description | Default | Options |
-|---|---|---|---|---|
 | `-c`, `--config` | AMIDOSTACKS_CONFIG | Path to the configuration file to use | | |
 | `-l`, `--loglevel` | AMIDOSTACKS_LOGLEVEL | Level of logging to be used | `info` | `debug`, `info`, `warning`, `error`, `fatal` |
 | `-f`, `--logformat` | AMIDOSTACKS_LOGFORMAT | Output type of the logging | `text` | `text`, `json` |
 | `--logcolur` | AMIDOSTACKS_LOGCOLOUR | State if logging should include colour | | |
+|===
 
-### Scaffold options
+==== Scaffold Options
 
+.Scaffold Options
+|===
 | Option | Environment Variable | Description | Default | Options |
-|---|---|---|---|---|
 | `-n`, `--name` | AMIDOSTACKS_PROJECT_NAME | Name of the project to created | | |
 | `--sourcecontrol` | AMIDOSTACKS_PROJECT_SOURCECONTROL_TYPE | Source control system to be used | `github` | |
 | `-u`, `--sourcecontrolurl` | AMIDOSTACKS_PROJECT_SOURCECONTROL_URL | URL to the remote repository | | | 
@@ -48,12 +51,14 @@ The following options can be applied to any command within the Stacks CLI.
 | `-d`, `--domain` | AMIDOSTACKS_NETWORK_BASE_DOMAIN | Domain root to be used for the projects | | | 
 | `-w`, `--workingdirectory` | AMIDOSTACKS_DIRECTORY_WORKINGDIR | Directory that the projects should be created in | `${PWD}` | |
 | `--tempdir` | AMIDOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Stacks for its temp files | System temp directory | |
+|===
 
-## Configuration File
+=== Configuration File
 
 The following shows an example of a configuration file that can be passed to the command.
 
-```yaml
+[source,yaml]
+----
 project:
 - name: tigerfest
   framework:
@@ -91,12 +96,13 @@ network:
 stacks:
   dotnet:
     webapi: https://github.com/amido/stacks-dotnet
-```
+----
 
 Note that when using the configuration file it is possible to specify multiple projects to be configured. This allows several projects to be setup at the same time, without having to run the command multiple times. Each project will be created within the specified working directory.
 
 If this file was called `conf.yml` the command to run to consume the file would be:
 
-```
+[source,bash]
+----
 .\stacks-cli.exe scaffold -c .\local\conf.yml
-```
+----

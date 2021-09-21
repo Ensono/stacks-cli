@@ -1,4 +1,4 @@
-package models
+package config
 
 type Business struct {
 	Company   string `mapstructure:"company"`

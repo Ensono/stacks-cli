@@ -1,12 +1,12 @@
 package scaffold
 
 import (
-	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/amido/stacks-cli/internal/helper"
-	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
+	"github.com/sirupsen/logrus"
 )
 
 // type Foo interface {
@@ -15,12 +15,14 @@ import (
 type Scaffold struct {
 	Name   string // name of the processing template
 	Config *config.Config
+	Logger *logrus.Logger
 }
 
 // New allocates a new ScaffoldPointer with the given config.
-func New(conf *config.Config) *Scaffold {
+func New(conf *config.Config, logger *logrus.Logger) *Scaffold {
 	return &Scaffold{
 		Config: conf,
+		Logger: logger,
 	}
 }
 
@@ -41,42 +43,63 @@ func (s *Scaffold) Run() error {
 // 5. copy to final output place
 func (s *Scaffold) run() error {
 	// invoke all helper functions from here so defer will be closed automatically on block exit
-	defer os.RemoveAll(s.Config.Output.TmpPath)
+	// defer os.RemoveAll(s.Config.Input.Directory.TempDir)
 
 	pwd, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 
-	helper.TraceInfo(fmt.Sprintf("Current Dir: %s\n", pwd))
+	s.Logger.Tracef("Current Dir: %s\n", pwd)
 
-	helper.TraceInfo(fmt.Sprintf("New Project Dir: %s\n", s.Config.Output.NewPath))
+	// Iterate around the projects that have been configured
+	for _, project := range s.Config.Input.Project {
 
-	if err := util.GitClone(s.Config.Self.Specific.Gitrepo, s.Config.Self.Specific.Gitref, s.Config.Output.TmpPath, s.Config.Output.ZipPath); err != nil {
-		helper.TraceError(err)
-		// cleanUpNewDirOnError(s.Config.Output.NewPath)
-		return err
+		// Determine the project path
+		s.Config.Self.AddPath(project, s.setProjectPath(project.Name))
+		s.Logger.Infof("Project path: %s\n", s.Config.Self.GetPath(project))
+		s.Logger.Debugf("Project ID: %s", project.GetId())
+
+		// create the directory
+		err := os.MkdirAll(s.Config.Self.GetPath(project), 0755)
+		if err != nil {
+			break
+		}
 	}
 
-	// Add additional config values from Repos
+	return err
 
-	helper.TraceInfo(fmt.Sprintf("Cloned path %s\n\n", s.Config.Output.TmpPath))
+	/*
+		s.Logger.Tracef("New Project Dir: %s\n", s.Config.Input.Directory.WorkingDir)
 
-	strs, e3 := s.sortFileOperations()
-	if e3 != nil {
-		helper.TraceError(err)
-		cleanUpNewDirOnError(s.Config.Output.NewPath)
-		return err
-	}
+		// , s.Config.Output.ZipPath
+		if err := util.GitClone(s.Config.Self.Specific.Gitrepo, s.Config.Self.Specific.Gitref, s.Config.Output.TmpPath); err != nil {
+			s.Logger.Trace(err.Error())
+			// cleanUpNewDirOnError(s.Config.Output.NewPath)
+			return err
+		}
 
-	helper.TraceInfo(fmt.Sprintf("%s", strs))
+		// Add additional config values from Repos
 
-	return nil
+		s.Logger.Tracef("Cloned path %s\n\n", s.Config.Output.TmpPath)
+
+		strs, e3 := s.sortFileOperations()
+		if e3 != nil {
+			s.Logger.Trace(err.Error())
+			cleanUpNewDirOnError(s.Config.Output.NewPath)
+			return err
+		}
+
+		helper.TraceInfo(fmt.Sprintf("%s", strs))
+
+		return nil
+	*/
 }
 
+/*
 func (s *Scaffold) sortFileOperations() ([]string, error) {
 
-	fileListArr, err := util.UnzipClone(s.Config.Output.ZipPath, s.Config.Output.UnzipPath)
+	fileListArr, err := util.Unzip(s.Config.Output.ZipPath, s.Config.Output.UnzipPath)
 	if err != nil {
 		return nil, err
 	}
@@ -84,6 +107,13 @@ func (s *Scaffold) sortFileOperations() ([]string, error) {
 	// create a map of replacements on each file
 
 	return fileListArr, nil
+}
+*/
+
+func (s *Scaffold) setProjectPath(name string) string {
+	project_path := filepath.Join(s.Config.Input.Directory.WorkingDir, name)
+
+	return project_path
 }
 
 // create replace map

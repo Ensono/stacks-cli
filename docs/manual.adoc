@@ -1,0 +1,13 @@
+:source-highlighter: rouge
+:pdf-theme: styles/theme.yml
+:doctype: book
+:notitle:
+:table-stripes: even
+
+= Stacks CLI Manual
+
+include::quickstart.adoc[]
+
+include::runtime_config.adoc[]
+
+include::build.adoc[]

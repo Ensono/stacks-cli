@@ -1,0 +1,89 @@
+# https://taskfile.dev
+
+version: '3'
+
+env:
+  BUILDNUMBER: "100.98.99"
+  OUTPUT_DIR: outputs
+  OUTPUT_TEST_DIR: "{{.OUTPUT_DIR}}/tests"
+  OUTPUT_BIN_DIR: "{{.OUTPUT_DIR}}/bin"
+  OUTPUT_DOCS_DIR: "{{.OUTPUT_DIR}}/docs"
+
+vars:
+  REPORT_OUTPUT: report.xml
+  COVERAGE_REPORT: coverage.xml
+
+tasks:
+  default:
+    desc: Compile CLI and run tests
+    cmds:
+      - task: test
+      - task: compile
+
+  clean:
+    desc: Clean out old any old builds
+    cmds:
+      - rm -rf {{.OUTPUT_DIR}}
+
+  test:
+    desc: Run tests and reports
+    cmds:
+      - cmd: mkdir -p {{.OUTPUT_TEST_DIR}}
+      - task: test:execute
+      - task: test:reports
+      
+  test:execute:
+    desc: Run Unit Tests
+    dir: internal
+    cmds:
+      - go install github.com/jstemmer/go-junit-report
+      - go install github.com/axw/gocov/gocov
+      - go install github.com/AlekSi/gocov-xml
+      - go test ./... -v | go-junit-report > ../{{.OUTPUT_TEST_DIR}}/{{.REPORT_OUTPUT}}
+      - go test ./... -v -coverprofile=../{{.OUTPUT_TEST_DIR}}/cover.out
+
+  test:reports:
+    desc: Produce reports
+    cmds:
+      - gocov convert {{.OUTPUT_TEST_DIR}}/cover.out > {{.OUTPUT_TEST_DIR}}/cover.convert.out
+      - cat {{.OUTPUT_TEST_DIR}}/cover.convert.out | gocov-xml > {{.OUTPUT_TEST_DIR}}/{{.COVERAGE_REPORT}}
+      - rm {{.OUTPUT_TEST_DIR}}/*.out
+
+    # Ensure that the files are available for conversion
+    preconditions:
+      - sh: test -f {{.OUTPUT_TEST_DIR}}/cover.out
+        msg: "Coverage report does not exist: {{.OUTPUT_TEST_DIR}}/cover.out"
+
+  compile:cmd:
+    cmds:
+      - go build -ldflags "-X github.com/amido/stacks-cli/cmd.version={{.BUILDNUMBER}}" -o {{.OUTPUT_BIN_DIR}}/stacks-cli-{{.PLATFORM_OS}}-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}}
+  
+  compile:
+    desc: Compile supports platforms
+
+    deps:
+      - task: compile:cmd
+        vars:
+          PLATFORM_OS: windows
+          PLATFORM_ARCH: amd64
+          PLATFORM_EXTENSION: ".exe"
+      - task: compile:cmd
+        vars:
+          PLATFORM_OS: linux
+          PLATFORM_ARCH: amd64
+          PLATFORM_EXTENSION:
+      - task: compile:cmd
+        vars:
+          PLATFORM_OS: darwin
+          PLATFORM_ARCH: amd64
+          PLATFORM_EXTENSION:          
+      
+  docs:
+    desc: Generate a PDF of the current documentation
+
+    cmds:
+      - docker pull asciidoctor/docker-asciidoctor
+      - docker run --rm -v ${PWD}:/data asciidoctor/docker-asciidoctor asciidoctor-pdf -a pdf-theme=/data/docs/styles/theme.yml -a pdf-fontsdir="/data/docs/styles/fonts;GEM_FONTS_DIR" -o "{{.DOCS_FILENAME}}" -D /data/{{.OUTPUT_DOCS_DIR}} /data/docs/manual.adoc
+
+    vars:
+      DOCS_FILENAME: "Stacks CLI Manual - {{.BUILDNUMBER}}.pdf"

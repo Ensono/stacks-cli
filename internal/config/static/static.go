@@ -69,6 +69,8 @@ folder_map:
 // This can be overriden by passing the configuration in as a configuration file
 // but this will be the default
 var stacks_frameworks = `
+input:
+stacks:
   dotnet:
     webapi: https://github.com/amido/stacks-dotnet
     cqrs: https://github.com/amido/stacks-dotnet-cqrs

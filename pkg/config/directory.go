@@ -1,4 +1,4 @@
-package models
+package config
 
 type Directory struct {
 	WorkingDir string `mapstructure:"working"`

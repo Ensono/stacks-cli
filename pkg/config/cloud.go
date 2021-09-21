@@ -1,4 +1,4 @@
-package models
+package config
 
 type Cloud struct {
 	Platform      string `mapstructure:"platform"`

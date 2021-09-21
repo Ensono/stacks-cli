@@ -1,4 +1,4 @@
-package models
+package config
 
 import (
 	"testing"
@@ -20,12 +20,11 @@ func TestGetVersionWithDefaultVersionNumber(t *testing.T) {
 }
 
 func TestGetVersion(t *testing.T) {
-	config := Config{
-		Version: "100.98.99",
-	}
+	config := Config{}
+	config.Input.Version = "100.98.99"
 
 	// get the actual version
 	actual := config.GetVersion()
 
-	assert.Equal(t, actual, config.Version)
+	assert.Equal(t, actual, config.Input.Version)
 }

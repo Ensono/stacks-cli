@@ -1,0 +1,7 @@
+:source-highlighter: rouge
+
+include::quickstart.adoc[]
+
+include::runtime_config.adoc[]
+
+include::build.adoc[]

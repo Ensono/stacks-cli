@@ -45,10 +45,10 @@ stages:
             export GOBIN=$HOME/go/bin
             export PATH=$PATH:$GOBIN
             task
+            task docs
         env:
           BUILDNUMBER: $(Build.BuildNumber)
-          TEST_OUTPUT_DIR: $(Build.SourcesDirectory)/outputs/tests
-          OUTPUT_DIR: $(Build.SourcesDirectory)/outputs/bin
+          OUTPUT_DIR: $(Build.SourcesDirectory)/outputs
 
       # Upload the tests and the coverage
       - task: PublishTestResults@2
@@ -66,4 +66,11 @@ stages:
         displayName: Publish Binaries
         inputs:
           pathToPublish: $(Build.SourcesDirectory)/outputs/bin
-          artifactName: StacksCLI      
+          artifactName: StacksCLI
+
+      # Upload the documentation
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Manual
+        inputs:
+          pathToPublish: $(Build.SourcesDirectory)/outputs/docs
+          artifactName: docs

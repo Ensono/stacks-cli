@@ -89,16 +89,16 @@ func (config *Config) GetVersion() string {
 }
 
 // SetPaths sets the current project path
-func (self *SelfConfig) AddPath(project Project, path string) {
-	if self.ProjectPaths == nil {
-		self.ProjectPaths = make(map[string]string)
+func (selfConfig *SelfConfig) AddPath(project Project, path string) {
+	if selfConfig.ProjectPaths == nil {
+		selfConfig.ProjectPaths = make(map[string]string)
 	}
-	self.ProjectPaths[project.GetId()] = path
+	selfConfig.ProjectPaths[project.GetId()] = path
 }
 
 // GetPath returns the path for the current project
-func (self *SelfConfig) GetPath(project Project) string {
-	return self.ProjectPaths[project.GetId()]
+func (selfConfig *SelfConfig) GetPath(project Project) string {
+	return selfConfig.ProjectPaths[project.GetId()]
 }
 
 /*

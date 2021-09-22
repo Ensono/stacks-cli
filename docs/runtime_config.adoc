@@ -19,11 +19,11 @@ The following options can be applied to any command within the Stacks CLI.
 .Global Options
 [options="header"]
 |===
-| Option | Environment Variable | Description | Default | Options |
-| `-c`, `--config` | AMIDOSTACKS_CONFIG | Path to the configuration file to use | | |
-| `-l`, `--loglevel` | AMIDOSTACKS_LOGLEVEL | Level of logging to be used | `info` | `debug`, `info`, `warning`, `error`, `fatal` |
-| `-f`, `--logformat` | AMIDOSTACKS_LOGFORMAT | Output type of the logging | `text` | `text`, `json` |
-| `--logcolur` | AMIDOSTACKS_LOGCOLOUR | State if logging should include colour | | |
+| Option | Environment Variable | Description | Default | Options 
+| `-c`, `--config` | AMIDOSTACKS_CONFIG | Path to the configuration file to use | | 
+| `-l`, `--loglevel` | AMIDOSTACKS_LOGLEVEL | Level of logging to be used | `info` | `debug`, `info`, `warning`, `error`, `fatal` 
+| `-f`, `--logformat` | AMIDOSTACKS_LOGFORMAT | Output type of the logging | `text` | `text`, `json` 
+| `--logcolur` | AMIDOSTACKS_LOGCOLOUR | State if logging should include colour | | 
 |===
 
 ==== Scaffold Options
@@ -31,28 +31,29 @@ The following options can be applied to any command within the Stacks CLI.
 .Scaffold Options
 [options="header"]
 |===
-| Option | Environment Variable | Description | Default | Options |
-| `-n`, `--name` | AMIDOSTACKS_PROJECT_NAME | Name of the project to created | | |
-| `--sourcecontrol` | AMIDOSTACKS_PROJECT_SOURCECONTROL_TYPE | Source control system to be used | `github` | |
-| `-u`, `--sourcecontrolurl` | AMIDOSTACKS_PROJECT_SOURCECONTROL_URL | URL to the remote repository | | | 
-| `--sourcecontrolref` | AMIDOSTACKS_PROJECT_SOURCECONTROL_REF | SHA reference or Tag to use to clone repository from. If a ref is supplied this is used over a release version package | | | 
-| `-F`, `--framework` | AMIDOSTACKS_PROJECT_FRAMEWORK_TYPE | The framework that is to be used | | `dotnet`, `java`, `nodejs` |
-| `-O`, `--frameworkoption` | AMIDOSTACKS_PROJECT_FRAMEWORK_OPTION | The sort of project to be created | | `webapi`, `cqrs`, `events` |
-| `-V`, `--frameworkversion` | AMIDOSTACKS_PROJECT_FRAMEWORK_VERSION | The version of the Amido stacks project to use | `latest` | |
-| `-P`, `--platformtype` | AMIDOSTACKS_PLATFORM_TYPE | Platform being deployed to | | `aks` |
-| `-p`, `--pipeline` | AMIDOSTACKS_PIPELINE | Pipeline being used to build the project | | `azdo` |
-| `-C`, `--cloud` | AMIDOSTACKS_CLOUD | Cloud platform being used | | `azure`, `aws`, `gcp` |
-| `-R`, `--cloudregion` | AMIDOSTACKS_CLOUD_REGION | Region that the project will be deployed to | | |
-| `-G`, `--cloudgroup` | AMIDOSTACKS_CLOUD_GROUP | Group in the cloud platform that will hold all the resources | | |
-| `--company` | AMIDOSTACKS_BUSINESS_COMPANY | Name of your company or organisation | | |
-| `-A`, `--area` | AMIDOSTACKS_BUSINESS_DOMAIN | Area of the company that is responsible for the project | | |
-| `--component` | AMIDOSTACKS_BUSINESS_COMPONENT | Component of the overall project | | |
-| `--tfstorage` | AMIDOSTACKS_TERRAFORM_BACKEND_STORAGE | Name of the storage account being used for the state | | |
-| `--tfgroup` | AMIDOSTACKS_TERRAFORM_BACKEND_GROUP | Group name of the storage account | | |
-| `--tfcontainer` | AMIDOSTACKS_TERRAFORM_BACKEND_CONTAINER | Container being used to store the data | | |
-| `-d`, `--domain` | AMIDOSTACKS_NETWORK_BASE_DOMAIN | Domain root to be used for the projects | | | 
-| `-w`, `--workingdirectory` | AMIDOSTACKS_DIRECTORY_WORKINGDIR | Directory that the projects should be created in | `${PWD}` | |
-| `--tempdir` | AMIDOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Stacks for its temp files | System temp directory | |
+| Option | Environment Variable | Description | Default | Options 
+| `-n`, `--name` | AMIDOSTACKS_PROJECT_NAME | Name of the project to created | | 
+| `--sourcecontrol` | AMIDOSTACKS_PROJECT_SOURCECONTROL_TYPE | Source control system to be used | `github` | 
+| `-u`, `--sourcecontrolurl` | AMIDOSTACKS_PROJECT_SOURCECONTROL_URL | URL to the remote repository | | 
+| `--sourcecontrolref` | AMIDOSTACKS_PROJECT_SOURCECONTROL_REF | SHA reference or Tag to use to clone repository from. If a ref is supplied this is used over a release version package | | 
+| `-F`, `--framework` | AMIDOSTACKS_PROJECT_FRAMEWORK_TYPE | The framework that is to be used | | `dotnet`, `java`, `nodejs` 
+| `-O`, `--frameworkoption` | AMIDOSTACKS_PROJECT_FRAMEWORK_OPTION | The sort of project to be created | | `webapi`, `cqrs`, `events` 
+| `-V`, `--frameworkversion` | AMIDOSTACKS_PROJECT_FRAMEWORK_VERSION | The version of the Amido stacks project to use | `latest` | 
+| `-P`, `--platformtype` | AMIDOSTACKS_PLATFORM_TYPE | Platform being deployed to | | `aks` 
+| `-p`, `--pipeline` | AMIDOSTACKS_PIPELINE | Pipeline being used to build the project | | `azdo` 
+| `-C`, `--cloud` | AMIDOSTACKS_CLOUD | Cloud platform being used | | `azure`, `aws`, `gcp` 
+| `-R`, `--cloudregion` | AMIDOSTACKS_CLOUD_REGION | Region that the project will be deployed to | | 
+| `-G`, `--cloudgroup` | AMIDOSTACKS_CLOUD_GROUP | Group in the cloud platform that will hold all the resources | | 
+| `--company` | AMIDOSTACKS_BUSINESS_COMPANY | Name of your company or organisation | | 
+| `-A`, `--area` | AMIDOSTACKS_BUSINESS_DOMAIN | Area of the company that is responsible for the project | | 
+| `--component` | AMIDOSTACKS_BUSINESS_COMPONENT | Component of the overall project | | 
+| `--tfstorage` | AMIDOSTACKS_TERRAFORM_BACKEND_STORAGE | Name of the storage account being used for the state | | 
+| `--tfgroup` | AMIDOSTACKS_TERRAFORM_BACKEND_GROUP | Group name of the storage account | | 
+| `--tfcontainer` | AMIDOSTACKS_TERRAFORM_BACKEND_CONTAINER | Container being used to store the data | | 
+| `-d`, `--domain` | AMIDOSTACKS_NETWORK_BASE_DOMAIN | Domain root to be used for the projects | | 
+| `-w`, `--workingdirectory` | AMIDOSTACKS_DIRECTORY_WORKINGDIR | Directory that the projects should be created in | `${PWD}` | 
+| `--tempdir` | AMIDOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Stacks for its temp files | System temp directory | 
+| `--settingsfile` | AMIDOSTACKS_SETTINGSFILE | Name of the file to look for in the project | `stackscli.yml` | 
 |===
 
 === Configuration File

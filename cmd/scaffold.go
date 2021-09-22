@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/scaffold"
 	"github.com/spf13/cobra"
@@ -30,6 +31,7 @@ func init() {
 	var project_vcs_type string
 	var project_vcs_url string
 	var project_vcs_ref string
+	var settings_file string
 
 	// - framework settings
 	var framework_type string
@@ -94,6 +96,8 @@ func init() {
 
 	scaffoldCmd.Flags().StringVarP(&network_base_domain, "domain", "d", "", "Domain for the app")
 
+	scaffoldCmd.Flags().StringVar(&settings_file, "settingsfile", constants.SettingsFile, "Name of the settings file to look for in a project")
+
 	// Bind the flags to the configuration
 
 	// The project is a slice, so that multiple projects can be specified, however
@@ -107,6 +111,8 @@ func init() {
 	viper.BindPFlag("project.sourcecontrol.type", scaffoldCmd.Flags().Lookup("sourcecontrol"))
 	viper.BindPFlag("project.sourcecontrol.url", scaffoldCmd.Flags().Lookup("sourcecontrolurl"))
 	viper.BindPFlag("project.sourcecontrol.ref", scaffoldCmd.Flags().Lookup("sourcecontrolref"))
+
+	viper.BindPFlag("settingsfile", scaffoldCmd.Flags().Lookup("settingsfile"))
 
 	viper.BindPFlag("pipeline", scaffoldCmd.Flags().Lookup("pipeline"))
 
@@ -169,8 +175,10 @@ func executeRun(ccmd *cobra.Command, args []string) {
 			fmt.Println("clones")
 		}
 
+		// Read in the configuration file for the project
+
 		// copy the contents of the temporary project dir to the working directory
-		util.CopyDirectory(filepath.Join(projectTempDir, "*"), Config.Self.GetPath(project))
+		// util.CopyDirectory(filepath.Join(projectTempDir, "*"), Config.Self.GetPath(project))
 	}
 
 }

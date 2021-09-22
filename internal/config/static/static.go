@@ -84,6 +84,15 @@ stacks:
     ssr: https://github.com/amido/stacks-typescript-ssr
 `
 
+func FrameworkCommand(framework string) string {
+	commands := map[string]string{
+		"dotnet": "dotnet",
+		"java":   "maven",
+	}
+
+	return commands[framework]
+}
+
 // Config byte parses static
 func Config(key string) []byte {
 	switch key {

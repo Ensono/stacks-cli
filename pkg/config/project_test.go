@@ -38,7 +38,7 @@ func TestSettingsFileDoesNotExist(t *testing.T) {
 	// setup the project configuration
 	config.Input.Project = make([]Project, 1)
 
-	err := config.Input.Project[0].getSettingsFilePath(tempDir, &config)
+	err := config.Input.Project[0].setSettingsFilePath(tempDir, &config)
 
 	// TODO: Need to work out how to check for a specific type of error
 	// In this case need to check for os.IsNotExist
@@ -66,7 +66,7 @@ func TestDefaultSettingsFileExists(t *testing.T) {
 	// setup the project configuration
 	config.Input.Project = make([]Project, 1)
 
-	err := config.Input.Project[0].getSettingsFilePath(tempDir, &config)
+	err := config.Input.Project[0].setSettingsFilePath(tempDir, &config)
 
 	// define the expected result
 	expected := filepath.Join(tempDir, "stackscli.yml")
@@ -93,7 +93,7 @@ func TestSpecifiedSettingsFileExists(t *testing.T) {
 	// setup the project configuration
 	config.Input.Project = make([]Project, 1)
 
-	err := config.Input.Project[0].getSettingsFilePath(tempDir, &config)
+	err := config.Input.Project[0].setSettingsFilePath(tempDir, &config)
 
 	// define the expected result
 	expected := filepath.Join(tempDir, "altsettings.yml")

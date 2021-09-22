@@ -1,0 +1,69 @@
+:listing-caption: Listing
+
+== Project Settings
+
+Each project that is supported by the Stacks CLI have a settings file associated with them. This is called, by default, `stackscli.yml`. It is possible to override the actual file that is used as well as the filename.
+
+The settings file is intended to allow the project maintainers to define what steps needs to be done on a project and instruct the CLI what to do, without having to refactor the CLI.
+
+=== Structure
+
+The following table details the structure of the settings file.
+
+.Settings file root structure
+[options="header"]
+|===
+| Parameter | Description | Example | Allowed Values 
+| `framework` | The framework that the project is based on. | `dotnet` | `dotnet`, `java`, `node`
+| `init.operations` | List of operations that need to be performed on the temporary project directory | |
+| `setup.operations` | List of operations that need to be performed on the project directory | |
+|===
+
+The next table shows the options for the operations.
+
+NOTE: These are valid for both `init` and `setup` operations
+
+.Operations parameters
+[options="header"]
+|===
+| Parameter | Description | Example | Allowed Values
+| `action` | The type of action that needs to be performed | `cmd` | `cmd`, `copy` 
+| `cmd` | The command that needs to be run.
+
+This is determined by the `framework` option in this file, which the CLI uses to determine the command to run. This setting can be used to override this value. | | 
+| `args` | The arguments that need to be passed to the command | `new -i .` | 
+| `desc` | Description of what is being performed. This is output during the execution of the CLI | Installing template from folder | 
+|===
+
+IMPORTANT: Care must be taken when changing the `cmd` from the default value. The CLI will check for the `dotnet`, `java` and NodeJS commands, but it will not check for commands that have been specified here. There is no way to guarantee that it is installed on the machine.
+
+=== YAML File
+
+The following code listing shows an example settings file.
+
+.Example project settings file
+[[project_settings_file,{listing-caption} {counter:refnum}]]
+[source,yaml]
+----
+framework: dotnet // <1>
+
+init: // <2>
+  operations: // <3>
+    - action: cmd // <4>
+      args: new stacks-docs -n {{ .Input.Business.Company }}.{{ .Input.Business.Domain }} // <5>
+      desc: Create a project using the "stacks-docs" project // <6>
+
+setup: // <7>
+   operations:
+----
+
+<1> Sets the framework that the commands should be run for
+<2> Perform operations on the temporary project directory
+<3> List any number of operations that need to be performed
+<4> States the action that needs to be performed
+<5> The arguments that need to be passed to the framework command, in this case `dotnet`
+<6> Description of the operation, this will be displayed in the log output when the CLI is executed
+<7> Define operations that need to be performed after the project has been created
+
+This example shows one action that needs to be performed on the project before it has been created in the user specified working directory.
+

@@ -60,12 +60,12 @@ The following options can be applied to any command within the Stacks CLI.
 
 The following shows an example of a configuration file that can be passed to the command.
 
+[[cli_configuation_file]]
 [source,yaml]
 ----
 project:
 - name: tigerfest
   framework:
-    type: dotnet
     option: webapi
     version: latest
   platform:

@@ -18,11 +18,12 @@ type InputConfig struct {
 
 	Directory Directory `mapstructure:"directory"`
 
-	Business  Business  `mapstructure:"business"`
-	Cloud     Cloud     `mapstructure:"cloud"`
-	Network   Network   `mapstructure:"network"`
-	Pipeline  string    `mapstructure:"pipeline"`
-	Project   []Project `mapstructure:"project"`
-	Stacks    Stacks    `mapstructure:"stacks"` // Holds the information about the projects in stacks
-	Terraform Terraform `mapstructure:"terraform"`
+	Business     Business  `mapstructure:"business"`
+	Cloud        Cloud     `mapstructure:"cloud"`
+	Network      Network   `mapstructure:"network"`
+	Pipeline     string    `mapstructure:"pipeline"`
+	Project      []Project `mapstructure:"project"`
+	Stacks       Stacks    `mapstructure:"stacks"` // Holds the information about the projects in stacks
+	Terraform    Terraform `mapstructure:"terraform"`
+	SettingsFile string    `mapstructure:"settings_file"`
 }

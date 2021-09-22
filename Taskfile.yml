@@ -83,7 +83,7 @@ tasks:
 
     cmds:
       - docker pull asciidoctor/docker-asciidoctor
-      - docker run --rm -v ${PWD}:/data asciidoctor/docker-asciidoctor asciidoctor-pdf -a pdf-theme=/data/docs/styles/theme.yml -a pdf-fontsdir="/data/docs/styles/fonts;GEM_FONTS_DIR" -o "{{.DOCS_FILENAME}}" -D /data/{{.OUTPUT_DOCS_DIR}} /data/docs/manual.adoc
+      - docker run --rm -v ${PWD}:/data asciidoctor/docker-asciidoctor asciidoctor-pdf -a pdf-theme=/data/docs/styles/theme.yml -a pdf-fontsdir="/data/docs/styles/fonts;GEM_FONTS_DIR" -a doctype="book" -o "{{.DOCS_FILENAME}}" -a toc -D /data/{{.OUTPUT_DOCS_DIR}} /data/docs/manual.adoc
 
     vars:
       DOCS_FILENAME: "Stacks CLI Manual - {{.BUILDNUMBER}}.pdf"

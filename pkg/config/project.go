@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 type Project struct {
@@ -11,9 +13,9 @@ type Project struct {
 	Framework     Framework     `mapstructure:"framework"`
 	Platform      Platform      `mapstructure:"platform"`
 	SourceControl SourceControl `mapstructure:"sourcecontrol"`
-	SettingsFile  string        `mapstructure:"settings_file"`
+	SettingsFile  string        `mapstructure:"settingsfile"`
 
-	Paths map[string]string // define a map to hold the paths that are created for each project
+	Directory Directory // Holds the workingdir and tempdir for the project
 
 	Settings Settings // Hold the settings for the current project
 }
@@ -28,7 +30,22 @@ func (project *Project) GetId() string {
 func (project *Project) ReadSettings(path string, config *Config) error {
 
 	// get the path to the settings file
-	err := project.getSettingsFilePath(path, config)
+	err := project.setSettingsFilePath(path, config)
+	if err != nil {
+		return err
+	}
+
+	// read in the settings file
+	// using Viper as this supports multiple file formats
+	v := viper.New()
+	v.SetConfigFile(project.SettingsFile)
+	err = v.ReadInConfig()
+	if err != nil {
+		return err
+	}
+
+	// unmarshal the data into the settings for the project
+	err = v.Unmarshal(&project.Settings)
 	if err != nil {
 		return err
 	}
@@ -36,18 +53,22 @@ func (project *Project) ReadSettings(path string, config *Config) error {
 	return nil
 }
 
-func (project *Project) getSettingsFilePath(path string, config *Config) error {
+func (project *Project) setSettingsFilePath(path string, config *Config) error {
 
 	// set the default value of the filename
-	filename := config.Input.SettingsFile
+	settingsFilePath := config.Input.SettingsFile
 
 	// if the SettingsFile has been set on the project then use that
 	if project.SettingsFile != "" {
-		filename = project.SettingsFile
+		settingsFilePath = project.SettingsFile
 	}
 
-	// set the path to the file
-	settingsFilePath := filepath.Join(path, filename)
+	// determine if the filename exists as it is set, if not then prepend
+	// the path to the filename if the filename is not ab absolute path
+	_, err := os.Stat(settingsFilePath)
+	if os.IsNotExist(err) && !filepath.IsAbs(settingsFilePath) {
+		settingsFilePath = filepath.Join(path, settingsFilePath)
+	}
 
 	// determine if the file exists, if it does then set the SettingsFile
 	// otherwise return an error

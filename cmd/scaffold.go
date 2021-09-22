@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -25,13 +24,14 @@ func init() {
 
 	// declare variables that will be populated from the command line
 	var interactive bool
+	var settings_file string
 
 	// - project settings
 	var project_name string
 	var project_vcs_type string
 	var project_vcs_url string
 	var project_vcs_ref string
-	var settings_file string
+	var project_settings_file string
 
 	// - framework settings
 	var framework_type string
@@ -73,6 +73,7 @@ func init() {
 	scaffoldCmd.Flags().StringVar(&project_vcs_type, "sourcecontrol", "github", "Type of source control being used")
 	scaffoldCmd.Flags().StringVarP(&project_vcs_url, "sourcecontrolurl", "u", "", "Url of the remote for source control")
 	scaffoldCmd.Flags().StringVar(&project_vcs_ref, "sourcecontrolref", "", "SHA reference or Tag to use to clone repo from")
+	scaffoldCmd.Flags().StringVar(&project_settings_file, "projectsettingsfile", "", "Path to a settings file to use for the project")
 
 	scaffoldCmd.Flags().StringVarP(&framework_type, "framework", "F", "", "Framework for the project")
 	scaffoldCmd.Flags().StringVarP(&framework_option, "frameworkoption", "O", "", "Option of the chosen framework to use")
@@ -111,6 +112,7 @@ func init() {
 	viper.BindPFlag("project.sourcecontrol.type", scaffoldCmd.Flags().Lookup("sourcecontrol"))
 	viper.BindPFlag("project.sourcecontrol.url", scaffoldCmd.Flags().Lookup("sourcecontrolurl"))
 	viper.BindPFlag("project.sourcecontrol.ref", scaffoldCmd.Flags().Lookup("sourcecontrolref"))
+	viper.BindPFlag("project.settingsfile", scaffoldCmd.Flags().Lookup("projectsettingsfile"))
 
 	viper.BindPFlag("settingsfile", scaffoldCmd.Flags().Lookup("settingsfile"))
 
@@ -143,7 +145,8 @@ func executeRun(ccmd *cobra.Command, args []string) {
 	}
 
 	// Call the scaffolding method
-	err := scaffold.New(&Config, App.Logger).Run()
+	scaff := scaffold.New(&Config, App.Logger)
+	err := scaff.Run()
 	if err != nil {
 		App.Logger.Fatalf("Error running scaffold: %s", err.Error())
 	}
@@ -161,21 +164,57 @@ func executeRun(ccmd *cobra.Command, args []string) {
 		App.Logger.Infof("Setting up project: %s\n", project.Name)
 
 		// Create the temporary and working directories for the current project
-		projectTempDir := filepath.Join(Config.Input.Directory.TempDir, project.Name)
-		// projectDir := filepath.Join(Config.Input.Directory.WorkingDir, project.Name)
+		project.Directory.TempDir = filepath.Join(Config.Input.Directory.TempDir, project.Name)
+		project.Directory.WorkingDir = filepath.Join(Config.Input.Directory.WorkingDir, project.Name)
 
 		// Clone the target repository into the temp directory
 		err := util.GitClone(
 			Config.Input.Stacks.GetSrcURL(project.Framework.GetMapKey()),
 			project.SourceControl.Ref,
-			projectTempDir,
+			project.Directory.TempDir,
 		)
 
-		if err == nil {
-			fmt.Println("clones")
+		// if an error occured getting the code then show an error and move onto the next project
+		if err != nil {
+			App.Logger.Errorf("Error downloading code: %s", err.Error())
+			continue
 		}
 
 		// Read in the configuration file for the project
+		err = project.ReadSettings(project.Directory.TempDir, &Config)
+
+		if err != nil {
+			App.Logger.Errorf("Error reading settins from project settings: %s", err.Error())
+			continue
+		}
+
+		// iterate around the init settings for the project
+		// all of these operations will occur in the temporary directory of the project
+		for _, op := range project.Settings.Init.Operations {
+
+			// log information based on the description in the settings file
+			App.Logger.Info(op.Description)
+
+			err = scaff.PerformOperation(op, &Config, &project, project.Directory.TempDir)
+
+			if err != nil {
+				break
+			}
+		}
+
+		// iterate around the setup settings for the project
+		// all of these operations will occur in the working directory of the project
+		for _, op := range project.Settings.Setup.Operations {
+
+			// log information based on the description in the settings file
+			App.Logger.Info(op.Description)
+
+			err = scaff.PerformOperation(op, &Config, &project, project.Directory.WorkingDir)
+
+			if err != nil {
+				break
+			}
+		}
 
 		// copy the contents of the temporary project dir to the working directory
 		// util.CopyDirectory(filepath.Join(projectTempDir, "*"), Config.Self.GetPath(project))

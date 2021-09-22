@@ -1,10 +1,15 @@
 package scaffold
 
 import (
+	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 
+	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/helper"
+	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
 	"github.com/sirupsen/logrus"
 )
@@ -114,6 +119,62 @@ func (s *Scaffold) setProjectPath(name string) string {
 	project_path := filepath.Join(s.Config.Input.Directory.WorkingDir, name)
 
 	return project_path
+}
+
+// PerformOperation performs the operation as specified by the settings file for the project
+// It is responsible for performing any template replacements using GoTemplate
+//
+// The method reads in the Action and determines what is requied
+// The currently supported actions are
+//		copy - copies data from the temporary dir to the working dir
+//		cmd - run a command on the local machine
+//			The command is set using the `command` parameter
+func (s *Scaffold) PerformOperation(operation config.Operation, cfg *config.Config, project *config.Project, path string) error {
+
+	switch operation.Action {
+	case "cmd":
+
+		// define a replacements object so that all can be passed to the render function
+		// the project is passed in as a seperate object as it is part of a slice
+		replacements := config.Replacements{}
+		replacements.Input = cfg.Input
+		replacements.Project = *project
+
+		// get the command for the current action
+		command := static.FrameworkCommand(project.Framework.Type)
+		if operation.Command != "" {
+			command = operation.Command
+		}
+
+		// run the args that have been specified through the template engine
+		args, err := util.RenderTemplate(operation.Arguments, replacements)
+		if err != nil {
+			s.Logger.Errorf("Error resolving template: %s", err.Error())
+			return err
+		}
+
+		// output the command being run if in debug mode
+		s.Logger.Debugf("Command: %s %s", command, args)
+
+		// set the command to be run if the platform is windows
+		if runtime.GOOS == "windows" {
+			args = fmt.Sprintf("/C %s %s", command, args)
+			command = "cmd"
+		}
+
+		// execute the command on the machine
+		cmd := exec.Command(command, args)
+		// cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Dir = path
+
+		if err = cmd.Run(); err != nil {
+			s.Logger.Errorf("Error running command: %s", err.Error())
+			return err
+		}
+	}
+
+	return nil
 }
 
 // create replace map

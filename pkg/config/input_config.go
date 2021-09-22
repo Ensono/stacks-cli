@@ -1,8 +1,6 @@
 package config
 
-import (
-	"github.com/amido/stacks-cli/internal/models"
-)
+import "github.com/amido/stacks-cli/internal/models"
 
 // Config is used to map the configuration onto the application models
 type InputConfig struct {
@@ -25,5 +23,5 @@ type InputConfig struct {
 	Project      []Project `mapstructure:"project"`
 	Stacks       Stacks    `mapstructure:"stacks"` // Holds the information about the projects in stacks
 	Terraform    Terraform `mapstructure:"terraform"`
-	SettingsFile string    `mapstructure:"settings_file"`
+	SettingsFile string    `mapstructure:"settingsfile"`
 }

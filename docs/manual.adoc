@@ -1,6 +1,7 @@
 :source-highlighter: rouge
 :pdf-theme: styles/theme.yml
 :table-stripes: even
+:listing-caption: Listing
 
 = Stacks CLI Manual
 
@@ -8,4 +9,8 @@ include::quickstart.adoc[]
 
 include::runtime_config.adoc[]
 
+include::project_settings.adoc[]
+
 include::build.adoc[]
+
+include::templating.adoc[]

@@ -1,0 +1,50 @@
+== Using the CLI
+
+The Stacks CLI is built using Go, which means that it is a single binary which can be downloaded and run without the need for installation. It is currently built for the following platforms
+
+ - icon:windows[fw] Windows
+ - icon:apple[fw] Mac OS
+ - icon:linux[fw] Linux
+
+The CLI will download the specified projects and run a series of operations to customise them according to the user's requirements. The steps that are to be performed in each project is governed by a project settings file, which by default is called `stackscli.yml`.
+
+=== Installation
+
+As the CLI is a single binary the quickest way to install it is to download it and put it somewhere in your PATH. The following code snippets show how this can be achieved using Bash and PowerShell.
+
+==== Linux and Mac OS
+[source,bash,subs="attributes"]
+----
+# Download the binary to a location in the PATH
+## Mac OS
+wget https://github.com/amido/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-darwin-amd64-{stackscli_version} -O /usr/local/bin/stackscli
+
+# Linux
+wget https://github.com/amido/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-linux-amd64-{stackscli_version} -O /usr/local/bin/stackscli
+----
+
+==== Windows
+[source,powershell,subs="attributes"]
+----
+# Download the binary
+Invoke-RestMethod -Uri https://github.com/amido/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-windows-amd64-{stackscli_version}.exe -OutFile $env:USERPROFILE\Downloads\stackscli.exe
+----
+
+=== Operation
+
+The CLI has a couple of commands and various options. The easiest way to see what is available it to run the `stackscli` command, which will display the help page.
+
+NOTE: The operation of the Stacks CLI is identical on every platform
+
+.Stacks CLI Help
+image::images/stackscli-help.png[]
+
+The `scaffold` command is the main command that will be used. This downloads the specified projects, customises them and sets them up in the specified directory. To see the help for this command run the following:
+
+[source,bash]
+----
+stacks-cli scaffold -h
+----
+
+.Help page for `scaffold` command
+image::images/scaffold-help.png[]

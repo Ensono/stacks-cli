@@ -2,10 +2,13 @@
 :pdf-theme: styles/theme.yml
 :table-stripes: even
 :listing-caption: Listing
+:icons: font
+
+:stackscli_version: 100.98.99
 
 = Stacks CLI Manual
 
-include::quickstart.adoc[]
+include::usage.adoc[]
 
 include::runtime_config.adoc[]
 

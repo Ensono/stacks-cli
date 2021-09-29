@@ -3,9 +3,10 @@ package config
 // Settings holds the settings for each project as read from
 // the `stackscli.yml` file in the project
 type Settings struct {
-	Framework string `mapstructure:"framework"`
-	Init      Init   `mapstructure:"init"`
-	Setup     Setup  `mapstructure:"setup"`
+	Framework string     `mapstructure:"framework"`
+	Pipeline  []Pipeline `mapstructure:"pipeline"`
+	Init      Init       `mapstructure:"init"`
+	Setup     Setup      `mapstructure:"setup"`
 }
 
 // Init holds the operations that should be performed before any work
@@ -25,4 +26,20 @@ type Operation struct {
 	Command     string `mapstructure:"cmd"`
 	Arguments   string `mapstructure:"args"`
 	Description string `mapstructure:"desc"`
+}
+
+// GetPipeline attempts to return the pipeline settings for the named pipeline
+func (s *Settings) GetPipeline(name string) Pipeline {
+	pipeline := Pipeline{}
+
+	// iterate around the pipeline slice and find the one with the type that matches
+	// the specified name
+	for _, p := range s.Pipeline {
+		if p.Type == name {
+			pipeline = p
+			break
+		}
+	}
+
+	return pipeline
 }

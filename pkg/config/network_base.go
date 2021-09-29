@@ -1,5 +1,10 @@
 package config
 
 type NetworkBase struct {
-	Domain string `mapstructure:"domain"`
+	Domain DomainType `mapstructure:"domain"`
+}
+
+type DomainType struct {
+	Internal string `mapstructure:"internal"`
+	External string `mapstructure:"external"`
 }

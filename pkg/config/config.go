@@ -1,7 +1,11 @@
 package config
 
 import (
+	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
+	"text/template"
 
 	"github.com/amido/stacks-cli/internal/constants"
 )
@@ -99,6 +103,60 @@ func (selfConfig *SelfConfig) AddPath(project Project, path string) {
 // GetPath returns the path for the current project
 func (selfConfig *SelfConfig) GetPath(project Project) string {
 	return selfConfig.ProjectPaths[project.GetId()]
+}
+
+// WriteVariablesFile writes out the variables template file for the build pipeline
+func (config *Config) WriteVariablesFile(project *Project, pipelineSettings Pipeline, replacements Replacements) (string, error) {
+	var err error
+	var variableFile string
+	var variableTemplate string
+
+	variableFile = pipelineSettings.GetVariableFilePath(project.Directory.WorkingDir)
+	variableTemplate = pipelineSettings.GetVariableTemplate(project.Directory.WorkingDir)
+
+	// render the variable file
+	rendered, err := config.RenderTemplate(variableTemplate, replacements)
+
+	if err != nil {
+		return "Problem rendering variable template file", err
+	}
+
+	// get the dirname of the path and ensure it exists
+	// this should not be needed in normal operation as the file structure should already exist
+	dir := filepath.Dir(variableFile)
+	_, err = os.Stat(dir)
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(dir, 0755)
+		fmt.Printf("%v", err)
+	}
+
+	err = os.WriteFile(variableFile, []byte(rendered), 0666)
+	if err != nil {
+		return "Problem writing out variable file", err
+	}
+
+	return "", err
+}
+
+// renderTemplate takes any string and attempts to replace items in it based
+// on the values in the supplied Input object
+func (config *Config) RenderTemplate(tmpl string, input Replacements) (string, error) {
+
+	// declare var to hold the rendered string
+	var rendered bytes.Buffer
+
+	// create an object of the template
+	t := template.Must(
+		template.New("").Parse(tmpl),
+	)
+
+	// render the template into the variable
+	err := t.Execute(&rendered, input)
+	if err != nil {
+		return "", err
+	}
+
+	return rendered.String(), nil
 }
 
 /*

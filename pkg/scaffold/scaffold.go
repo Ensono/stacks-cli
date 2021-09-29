@@ -9,7 +9,6 @@ import (
 
 	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/helper"
-	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
 	"github.com/sirupsen/logrus"
 )
@@ -147,20 +146,20 @@ func (s *Scaffold) PerformOperation(operation config.Operation, cfg *config.Conf
 		}
 
 		// run the args that have been specified through the template engine
-		args, err := util.RenderTemplate(operation.Arguments, replacements)
+		args, err := cfg.RenderTemplate(operation.Arguments, replacements)
 		if err != nil {
 			s.Logger.Errorf("Error resolving template: %s", err.Error())
 			return err
 		}
-
-		// output the command being run if in debug mode
-		s.Logger.Debugf("Command: %s %s", command, args)
 
 		// set the command to be run if the platform is windows
 		if runtime.GOOS == "windows" {
 			args = fmt.Sprintf("/C %s %s", command, args)
 			command = "cmd"
 		}
+
+		// output the command being run if in debug mode
+		s.Logger.Debugf("Command: %s %s", command, args)
 
 		// execute the command on the machine
 		cmd := exec.Command(command, args)

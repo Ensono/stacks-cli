@@ -6,6 +6,7 @@ import (
 
 	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/amido/stacks-cli/internal/util"
+	"github.com/amido/stacks-cli/pkg/config"
 	"github.com/amido/stacks-cli/pkg/scaffold"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -60,7 +61,8 @@ func init() {
 	var terraform_backend_container string
 
 	// - network settings
-	var network_base_domain string
+	var network_base_domain_external string
+	var network_base_domain_internal string
 
 	// Add the run command to the root
 	rootCmd.AddCommand(scaffoldCmd)
@@ -95,7 +97,8 @@ func init() {
 	scaffoldCmd.Flags().StringVar(&terraform_backend_group, "tfgroup", "", "Name of the group that the storage account is in")
 	scaffoldCmd.Flags().StringVar(&terraform_backend_container, "tfcontainer", "", "Name of the container within the storage to use")
 
-	scaffoldCmd.Flags().StringVarP(&network_base_domain, "domain", "d", "", "Domain for the app")
+	scaffoldCmd.Flags().StringVarP(&network_base_domain_external, "domain", "d", "", "External domain for the app")
+	scaffoldCmd.Flags().StringVar(&network_base_domain_internal, "internaldomain", "", "Internal domain for the app")
 
 	scaffoldCmd.Flags().StringVar(&settings_file, "settingsfile", constants.SettingsFile, "Name of the settings file to look for in a project")
 
@@ -132,7 +135,8 @@ func init() {
 	viper.BindPFlag("terraform.backend.group", scaffoldCmd.Flags().Lookup("tfgroup"))
 	viper.BindPFlag("terraform.backend.container", scaffoldCmd.Flags().Lookup("tfcontainer"))
 
-	viper.BindPFlag("network.base.domain", scaffoldCmd.Flags().Lookup("domain"))
+	viper.BindPFlag("network.base.domain.external", scaffoldCmd.Flags().Lookup("domain"))
+	viper.BindPFlag("network.base.domain.internal", scaffoldCmd.Flags().Lookup("internaldomain"))
 
 	viper.BindPFlag("interactive", scaffoldCmd.Flags().Lookup("interactive"))
 }
@@ -142,6 +146,12 @@ func executeRun(ccmd *cobra.Command, args []string) {
 	// ensure that at least one project has been specified
 	if len(Config.Input.Project) == 1 && Config.Input.Project[0].Name == "" {
 		App.Logger.Fatalln("No projects have been defined")
+	}
+
+	// check that the specified pipeline is supported by the CLI
+	pipeline := config.Pipeline{}
+	if !pipeline.IsSupported(Config.Input.Pipeline) {
+		App.Logger.Fatalf("Specified pipeline is not supported: %s %v\n", Config.Input.Pipeline, pipeline.GetSupported())
 	}
 
 	// Call the scaffolding method
@@ -184,7 +194,7 @@ func executeRun(ccmd *cobra.Command, args []string) {
 		err = project.ReadSettings(project.Directory.TempDir, &Config)
 
 		if err != nil {
-			App.Logger.Errorf("Error reading settins from project settings: %s", err.Error())
+			App.Logger.Errorf("Error reading settings from project settings: %s", err.Error())
 			continue
 		}
 
@@ -198,6 +208,7 @@ func executeRun(ccmd *cobra.Command, args []string) {
 			err = scaff.PerformOperation(op, &Config, &project, project.Directory.TempDir)
 
 			if err != nil {
+				App.HandleError(err, "error", "Issue encountered performing init operation")
 				break
 			}
 		}
@@ -212,12 +223,30 @@ func executeRun(ccmd *cobra.Command, args []string) {
 			err = scaff.PerformOperation(op, &Config, &project, project.Directory.WorkingDir)
 
 			if err != nil {
+				App.HandleError(err, "error", "Issue encountered performing setup operation")
 				break
 			}
 		}
 
-		// copy the contents of the temporary project dir to the working directory
-		// util.CopyDirectory(filepath.Join(projectTempDir, "*"), Config.Self.GetPath(project))
-	}
+		// replace the variable file in the working version of the project with the values
+		// as specified in the CLI
+		// use the path to the variable file from the stackscli based on the type of pipeline
+		// being targeted
 
+		// get the pipeline settings from the project settings file
+		pipelineSettings := project.Settings.GetPipeline(Config.Input.Pipeline)
+
+		// define a replacements object so that all can be passed to the render function
+		// the project is passed in as a separate object as it is part of a slice
+		replacements := config.Replacements{}
+		replacements.Input = Config.Input
+		replacements.Project = project
+
+		msg, err := Config.WriteVariablesFile(&project, pipelineSettings, replacements)
+		if err == nil {
+			App.Logger.Info("Created pipeline variable file")
+		} else {
+			App.HandleError(err, "error", msg)
+		}
+	}
 }

@@ -50,10 +50,17 @@ The following options can be applied to any command within the Stacks CLI.
 | `--tfstorage` | AMIDOSTACKS_TERRAFORM_BACKEND_STORAGE | Name of the storage account being used for the state | | 
 | `--tfgroup` | AMIDOSTACKS_TERRAFORM_BACKEND_GROUP | Group name of the storage account | | 
 | `--tfcontainer` | AMIDOSTACKS_TERRAFORM_BACKEND_CONTAINER | Container being used to store the data | | 
-| `-d`, `--domain` | AMIDOSTACKS_NETWORK_BASE_DOMAIN | Domain root to be used for the projects | | 
+| `-d`, `--domain` | AMIDOSTACKS_NETWORK_BASE_DOMAIN_EXTERNAL | External domain root to be used for the projects | | 
+| `--internaldomain` | AMIDOSTACKS_NETWORK_BASE_DOMAIN_INTERNAL | Internal domain root to be used for projects.
+
+If not specified then the internal domain will be inferred from the external by replacing the TLD with `internal`. Thus if `mydomain.com` is provided as the external domain then the internal will be set to `mydomain.internal`. |
 | `-w`, `--workingdirectory` | AMIDOSTACKS_DIRECTORY_WORKINGDIR | Directory that the projects should be created in | `${PWD}` | 
 | `--tempdir` | AMIDOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Stacks for its temp files | System temp directory | 
 | `--settingsfile` | AMIDOSTACKS_SETTINGSFILE | Name of the file to look for in the project | `stackscli.yml` | 
+| `--cmdlog` | AMIDOSTACKS_CMDLOG | Generate a log of all the commands that the CLI has run.
+
+The `cmdlog.txt` file is created in the directory that the CLI has been run in | false |
+| `--dryrun` | AMIDOSTACKS_DRYRUN | Perform a dryrun of all the CLI. Particularly useful when used with `--cmdlog` | false |
 |===
 
 === Configuration File
@@ -94,7 +101,15 @@ terraform:
 
 network:
   base:
-    domain: mydomain.com
+    domain: 
+      external: mydomain.com
+
+log:
+  level: info
+
+options:
+  cmdlog: false
+  dryrun: false
 
 stacks:
   dotnet:

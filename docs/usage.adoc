@@ -37,7 +37,7 @@ The CLI has a couple of commands and various options. The easiest way to see wha
 NOTE: The operation of the Stacks CLI is identical on every platform
 
 .Stacks CLI Help
-image::images/stackscli-help.png[]
+image::images/stackscli-global-help.png[]
 
 The `scaffold` command is the main command that will be used. This downloads the specified projects, customises them and sets them up in the specified directory. To see the help for this command run the following:
 
@@ -47,4 +47,4 @@ stacks-cli scaffold -h
 ----
 
 .Help page for `scaffold` command
-image::images/scaffold-help.png[]
+image::images/stackscli-scaffold-help.png[]

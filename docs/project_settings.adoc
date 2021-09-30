@@ -15,6 +15,7 @@ The following table details the structure of the settings file.
 |===
 | Parameter | Description | Example | Allowed Values 
 | `framework` | The framework that the project is based on. | `dotnet` | `dotnet`, `java`, `node`
+| `pipeline` | This is a list of the supported pipelines and the associated files | | |
 | `init.operations` | List of operations that need to be performed on the temporary project directory | |
 | `setup.operations` | List of operations that need to be performed on the project directory | |
 |===
@@ -36,6 +37,19 @@ This is determined by the `framework` option in this file, which the CLI uses to
 |===
 
 IMPORTANT: Care must be taken when changing the `cmd` from the default value. The CLI will check for the `dotnet`, `java` and NodeJS commands, but it will not check for commands that have been specified here. There is no way to guarantee that it is installed on the machine.
+
+The follow table shows the values that can be assigned to the pipeline list.
+
+.Pipeline options
+[options="header"]
+|===
+| Parameter | Description | Example | Allowed Values
+| `type` | Type of pipeline being configured | `azdo` | `azdo`
+| `variableFile` | Relative path to the variable file for the specified pipeline. This is where the CLI will write the file out to | `build/azDevOps/azure/azuredevops-vars.yml` | 
+| `templateFile` | Relative path to a template to use to create the template file.
+
+If not set then a built in version of the template file will be used. | |
+|===
 
 === YAML File
 

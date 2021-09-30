@@ -121,5 +121,49 @@ func TestWriteVariableTemplate(t *testing.T) {
 	assert.Equal(t, "", msg)
 	assert.Equal(t, nil, err1)
 	assert.Equal(t, false, os.IsNotExist(err2))
+}
 
+func TestSetDefaultValueForInternalDomain(t *testing.T) {
+
+	// configure the network domain settings so that it can be tested
+	config := Config{
+		Input: InputConfig{
+			Network: Network{
+				Base: NetworkBase{
+					Domain: DomainType{
+						External: "myproject.co.uk",
+					},
+				},
+			},
+		},
+	}
+
+	// set the default values
+	config.SetDefaultValues()
+
+	// check that the internal
+	assert.Equal(t, "myproject.internal", config.Input.Network.Base.Domain.Internal)
+}
+
+func TestSetDefaultValueDoesNotChangeSpecifiedValue(t *testing.T) {
+
+	// configure the network domain settings so that it can be tested
+	config := Config{
+		Input: InputConfig{
+			Network: Network{
+				Base: NetworkBase{
+					Domain: DomainType{
+						External: "myproject.co.uk",
+						Internal: "myproject.newsuffix",
+					},
+				},
+			},
+		},
+	}
+
+	// set the default values
+	config.SetDefaultValues()
+
+	// check that the internal
+	assert.Equal(t, "myproject.newsuffix", config.Input.Network.Base.Domain.Internal)
 }

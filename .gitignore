@@ -32,3 +32,5 @@ local/
 outputs/
 
 build/tests
+
+cmdlog.txt

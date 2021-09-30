@@ -27,7 +27,8 @@ The following table shows all of the tokens that can be used in a template strin
 | `.Input.Terraform.Backend.Storage` | Storage to be used to store the terraform state | lkjlkjlkj
 | `.Input.Terraform.Backend.Group` | Group that contains the specified storage | ancillary-resources
 | `.Input.Terraform.Backend.Container` | Container in which the Terraform state will be stored | tfstate
-| `.Input.Network.Base.Domain` | Base domain to use for DNS | example.com
+| `.Input.Network.Base.Domain.External` | External base domain to use for DNS | example.com
+| `.Input.Network.Base.Domain.Internal` | Internal base domain to use for DNS | example.internal
 | `.Project.Name` | Name of the project as specified by the user | my-project
 | `.Project.Framework.Option` | Framework option that has been chosen | webapi
 | `.Project.Framework.Version` | Version of the specified option to download | latest

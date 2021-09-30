@@ -161,15 +161,24 @@ func (s *Scaffold) PerformOperation(operation config.Operation, cfg *config.Conf
 		// output the command being run if in debug mode
 		s.Logger.Debugf("Command: %s %s", command, args)
 
-		// execute the command on the machine
+		// Write out the command log
+		err = cfg.WriteCmdLog(fmt.Sprintf("%s %s", command, args))
+		if err != nil {
+			s.Logger.Warnf("Unable to write command to log: %s", err.Error())
+		}
+
+		// set the command that needs to be executed
 		cmd := exec.Command(command, args)
 		// cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		cmd.Dir = path
 
-		if err = cmd.Run(); err != nil {
-			s.Logger.Errorf("Error running command: %s", err.Error())
-			return err
+		// only run the command if not in dryrun mode
+		if !cfg.Input.Options.DryRun {
+			if err = cmd.Run(); err != nil {
+				s.Logger.Errorf("Error running command: %s", err.Error())
+				return err
+			}
 		}
 	}
 

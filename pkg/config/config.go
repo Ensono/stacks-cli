@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/amido/stacks-cli/internal/constants"
+	"github.com/bobesa/go-domain-util/domainutil"
 )
 
 // import (
@@ -54,6 +56,8 @@ type SelfConfig struct {
 	Specific *TypeDetail
 
 	ProjectPaths map[string]string
+
+	CmdLogPath string
 }
 
 type OutputConfig struct {
@@ -157,6 +161,52 @@ func (config *Config) RenderTemplate(tmpl string, input Replacements) (string, e
 	}
 
 	return rendered.String(), nil
+}
+
+// SetDefaultValues sets values in the config object that are based off other values in the
+// config object
+// For example, if the internal domain name has not been set then it will be based on the
+// external domain name, with the TLD replaced with `internal`
+func (config *Config) SetDefaultValues() {
+
+	// Check that the internal domain name
+	if config.Input.Network.Base.Domain.Internal == "" {
+
+		// get the external domain and replace the suffix with internal
+		internal := config.Input.Network.Base.Domain.External
+		internal = strings.Replace(internal, domainutil.DomainSuffix(internal), "internal", -1)
+		config.Input.Network.Base.Domain.Internal = internal
+	}
+
+	// Set the currentdirectory to the path that the CLI is currently running in
+	cwd, _ := os.Getwd()
+	config.Self.CmdLogPath = filepath.Join(cwd, "cmdlog.txt")
+}
+
+// WriteCmdLog writes the command out a log file in the directory that the CLI is being run
+// The cmd is only written out if the option to do so has been set in the config
+func (config *Config) WriteCmdLog(cmd string) error {
+
+	var err error
+
+	// return empty error if not logging commands
+	if !config.Input.Options.CmdLog {
+		return err
+	}
+
+	// get a reference to the file, either to create or append to the file
+	f, err := os.OpenFile(config.Self.CmdLogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	// write out the cmd to the file
+	if _, err := f.WriteString(fmt.Sprintf("%s\n", cmd)); err != nil {
+		return err
+	}
+
+	return err
 }
 
 /*

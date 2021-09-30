@@ -3,7 +3,9 @@ package cmd
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
@@ -26,6 +28,10 @@ func init() {
 	// declare variables that will be populated from the command line
 	var interactive bool
 	var settings_file string
+
+	// - options
+	var cmdlog bool
+	var dryrun bool
 
 	// - project settings
 	var project_name string
@@ -102,6 +108,9 @@ func init() {
 
 	scaffoldCmd.Flags().StringVar(&settings_file, "settingsfile", constants.SettingsFile, "Name of the settings file to look for in a project")
 
+	scaffoldCmd.Flags().BoolVar(&cmdlog, "cmdlog", false, "Specify if commands should be logged")
+	scaffoldCmd.Flags().BoolVar(&dryrun, "dryrun", false, "Perform a dryrun of the CLI. No changes will be made on disk")
+
 	// Bind the flags to the configuration
 
 	// The project is a slice, so that multiple projects can be specified, however
@@ -138,6 +147,9 @@ func init() {
 	viper.BindPFlag("network.base.domain.external", scaffoldCmd.Flags().Lookup("domain"))
 	viper.BindPFlag("network.base.domain.internal", scaffoldCmd.Flags().Lookup("internaldomain"))
 
+	viper.BindPFlag("options.cmdlog", scaffoldCmd.Flags().Lookup("cmdlog"))
+	viper.BindPFlag("options.dryrun", scaffoldCmd.Flags().Lookup("dryrun"))
+
 	viper.BindPFlag("interactive", scaffoldCmd.Flags().Lookup("interactive"))
 }
 
@@ -167,6 +179,9 @@ func executeRun(ccmd *cobra.Command, args []string) {
 	if err != nil {
 		App.Logger.Fatalf("Unable to remove temporary directory: %s", Config.Input.Directory.TempDir)
 	}
+
+	// call the func to set default values in the object
+	Config.SetDefaultValues()
 
 	// iterate around the projects that have been specified
 	for _, project := range Config.Input.Project {
@@ -242,11 +257,46 @@ func executeRun(ccmd *cobra.Command, args []string) {
 		replacements.Input = Config.Input
 		replacements.Project = project
 
-		msg, err := Config.WriteVariablesFile(&project, pipelineSettings, replacements)
-		if err == nil {
-			App.Logger.Info("Created pipeline variable file")
-		} else {
-			App.HandleError(err, "error", msg)
+		if !Config.Input.Options.DryRun {
+			msg, err := Config.WriteVariablesFile(&project, pipelineSettings, replacements)
+			if err == nil {
+				App.Logger.Info("Created pipeline variable file")
+			} else {
+				App.HandleError(err, "error", msg)
+			}
 		}
+
+		// Initialise the working dir as a git repository
+		// Iterate around the git commands and use the PerformOperation function so that the
+		// commands get parsed by the template system
+		App.Logger.Info("Configuring source control for project")
+		for _, command := range static.GitCmds {
+
+			// split the command string into cmd, args so that the operation model can be configured
+			commandParts := strings.SplitN(command, " ", 2)
+
+			op := config.Operation{
+				Action:    "cmd",
+				Command:   commandParts[0],
+				Arguments: commandParts[1],
+			}
+
+			err = scaff.PerformOperation(op, &Config, &project, project.Directory.WorkingDir)
+
+			if err != nil {
+				App.HandleError(err, "error", "Issue encountered configuring project as git repository")
+				break
+			}
+
+		}
+	}
+
+	// Output information about the run
+	if Config.Input.Options.DryRun {
+		App.Logger.Warnf("CLI was run with the --dryrun option, no projects have been configured")
+	}
+
+	if Config.Input.Options.CmdLog {
+		App.Logger.Infof("Command log has been created: %s\n", Config.Self.CmdLogPath)
 	}
 }

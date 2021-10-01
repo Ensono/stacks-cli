@@ -17,3 +17,6 @@ include::project_settings.adoc[]
 include::build.adoc[]
 
 include::templating.adoc[]
+
+== Appendix
+include::appendix.adoc[]

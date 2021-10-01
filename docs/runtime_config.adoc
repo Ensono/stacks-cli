@@ -67,7 +67,8 @@ The `cmdlog.txt` file is created in the directory that the CLI has been run in |
 
 The following shows an example of a configuration file that can be passed to the command.
 
-[[cli_configuation_file]]
+.CLI Configuration File
+[[cli_configuration_file,{listing-caption} {counter:refum}]]
 [source,yaml]
 ----
 project:

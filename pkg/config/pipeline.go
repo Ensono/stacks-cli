@@ -1,8 +1,11 @@
 package config
 
 import (
+	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/amido/stacks-cli/internal/config/static"
@@ -10,13 +13,28 @@ import (
 )
 
 type Pipeline struct {
-	Type         string `mapstructure:"type"`
-	TemplateFile string `mapstructure:"templateFile"`
-	VariableFile string `mapstructure:"variableFile"`
+	Type         string                `mapstructure:"type"`
+	File         PipelineFile          `mapstructure:"files"`
+	Template     PipelineTemplate      `mapstructure:"templates"`
+	Replacements []PipelineReplacement `mapstructure:"replacements"`
+}
+
+type PipelineFile struct {
+	Build    string `mapstructure:"build"`
+	Variable string `mapstructure:"variable"`
+}
+
+type PipelineTemplate struct {
+	Variable string `mapstructure:"variable"`
+}
+
+type PipelineReplacement struct {
+	Pattern string `mapstructure:"pattern"`
+	Value   string `mapstructure:"value"`
 }
 
 func (p *Pipeline) GetVariableFilePath(workingDir string) string {
-	path := filepath.Join(workingDir, p.VariableFile)
+	path := filepath.Join(workingDir, p.File.Variable)
 
 	return path
 }
@@ -25,8 +43,8 @@ func (p *Pipeline) GetVariableTemplate(workingDir string) string {
 	var template string
 
 	// if the variableTemplate has been set attempt to find the file and read in its contents
-	if p.TemplateFile != "" {
-		path := filepath.Join(workingDir, p.TemplateFile)
+	if p.Template.Variable != "" {
+		path := filepath.Join(workingDir, p.Template.Variable)
 
 		if util.Exists(path) {
 			content, _ := ioutil.ReadFile(path)
@@ -65,4 +83,54 @@ func (p *Pipeline) GetSupported() []string {
 	}
 
 	return pipelines
+}
+
+// ReplacePatterns replaces the phrases that are found in the build file according to
+// the regex pattern with the specified value
+func (p *Pipeline) ReplacePatterns(dir string) []error {
+
+	var err error
+	var errs []error
+	errs = make([]error, 1)
+
+	// Return if there are no replacements to perform
+	if len(p.Replacements) == 0 {
+		return errs
+	}
+
+	// determine the path to the build file
+	buildFile := filepath.Join(dir, p.File.Build)
+	if !util.Exists(buildFile) {
+		err = fmt.Errorf("unable to find build file: %s", buildFile)
+		errs = append(errs, err)
+		return errs
+	}
+
+	// read the file into a variable
+	content, err := ioutil.ReadFile(buildFile)
+	if err != nil {
+		errs = append(errs, err)
+		return errs
+	}
+
+	// iterate around the replacements to get the pattern and the replacement value
+	for _, replacement := range p.Replacements {
+
+		// create the regex object from the pattern
+		pattern := fmt.Sprintf(`(?m)%s`, replacement.Pattern)
+		re, err := regexp.Compile(pattern)
+
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		content = re.ReplaceAll(content, []byte(replacement.Value))
+	}
+
+	// write out the file
+	err = os.WriteFile(buildFile, content, 0666)
+	errs = append(errs, err)
+
+	return errs
+
 }

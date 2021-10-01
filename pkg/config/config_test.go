@@ -105,8 +105,10 @@ func TestWriteVariableTemplate(t *testing.T) {
 		},
 	}
 	pipeline := Pipeline{
-		Type:         "azdo",
-		VariableFile: "build/azDevOps/azure/azuredevops-vars.yml",
+		Type: "azdo",
+		File: PipelineFile{
+			Variable: "build/azDevOps/azure/azuredevops-vars.yml",
+		},
 	}
 	replacements := Replacements{}
 	config := Config{}

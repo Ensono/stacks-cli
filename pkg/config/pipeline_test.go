@@ -1,10 +1,44 @@
 package config
 
 import (
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func setupPipelineTests(t *testing.T, name string) (func(t *testing.T), string) {
+
+	// create a temporary directory
+	tempDir := t.TempDir()
+
+	// create a build file to work with
+	pipeline := `
+stages:
+- stage: Build
+	variables:
+	- group: amido-stacks-infra-credentials-nonprod
+	- group: stacks-credentials-nonprod-kv
+	- group: amido-stacks-webapp
+	`
+
+	// write the file to the tempDir
+	err := os.WriteFile(filepath.Join(tempDir, name), []byte(pipeline), 0666)
+	if err != nil {
+		t.Logf("[ERROR] Error creating file: %v", err)
+	}
+
+	deferFunc := func(t *testing.T) {
+		err := os.RemoveAll(tempDir)
+		if err != nil {
+			t.Logf("[ERROR] Unable to remove dir: %v", err)
+		}
+	}
+
+	return deferFunc, tempDir
+}
 
 func TestSupportedPipelines(t *testing.T) {
 
@@ -38,4 +72,51 @@ func TestPipelineIsNotValid(t *testing.T) {
 	actual := pipeline.IsSupported("new-pipeline")
 
 	assert.Equal(t, false, actual)
+}
+
+func TestReplacePatterns(t *testing.T) {
+
+	// set the name of the build file
+	name := "build.yml"
+
+	// setup the environment
+	cleanup, dir := setupPipelineTests(t, name)
+	defer cleanup(t)
+
+	buildFile := filepath.Join(dir, name)
+
+	// create the replacements that need to be performed
+	replacements := make([]PipelineReplacement, 1)
+	replacements[0] = PipelineReplacement{
+		Pattern: `^.*stacks-credentials-nonprod-kv$`,
+		Value:   "",
+	}
+
+	// create the pipeline settings
+	pipeline := Pipeline{
+		File: PipelineFile{
+			Build: name,
+		},
+		Replacements: replacements,
+	}
+
+	// call the function
+	err := pipeline.ReplacePatterns(dir)
+
+	// set the expected value of the contents of the file
+	expected := `
+stages:
+- stage: Build
+	variables:
+	- group: amido-stacks-infra-credentials-nonprod
+
+	- group: amido-stacks-webapp
+	`
+
+	// read in the contents of the build file, which should have been modified
+	actual, _ := ioutil.ReadFile(buildFile)
+
+	// check that there are no errors
+	assert.Equal(t, nil, err)
+	assert.Equal(t, expected, string(actual))
 }

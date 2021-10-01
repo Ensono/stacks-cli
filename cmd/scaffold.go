@@ -266,6 +266,14 @@ func executeRun(ccmd *cobra.Command, args []string) {
 			}
 		}
 
+		// Replace patterns in the build file
+		errs := pipelineSettings.ReplacePatterns(project.Directory.WorkingDir)
+		if len(errs) > 0 {
+			for _, err := range errs {
+				App.HandleError(err, "error", "Issue performing replacements")
+			}
+		}
+
 		// Initialise the working dir as a git repository
 		// Iterate around the git commands and use the PerformOperation function so that the
 		// commands get parsed by the template system

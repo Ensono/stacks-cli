@@ -45,13 +45,30 @@ The follow table shows the values that can be assigned to the pipeline list.
 |===
 | Parameter | Description | Example | Allowed Values
 | `type` | Type of pipeline being configured | `azdo` | `azdo`
-| `files.build` | Relative path to the main build file | `build/azDevOps/azure/azure-pipelines-netcore-k8s.yml` | 
-| `files.variable` | Relative path to the variable file for the specified pipeline. This is where the CLI will write the file out to | `build/azDevOps/azure/azuredevops-vars.yml` | 
-| `templates.variable` | Relative path to the template file to for the variable template.
+| `files` | List of files that should be worked on.
 
-If not set then the built in value for the template will be used. This template can be viewed in this listing <<azdo_variable_template>>. | |
+See <<project_settings_file_definition>> for syntax |  | 
+| `template` | List of templates that the CLI should use. At the moment only `variable` is supported. |  | 
 | `replacements` | This is a list of replacements that need to be made in the build file | | 
 |===
+
+.File definition
+[[project_settings_file_definition]
+[options="header"]
+|===
+| Parameter | Description | Example
+| `name` | Name of the file
+The names `build` and `variable` are reserved by the CLI and are used when writing out files.
+Other files can be specified and the replacements will be made on each one.
+
+The names must be unique, if not then the last one specified with the same name will take precedence. | `build`
+| `path` | Path to the file in question, relative to the repository root | `build/azDevOps/azure/azure-pipelines-netcore-k8s.yml`
+| `noreplace` | If set to `true` then no replacements will be attempted on this file.
+
+This is not supported when used in a `template` definition. | true 
+|===
+
+NOTE: If no template is specified for the `variable` then the static version built into the CLI will be used. This can be seen in <<azdo_variable_template>>.
 
 .Replacement definition
 [options="header"]
@@ -74,8 +91,10 @@ framework: dotnet // <1>
 pipeline:
   - type: azdo //<2>
     files:
-       build: build/azDevOps/azure/azure-pipelines-netcore-k8s.yml // <3>
-       variable: build/azDevOps/azure/azuredevops-vars.yml // <4>
+       - name: build // <3>
+         path: build/azDevOps/azure/azure-pipelines-netcore-k8s.yml
+       - name: variable // <4>
+         path: build/azDevOps/azure/azuredevops-vars.yml 
     replacements: // <5>
         - pattern: ^.*myvalue$ 
           value: Foo Bar
@@ -92,8 +111,8 @@ setup: // <11>
 
 <1> Sets the framework that the commands should be run for
 <2> Specify the pipeline that is being targeted
-<3> Path to the build pipeline file in the repository, for the specified pipeline system
-<4> Path to the variable template in the repository
+<3> Name and path to the build pipeline file in the repository, for the specified pipeline system
+<4> Name and path to the variable template in the repository
 <5> List of replacements that should be made in the specified build file
 <6> Perform operations on the temporary project directory
 <7> List any number of operations that need to be performed

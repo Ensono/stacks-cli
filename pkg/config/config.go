@@ -115,7 +115,7 @@ func (config *Config) WriteVariablesFile(project *Project, pipelineSettings Pipe
 	var variableFile string
 	var variableTemplate string
 
-	variableFile = pipelineSettings.GetVariableFilePath(project.Directory.WorkingDir)
+	variableFile = pipelineSettings.GetFilePath("file", project.Directory.WorkingDir, "variable")
 	variableTemplate = pipelineSettings.GetVariableTemplate(project.Directory.WorkingDir)
 
 	// render the variable file

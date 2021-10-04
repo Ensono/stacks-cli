@@ -92,16 +92,21 @@ func TestReplacePatterns(t *testing.T) {
 		Value:   "",
 	}
 
+	// create the file list
+	list := make([]PipelineFile, 1)
+	list[0] = PipelineFile{
+		Name: "build",
+		Path: name,
+	}
+
 	// create the pipeline settings
 	pipeline := Pipeline{
-		File: PipelineFile{
-			Build: name,
-		},
+		File:         list,
 		Replacements: replacements,
 	}
 
 	// call the function
-	err := pipeline.ReplacePatterns(dir)
+	errs := pipeline.ReplacePatterns(dir)
 
 	// set the expected value of the contents of the file
 	expected := `
@@ -117,6 +122,63 @@ stages:
 	actual, _ := ioutil.ReadFile(buildFile)
 
 	// check that there are no errors
-	assert.Equal(t, nil, err)
+	for _, err := range errs {
+		assert.Equal(t, nil, err)
+	}
+	assert.Equal(t, expected, string(actual))
+}
+
+func TestReplacePatternsWithNoReplace(t *testing.T) {
+
+	// set the name of the build file
+	name := "build.yml"
+
+	// setup the environment
+	cleanup, dir := setupPipelineTests(t, name)
+	defer cleanup(t)
+
+	buildFile := filepath.Join(dir, name)
+
+	// create the replacements that need to be performed
+	replacements := make([]PipelineReplacement, 1)
+	replacements[0] = PipelineReplacement{
+		Pattern: `^.*stacks-credentials-nonprod-kv$`,
+		Value:   "",
+	}
+
+	// create the file list
+	list := make([]PipelineFile, 1)
+	list[0] = PipelineFile{
+		Name:      "build",
+		Path:      name,
+		NoReplace: true,
+	}
+
+	// create the pipeline settings
+	pipeline := Pipeline{
+		File:         list,
+		Replacements: replacements,
+	}
+
+	// call the function
+	errs := pipeline.ReplacePatterns(dir)
+
+	// set the expected value of the contents of the file
+	expected := `
+stages:
+- stage: Build
+	variables:
+	- group: amido-stacks-infra-credentials-nonprod
+	- group: stacks-credentials-nonprod-kv
+	- group: amido-stacks-webapp
+	`
+
+	// read in the contents of the build file, which should have been modified
+	actual, _ := ioutil.ReadFile(buildFile)
+
+	// check that there are no errors
+	for _, err := range errs {
+		assert.Equal(t, nil, err)
+	}
 	assert.Equal(t, expected, string(actual))
 }

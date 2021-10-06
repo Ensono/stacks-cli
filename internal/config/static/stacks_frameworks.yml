@@ -1,0 +1,12 @@
+stacks:
+  dotnet:
+    webapi: https://github.com/amido/stacks-dotnet
+    cqrs: https://github.com/amido/stacks-dotnet-cqrs
+    events: https://github.com/amido/stacks-dotnet-cqrs-events
+  java:
+    webapi: https://github.com/amido/stacks-java
+    cqrs: https://github.com/amido/stacks-java-cqrs
+    events: https://github.com/amido/stacks-java-cqrs-events
+  nodejs:
+    csr: https://github.com/amido/stacks-typescript-csr
+    ssr: https://github.com/amido/stacks-typescript-ssr

@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/amido/stacks-cli/internal/config/static"
-	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
 	"github.com/amido/stacks-cli/pkg/scaffold"
@@ -27,7 +26,6 @@ func init() {
 
 	// declare variables that will be populated from the command line
 	var interactive bool
-	var settings_file string
 
 	// - options
 	var cmdlog bool
@@ -106,8 +104,6 @@ func init() {
 	scaffoldCmd.Flags().StringVarP(&network_base_domain_external, "domain", "d", "", "External domain for the app")
 	scaffoldCmd.Flags().StringVar(&network_base_domain_internal, "internaldomain", "", "Internal domain for the app")
 
-	scaffoldCmd.Flags().StringVar(&settings_file, "settingsfile", constants.SettingsFile, "Name of the settings file to look for in a project")
-
 	scaffoldCmd.Flags().BoolVar(&cmdlog, "cmdlog", false, "Specify if commands should be logged")
 	scaffoldCmd.Flags().BoolVar(&dryrun, "dryrun", false, "Perform a dryrun of the CLI. No changes will be made on disk")
 
@@ -173,13 +169,6 @@ func executeRun(ccmd *cobra.Command, args []string) {
 		App.Logger.Fatalf("Error running scaffold: %s", err.Error())
 	}
 
-	// Ensure that the temp directory is removed
-	App.Logger.Info("Performing cleanup")
-	err = os.RemoveAll(Config.Input.Directory.TempDir)
-	if err != nil {
-		App.Logger.Fatalf("Unable to remove temporary directory: %s", Config.Input.Directory.TempDir)
-	}
-
 	// call the func to set default values in the object
 	Config.SetDefaultValues()
 
@@ -193,8 +182,9 @@ func executeRun(ccmd *cobra.Command, args []string) {
 		project.Directory.WorkingDir = filepath.Join(Config.Input.Directory.WorkingDir, project.Name)
 
 		// Clone the target repository into the temp directory
+		key := project.Framework.GetMapKey()
 		err := util.GitClone(
-			Config.Input.Stacks.GetSrcURL(project.Framework.GetMapKey()),
+			Config.Input.Stacks.GetSrcURL(key),
 			project.SourceControl.Ref,
 			project.Directory.TempDir,
 		)
@@ -307,4 +297,13 @@ func executeRun(ccmd *cobra.Command, args []string) {
 	if Config.Input.Options.CmdLog {
 		App.Logger.Infof("Command log has been created: %s\n", Config.Self.CmdLogPath)
 	}
+
+	// Perform cleanup by removing the temporary directory
+	App.Logger.Info("Performing cleanup")
+	App.Logger.Infof(" - removing temporary directory: %s\n", Config.Input.Directory.TempDir)
+	err = os.RemoveAll(Config.Input.Directory.TempDir)
+	if err != nil {
+		App.Logger.Fatalf("Unable to remove temporary directory: %s", Config.Input.Directory.TempDir)
+	}
+
 }

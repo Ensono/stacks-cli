@@ -162,7 +162,7 @@ func (s *Scaffold) PerformOperation(operation config.Operation, cfg *config.Conf
 		s.Logger.Debugf("Command: %s %s", command, args)
 
 		// Write out the command log
-		err = cfg.WriteCmdLog(fmt.Sprintf("%s %s", command, args))
+		err = cfg.WriteCmdLog(path, fmt.Sprintf("%s %s", command, args))
 		if err != nil {
 			s.Logger.Warnf("Unable to write command to log: %s", err.Error())
 		}

@@ -18,6 +18,23 @@ The chapter illustrates how to get a development environment up and running and 
 | Windows | Winget | `winget install -e --id GoLang.Go`
 |===
 
+==== Install Taskfile
+
+Taskfile[https://taskfile.dev/#/] is being used as in independent runner to build and test the code as well as generate this documentation. This means that whatever CI/CD runner is being used only needs to bootstrap the environment to run Taskfile.
+
+Regardless of whether the CLI is being built on a local machine or in a build agent Taskfile needs to be installed.
+
+.Installing Taskfile on different platforms
+[options="header"]
+|===
+| Platform | Package Manager | Command
+| Linux | - | `sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin`
+| Mac OS | Homebrew | `brew install go-task/tap/go-task`
+| Windows | Chocolatey | `choco install go-task` 
+|===
+
+In the case of the Azure DevOps build file Taskfile is being downloaded directly from the release page of the project. This is so that we can control the version that is downloaded.
+
 ==== Clone the `stacks-cli` repository
 
 Clone the repository to a location on disk, for example `C:\users\russell\workspaces\stacks\stacks-cli`.
@@ -31,44 +48,26 @@ git clone git@github.com:amido/stacks-cli.git
 
 ==== Build the CLI
 
-The necessary packages will be downloaded and a binary created for the platform that the command is running on. In the examples below this has been run in a PowerShell terminal and in WSL.
+Building the Stacks CLI is as simple as running the default tasks using Taskfile. The default task is set to perform the following operations:
 
-It is necessary to set the `GOPATH` environment variable so that the packages are installed into the correct location for app. It is recommended that the `GOPATH` is set to the parent directory of `stacks-cli`. This may cause problems if already using Go, in which case clone `stacks-cli` into the `GOPATH` already configured on the local machine.
+. Execute Tests
+.. Run tests
+.. Generate reports
+. Compile
+.. Create binaries for Windows, Linux and Mac OS
 
-===== PowerShell
-
-The `GOPATH` can be set globally or for the current session. It is recommended to set it globally. In this case the `GOPATH` would be set to `C:\users\russell\workspaces\stacks`
-
-[source,powershell]
-----
-cd ~/workspaces/stacks/stacks-cli
- 
-# Get all the package dependencies
-go get ./...
-
-# Build the application
-go build
-----
-
-===== Linux (WSL)
-
-The `GOPATH` can be set globally or for the current session. It is recommended to set it globally. In this case the `GOPATH` would be set to `~/workspaces/stacks`
+As this is the default task list, performing all tests and compiling the code is as simple as running one command in the stacks-cli repo directory.
 
 [source,bash]
 ----
-cd ~/workspaces/stacks/stacks-cli
- 
-# Get all the package dependencies
-go get ./...
-
-# Build the application
-go build
+task
 ----
 
-The output of this will be similar to the following.
+The output of the command will be similar to the following.
 
-.Quickstart Output - WSL
-image::images/quickstart_output_wsl.png[]
+.Test and compile Stacks CLI
+image::images/taskfile_compile.png[]
+
 
 === Build Pipeline
 
@@ -86,34 +85,27 @@ The build consists of three files:
 | `azuredevops-vars.yml` | Variable template file containing variables for the build
 |===
 
-==== Template Build File
+==== Build Pipeline File
 
-By using the template build file, it is possible to make Azure DevOps create the entire pipeline without it having to be explicitly configured.
+The build pipeline for Azure DevOps, `build/azuredevops-taskfile.yml`, has been configured to bootstrap the environment for Taskfile to run. These steps are as follows:
 
-For example, the following snippet is from the `azuredevops-pipeline.yml` file:
+. Install specified version of Go
+. Install Taskfile
+. Test and Compile
+.. Configure GOPATH and PATH environment variables
+.. Run default task of Taskfile
+.. Run docs task of Taskfile
+. Upload Test results
+. Upload Coverage reports
+. Upload manual
 
-[source,yaml]
-    - template: azuredevops-compile.yml
-    parameters:
-        platforms: 
-        - os: linux
-            arch: amd64
-            file_extension:
-        - os: darwin
-            arch: amd64
-            file_extension:     
-        - os: windows
-            arch: amd64
-            file_extension: .exe
-
-In this case the template file would be called three times, and on each time it will pass in the platform details. At the end of the build there would be three binaries as a result of the compilation. This makes it very easy to add another platform without having to explicitly write it out.
-
-When the build runs, Azure DevOps will expand out the build into _all_ the steps it creates:
+All of the testing, compilation and documentation has been handled by Taskfile, the parts outside of this are to install Go and Taskfile and to upload build artefacts.
 
 .Build steps
-image::images/azdo_build_steps.png[]
+image::images/azdo_build_steps.png[width=300]
 
-All of the compile binaries are copied up to the artefact directory in Azure DevOps.
+
+All of the compiled binaries, test reports and documentation are copied up to the artefact directory in Azure DevOps.
 
 .Build aretfacts
 image::images/azdo_artefacts.png[]

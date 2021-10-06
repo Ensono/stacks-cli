@@ -53,7 +53,10 @@ func (p *Pipeline) GetFilePath(filetype string, workingDir string, name string) 
 		}
 	}
 
-	path = filepath.Join(workingDir, path)
+	// only prepend the workingDir to the path if it is not ""
+	if path != "" {
+		path = filepath.Join(workingDir, path)
+	}
 
 	return path
 }

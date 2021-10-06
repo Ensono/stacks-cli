@@ -181,11 +181,17 @@ func (config *Config) SetDefaultValues() {
 	// Set the currentdirectory to the path that the CLI is currently running in
 	cwd, _ := os.Getwd()
 	config.Self.CmdLogPath = filepath.Join(cwd, "cmdlog.txt")
+
+	// If the working directory that has been set for the projects is relative, prepend the
+	// the current directory to it
+	if !filepath.IsAbs(config.Input.Directory.WorkingDir) {
+		config.Input.Directory.WorkingDir = filepath.Join(cwd, config.Input.Directory.WorkingDir)
+	}
 }
 
 // WriteCmdLog writes the command out a log file in the directory that the CLI is being run
 // The cmd is only written out if the option to do so has been set in the config
-func (config *Config) WriteCmdLog(cmd string) error {
+func (config *Config) WriteCmdLog(path string, cmd string) error {
 
 	var err error
 
@@ -202,7 +208,7 @@ func (config *Config) WriteCmdLog(cmd string) error {
 	defer f.Close()
 
 	// write out the cmd to the file
-	if _, err := f.WriteString(fmt.Sprintf("%s\n", cmd)); err != nil {
+	if _, err := f.WriteString(fmt.Sprintf("[%s] %s\n", path, cmd)); err != nil {
 		return err
 	}
 

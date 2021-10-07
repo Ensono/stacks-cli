@@ -1,3 +1,8 @@
+---
+title: Build
+weight: 50
+---
+
 == Building
 
 The Stacks CLI can be built locally on a development workstation or in a CI/CD pipeline. It has been configured to use Azure DevOps, but can easily be configured to work with other CI/CD runners, such as GitLab CI and GitHub Actions.
@@ -20,7 +25,7 @@ The chapter illustrates how to get a development environment up and running and 
 
 ==== Install Taskfile
 
-Taskfile[https://taskfile.dev/#/] is being used as in independent runner to build and test the code as well as generate this documentation. This means that whatever CI/CD runner is being used only needs to bootstrap the environment to run Taskfile.
+https://taskfile.dev[Taskfile] is being used as in independent runner to build and test the code as well as generate this documentation. This means that whatever CI/CD runner is being used only needs to bootstrap the environment to run Taskfile.
 
 Regardless of whether the CLI is being built on a local machine or in a build agent Taskfile needs to be installed.
 
@@ -28,7 +33,7 @@ Regardless of whether the CLI is being built on a local machine or in a build ag
 [options="header"]
 |===
 | Platform | Package Manager | Command
-| Linux | - | `sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin`
+| Linux | - | `sh -c "$(curl --location \https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin`
 | Mac OS | Homebrew | `brew install go-task/tap/go-task`
 | Windows | Chocolatey | `choco install go-task` 
 |===

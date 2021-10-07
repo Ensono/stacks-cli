@@ -1,0 +1,39 @@
+FROM ubuntu:20.04
+
+ARG HUGO_VERSION=0.88.1
+ENV DOCUMENT_DIR=/hugo-project
+
+RUN apt-get update && apt-get upgrade -y \
+      && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+           ruby ruby-dev make cmake build-essential bison flex wget unzip \
+      && apt-get clean \
+      && rm -rf /var/lib/apt/lists/* \
+      && rm -rf /tmp/*
+RUN gem install --no-document asciidoctor asciidoctor-revealjs asciidoctor-html5s \
+         rouge asciidoctor-confluence asciidoctor-diagram coderay pygments.rb
+
+RUN mv /usr/local/bin/asciidoctor /usr/local/bin/asciidoctor_real
+
+ADD build/asciidoctor /usr/local/bin/asciidoctor
+
+RUN chmod +x /usr/local/bin/asciidoctor
+
+ADD https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_Linux-64bit.tar.gz /tmp/hugo.tgz
+
+RUN cd /usr/local/bin && tar -xzf /tmp/hugo.tgz && rm /tmp/hugo.tgz
+
+RUN hugo new site ${DOCUMENT_DIR}
+
+RUN wget https://github.com/alex-shpak/hugo-book/archive/master.zip && \
+    unzip master.zip && \
+    mv hugo-book-master book && \
+    mv book ${DOCUMENT_DIR}/themes/ && \
+    rm master.zip
+
+RUN mkdir /repo
+WORKDIR ${DOCUMENT_DIR}
+
+VOLUME ${DOCUMENT_DIR}/content
+
+CMD ["hugo","server","--bind","0.0.0.0", "--config", "/repo/config.toml"]
+

@@ -86,7 +86,7 @@ The Taskfile has setup with three tasks for the documentation:
 
 This is run by using the command `task docs`.
 
-====== Markdown Generation
+===== Markdown Generation
 
 Generating the Markdown files is a two step process, the first step is to use `asciidoctor` to generate a https://docbook.org/[Docbook] file, which is an XML definition of the document. It then uses https://pandoc.org/[Pandoc] to turn the XML into a Markdown file.
 

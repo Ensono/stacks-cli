@@ -102,7 +102,9 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// Read  in the static configuration
-	stacks_config := strings.NewReader(string(static.Config("stacks_frameworks")))
+	stacks_frameworks := string(static.Config("stacks_frameworks"))
+	stacks_config := strings.NewReader(stacks_frameworks)
+	viper.SetConfigType("yaml")
 	viper.MergeConfig(stacks_config)
 
 	// if a configuration file is found, read it in

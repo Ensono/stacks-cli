@@ -1,9 +1,15 @@
 package config
 
 import (
+	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"text/template"
 
 	"github.com/amido/stacks-cli/internal/constants"
+	"github.com/bobesa/go-domain-util/domainutil"
 )
 
 // import (
@@ -50,6 +56,8 @@ type SelfConfig struct {
 	Specific *TypeDetail
 
 	ProjectPaths map[string]string
+
+	CmdLogPath string
 }
 
 type OutputConfig struct {
@@ -89,16 +97,122 @@ func (config *Config) GetVersion() string {
 }
 
 // SetPaths sets the current project path
-func (self *SelfConfig) AddPath(project Project, path string) {
-	if self.ProjectPaths == nil {
-		self.ProjectPaths = make(map[string]string)
+func (selfConfig *SelfConfig) AddPath(project Project, path string) {
+	if selfConfig.ProjectPaths == nil {
+		selfConfig.ProjectPaths = make(map[string]string)
 	}
-	self.ProjectPaths[project.GetId()] = path
+	selfConfig.ProjectPaths[project.GetId()] = path
 }
 
 // GetPath returns the path for the current project
-func (self *SelfConfig) GetPath(project Project) string {
-	return self.ProjectPaths[project.GetId()]
+func (selfConfig *SelfConfig) GetPath(project Project) string {
+	return selfConfig.ProjectPaths[project.GetId()]
+}
+
+// WriteVariablesFile writes out the variables template file for the build pipeline
+func (config *Config) WriteVariablesFile(project *Project, pipelineSettings Pipeline, replacements Replacements) (string, error) {
+	var err error
+	var variableFile string
+	var variableTemplate string
+
+	variableFile = pipelineSettings.GetFilePath("file", project.Directory.WorkingDir, "variable")
+	variableTemplate = pipelineSettings.GetVariableTemplate(project.Directory.WorkingDir)
+
+	// render the variable file
+	rendered, err := config.RenderTemplate(variableTemplate, replacements)
+
+	if err != nil {
+		return "Problem rendering variable template file", err
+	}
+
+	// get the dirname of the path and ensure it exists
+	// this should not be needed in normal operation as the file structure should already exist
+	dir := filepath.Dir(variableFile)
+	_, err = os.Stat(dir)
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(dir, 0755)
+		fmt.Printf("%v", err)
+	}
+
+	err = os.WriteFile(variableFile, []byte(rendered), 0666)
+	if err != nil {
+		return "Problem writing out variable file", err
+	}
+
+	return "", err
+}
+
+// renderTemplate takes any string and attempts to replace items in it based
+// on the values in the supplied Input object
+func (config *Config) RenderTemplate(tmpl string, input Replacements) (string, error) {
+
+	// declare var to hold the rendered string
+	var rendered bytes.Buffer
+
+	// create an object of the template
+	t := template.Must(
+		template.New("").Parse(tmpl),
+	)
+
+	// render the template into the variable
+	err := t.Execute(&rendered, input)
+	if err != nil {
+		return "", err
+	}
+
+	return rendered.String(), nil
+}
+
+// SetDefaultValues sets values in the config object that are based off other values in the
+// config object
+// For example, if the internal domain name has not been set then it will be based on the
+// external domain name, with the TLD replaced with `internal`
+func (config *Config) SetDefaultValues() {
+
+	// Check that the internal domain name
+	if config.Input.Network.Base.Domain.Internal == "" {
+
+		// get the external domain and replace the suffix with internal
+		internal := config.Input.Network.Base.Domain.External
+		internal = strings.Replace(internal, domainutil.DomainSuffix(internal), "internal", -1)
+		config.Input.Network.Base.Domain.Internal = internal
+	}
+
+	// Set the currentdirectory to the path that the CLI is currently running in
+	cwd, _ := os.Getwd()
+	config.Self.CmdLogPath = filepath.Join(cwd, "cmdlog.txt")
+
+	// If the working directory that has been set for the projects is relative, prepend the
+	// the current directory to it
+	if !filepath.IsAbs(config.Input.Directory.WorkingDir) {
+		config.Input.Directory.WorkingDir = filepath.Join(cwd, config.Input.Directory.WorkingDir)
+	}
+}
+
+// WriteCmdLog writes the command out a log file in the directory that the CLI is being run
+// The cmd is only written out if the option to do so has been set in the config
+func (config *Config) WriteCmdLog(path string, cmd string) error {
+
+	var err error
+
+	// return empty error if not logging commands
+	if !config.Input.Options.CmdLog {
+		return err
+	}
+
+	// get a reference to the file, either to create or append to the file
+	f, err := os.OpenFile(config.Self.CmdLogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	// write out the cmd to the file
+	if _, err := f.WriteString(fmt.Sprintf("[%s] %s\n", path, cmd)); err != nil {
+		return err
+	}
+
+	return err
 }
 
 /*

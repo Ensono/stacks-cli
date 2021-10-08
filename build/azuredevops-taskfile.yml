@@ -70,7 +70,7 @@ stages:
 
       # Upload the documentation
       - task: PublishBuildArtifacts@1
-        displayName: Publish Manual
+        displayName: Publish Documentation
         inputs:
           pathToPublish: $(Build.SourcesDirectory)/outputs/docs
           artifactName: docs

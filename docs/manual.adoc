@@ -1,13 +1,24 @@
 :source-highlighter: rouge
 :pdf-theme: styles/theme.yml
-:doctype: book
-:notitle:
 :table-stripes: even
+:listing-caption: Listing
+:icons: font
+
+:stackscli_version: 100.98.99
 
 = Stacks CLI Manual
 
-include::quickstart.adoc[]
+include::usage.adoc[]
 
 include::runtime_config.adoc[]
 
+include::project_settings.adoc[]
+
+include::examples.adoc[]
+
 include::build.adoc[]
+
+include::templating.adoc[]
+
+== Appendix
+include::appendix.adoc[]

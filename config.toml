@@ -1,0 +1,12 @@
+baseURL = "http://example.org/"
+languageCode = "en-us"
+title = "Amido Stacks CLI"
+
+theme = "book"
+
+ignoreFiles = ['manual\.adoc', 'appendix\.adoc']
+
+[[menu.Main]]
+    name = "Usage"
+    url = "/usage"
+    weight = 50

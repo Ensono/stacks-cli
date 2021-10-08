@@ -1,0 +1,42 @@
+== Templating
+
+Many parts of the CLI support templates, which means that files can be written out using the values that have been specified on the command line or in a configuration file. These templates are based on the Go template language and as such a number of items are passed to the template function when it is run.
+
+There are two objects that are passed:
+
+* Input Object - All of the configuration that was passed to the CLI on execution.
+* Project - Contains all of the settings that are pertinent to the project currently being setup.
+
+<<cli_configuration_file>> contains an example of the information that can be passed to the command.
+
+In both cases accessing the values is done using the dot notation, so to get the value for the cloud platform the token `{{ .Input.Cloud.Platform }}` would be used. Similarly to get the working directory for the project this would be used `{{ .Project.Directory.WorkingDirectory }}` would be used.
+
+The following table shows all of the tokens that can be used in a template string. Each token value should be surrounded by `{{ }}`.
+
+.Template tokens
+[options="header"]
+|===
+| Token | Description | Example
+| `.Input.Pipeline` | The build pipeline that is being used | azdo
+| `.Input.Cloud.Platform` | Cloud platform being deployed to | azure
+| `.Input.Cloud.Region` | Cloud region resources should be setup in | ukwest
+| `.Input.Cloud.Group` | Group that the resources should be collated in | my-resource-group
+| `.Input.Business.Company` | The name of the company as specified by the user | Amido
+| `.Input.Business.Domain` | Domain of the project | website
+| `.Input.Business.Component` | Name of the component that is being configured | infra
+| `.Input.Terraform.Backend.Storage` | Storage to be used to store the terraform state | lkjlkjlkj
+| `.Input.Terraform.Backend.Group` | Group that contains the specified storage | ancillary-resources
+| `.Input.Terraform.Backend.Container` | Container in which the Terraform state will be stored | tfstate
+| `.Input.Network.Base.Domain.External` | External base domain to use for DNS | example.com
+| `.Input.Network.Base.Domain.Internal` | Internal base domain to use for DNS | example.internal
+| `.Project.Name` | Name of the project as specified by the user | my-project
+| `.Project.Framework.Option` | Framework option that has been chosen | webapi
+| `.Project.Framework.Version` | Version of the specified option to download | latest
+| `.Project.Platform.Type` | Type of platform being deployed to | aks
+| `.Project.SourceControl.Type` | Type of source control that will be used for the final project | github
+| `.Project.SourceControl.URL` | URL to the remote repository | https://github.com/example/fred
+| `.Project.SettingsFile` | Path to the settings file used to setup the project | `stackscli.yml`
+| `.Project.Directory.TempDir` | Full path to the temporary directory for the project | 
+| `.Project.Directory.WorkingDir` | Full path to the directory for the final project | 
+|===
+

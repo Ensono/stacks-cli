@@ -18,4 +18,8 @@ const (
 	// if this is seen when `stacks-cli -v` is run then it means it has been built
 	// on a local machine
 	DefaultVersion = "0.0.1-workstation"
+
+	// SettingsFile is the default filename to be used when looking for the file in
+	// a project that is to be used with stacks
+	SettingsFile = "stackscli.yml"
 )

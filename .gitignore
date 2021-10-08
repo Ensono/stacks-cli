@@ -8,6 +8,7 @@
 !build/*.yml
 !Taskfile.yml
 !theme.yml
+!internal/**/*.yml
 
 # built binary to publish
 bin/
@@ -32,3 +33,5 @@ local/
 outputs/
 
 build/tests
+
+cmdlog.txt

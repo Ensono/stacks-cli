@@ -1,0 +1,10 @@
+=== Azure DevOps Variable Template
+
+The following listing shows the built in template that is used for the variable template if one is not set in the project settings file.
+
+.Azure DevOps Variable Template
+[[azdo_variable_template,{listing-caption} {counter:refnum}]]
+[source,yaml,subs="attributes"]
+----
+include::../internal/config/static/azdo_variable_template.yml[]
+----

@@ -4,10 +4,13 @@ version: '3'
 
 env:
   BUILDNUMBER: "100.98.99"
+  DOCS_DIR: docs/
   OUTPUT_DIR: outputs
   OUTPUT_TEST_DIR: "{{.OUTPUT_DIR}}/tests"
   OUTPUT_BIN_DIR: "{{.OUTPUT_DIR}}/bin"
   OUTPUT_DOCS_DIR: "{{.OUTPUT_DIR}}/docs"
+  OUTPUT_DOCS_PDF_DIR: "{{.OUTPUT_DOCS_DIR}}/pdf"
+  OUTPUT_DOCS_MD_DIR: "{{.OUTPUT_DOCS_DIR}}/md"
 
 vars:
   REPORT_OUTPUT: report.xml
@@ -79,11 +82,32 @@ tasks:
           PLATFORM_EXTENSION:          
       
   docs:
+    desc: Generate all the documentation formats
+
+    cmds:
+      - task: docs:setup
+      - task: docs:pdf
+      - task: docs:markdown
+
+  docs:pdf:
     desc: Generate a PDF of the current documentation
 
     cmds:
-      - docker pull asciidoctor/docker-asciidoctor
-      - docker run --rm -v ${PWD}:/data asciidoctor/docker-asciidoctor asciidoctor-pdf -a pdf-theme=/data/docs/styles/theme.yml -a pdf-fontsdir="/data/docs/styles/fonts;GEM_FONTS_DIR" -o "{{.DOCS_FILENAME}}" -D /data/{{.OUTPUT_DOCS_DIR}} /data/docs/manual.adoc
+      - docker run --rm -v ${PWD}:/data russellseymour/pandoc-asciidoctor asciidoctor-pdf -a pdf-theme=/data/docs/styles/theme.yml -a pdf-fontsdir="/data/docs/styles/fonts;GEM_FONTS_DIR" -a doctype="book" -a stackscli_version="{{.BUILDNUMBER}}" -o "{{.DOCS_FILENAME}}" -a toc -D /data/{{.OUTPUT_DOCS_PDF_DIR}} /data/docs/manual.adoc
 
     vars:
       DOCS_FILENAME: "Stacks CLI Manual - {{.BUILDNUMBER}}.pdf"
+
+  docs:markdown:
+    cmds:
+      - docker run -v ${PWD}:{{ .CONTAINER_DIR }} russellseymour/pandoc-asciidoctor pwsh -command {{ .CONTAINER_DIR }}/build/scripts/ConvertTo-Markdown.ps1 -docs_dir {{ .CONTAINER_DIR }}/{{ .DOCS_DIR }} -output_dir {{ .CONTAINER_DIR }}/{{ .OUTPUT_DOCS_MD_DIR }}
+      - cp -r ${PWD}/docs/images ${PWD}/outputs/docs/md/
+
+    vars:
+      CONTAINER_DIR: /data
+
+  docs:setup:
+    cmds:
+      - docker pull russellseymour/pandoc-asciidoctor
+      - mkdir -p ${PWD}/{{ .OUTPUT_DOCS_MD_DIR }}       
+      - mkdir -p ${PWD}/{{ .OUTPUT_DOCS_PDF_DIR }}      

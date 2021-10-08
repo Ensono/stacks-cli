@@ -1,5 +1,9 @@
 package static
 
+import (
+	_ "embed"
+)
+
 var shared = `
 git_repo: ""
 git_ref: ""
@@ -68,21 +72,17 @@ folder_map:
 // the location of the repositories
 // This can be overriden by passing the configuration in as a configuration file
 // but this will be the default
-var stacks_frameworks = `
-input:
-stacks:
-  dotnet:
-    webapi: https://github.com/amido/stacks-dotnet
-    cqrs: https://github.com/amido/stacks-dotnet-cqrs
-    events: https://github.com/amido/stacks-dotnet-cqrs-events
-  java:
-    webapi: https://github.com/amido/stacks-java
-    cqrs: https://github.com/amido/stacks-java-cqrs
-    events: https://github.com/amido/stacks-java-cqrs-events
-  nodejs:
-    csr: https://github.com/amido/stacks-typescript-csr
-    ssr: https://github.com/amido/stacks-typescript-ssr
-`
+//go:embed stacks_frameworks.yml
+var stacks_frameworks string
+
+func FrameworkCommand(framework string) string {
+	commands := map[string]string{
+		"dotnet": "dotnet",
+		"java":   "maven",
+	}
+
+	return commands[framework]
+}
 
 // Config byte parses static
 func Config(key string) []byte {

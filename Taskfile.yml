@@ -100,10 +100,6 @@ tasks:
 
   docs:markdown:
     cmds:
-      - ls -l ${PWD}
-      - ls -l ${PWD}/outputs
-      - ls -l ${PWD}/outputs/docs
-      - mkdir -p ${PWD}/{{ .OUTPUT_DOCS_MD_DIR }}
       - docker run -v ${PWD}:{{ .CONTAINER_DIR }} russellseymour/pandoc-asciidoctor pwsh -command {{ .CONTAINER_DIR }}/build/scripts/ConvertTo-Markdown.ps1 -docs_dir {{ .CONTAINER_DIR }}/{{ .DOCS_DIR }} -output_dir {{ .CONTAINER_DIR }}/{{ .OUTPUT_DOCS_MD_DIR }}
       - cp -r ${PWD}/docs/images ${PWD}/outputs/docs/md/
 

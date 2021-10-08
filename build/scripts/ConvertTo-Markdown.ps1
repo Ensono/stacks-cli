@@ -32,6 +32,16 @@ if (!$exists) {
     exit 1
 }
 
+# Ensure that the output directory exists, create it
+# This is ncessary due to the way in which the directories are created on the filesystem when
+# run in Docker. If directories are created in the mounted volume within Docker, they have
+# root permissions on the host filesystem, which means the process may not have permissions
+# to write to those directories. By doing it here the problem is circumvented.
+$exists = Test-Path -Path $output_dir
+if (!$exists) {
+    New-Item -ItemType Directory -Path $output_dir
+}
+
 # Get a list of the files in the docs dir
 $list = Get-ChildItem -Path $docs_dir/* -Attributes !Directory -Include *.adoc
 

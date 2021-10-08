@@ -93,49 +93,21 @@ tasks:
     desc: Generate a PDF of the current documentation
 
     cmds:
-      - docker run --rm -v ${PWD}:/data asciidoctor/docker-asciidoctor asciidoctor-pdf -a pdf-theme=/data/docs/styles/theme.yml -a pdf-fontsdir="/data/docs/styles/fonts;GEM_FONTS_DIR" -a doctype="book" -a stackscli_version="{{.BUILDNUMBER}}" -o "{{.DOCS_FILENAME}}" -a toc -D /data/{{.OUTPUT_DOCS_PDF_DIR}} /data/docs/manual.adoc
+      - docker run --rm -v ${PWD}:/data russellseymour/pandoc-asciidoctor asciidoctor-pdf -a pdf-theme=/data/docs/styles/theme.yml -a pdf-fontsdir="/data/docs/styles/fonts;GEM_FONTS_DIR" -a doctype="book" -a stackscli_version="{{.BUILDNUMBER}}" -o "{{.DOCS_FILENAME}}" -a toc -D /data/{{.OUTPUT_DOCS_PDF_DIR}} /data/docs/manual.adoc
 
     vars:
       DOCS_FILENAME: "Stacks CLI Manual - {{.BUILDNUMBER}}.pdf"
 
-  docs:markdown:cmd:
+  docs:markdown:
     cmds:
-      - docker run -v ${PWD}:{{ .CONTAINER_DIR }} asciidoctor/docker-asciidoctor asciidoctor -b docbook -o {{ .CONTAINER_DIR }}/{{.OUTPUT_DOCS_MD_DIR }}/{{ .FILENAME }}.xml {{ .CONTAINER_DIR }}/{{.DOCS_DIR}}/{{ .FILENAME }}.adoc
-      - docker run -v ${PWD}:{{ .CONTAINER_DIR }} pandoc/core -f docbook -t markdown_strict {{ .CONTAINER_DIR }}/{{.OUTPUT_DOCS_MD_DIR }}/{{ .FILENAME }}.xml -o {{ .CONTAINER_DIR }}/{{.OUTPUT_DOCS_MD_DIR }}/{{ .FILENAME }}.md
-      - rm $PWD/{{.OUTPUT_DOCS_MD_DIR }}/{{ .FILENAME }}.xml
+      - mkdir -p ${PWD}/{{ .OUTPUT_DOCS_MD_DIR }}
+      - docker run -v ${PWD}:{{ .CONTAINER_DIR }} russellseymour/pandoc-asciidoctor pwsh -command {{ .CONTAINER_DIR }}/build/scripts/ConvertTo-Markdown.ps1 -docs_dir {{ .CONTAINER_DIR }}/{{ .DOCS_DIR }} -output_dir {{ .CONTAINER_DIR }}/{{ .OUTPUT_DOCS_MD_DIR }}
+      - cp -r ${PWD}/docs/images ${PWD}/outputs/docs/md/
 
     vars:
       CONTAINER_DIR: /data
 
   docs:setup:
     cmds:
-      - docker pull pandoc/core
-      - docker pull asciidoctor/docker-asciidoctor
-
-  docs:markdown:
-    desc: Generate Markdown documents
-
-    cmds:
-      - task: docs:setup
-      - task: docs:markdown:cmd
-        vars:
-          FILENAME: appendix
-      - task: docs:markdown:cmd
-        vars:
-          FILENAME: build          
-      - task: docs:markdown:cmd
-        vars:
-          FILENAME: examples
-      - task: docs:markdown:cmd
-        vars:
-          FILENAME: project_settings
-      - task: docs:markdown:cmd
-        vars:
-          FILENAME: runtime_config
-      - task: docs:markdown:cmd
-        vars:
-          FILENAME: templating
-      - task: docs:markdown:cmd
-        vars:
-          FILENAME: usage
-      - cmd: cp -r $PWD/docs/images $PWD/{{.OUTPUT_DOCS_MD_DIR }}                  
+      - docker pull russellseymour/pandoc-asciidoctor
+               

@@ -1,7 +1,4 @@
----
-title: Build
-weight: 50
----
+:docs_build_docker_image: russellseymour/pandoc-asciidoctor
 
 == Building
 
@@ -72,6 +69,46 @@ The output of the command will be similar to the following.
 
 .Test and compile Stacks CLI
 image::images/taskfile_compile.png[]
+
+==== Build Documentation
+
+All of the documentation for the CLI is kept in the `docs/` directory of the repository. It is all written in https://asciidoctor.org/docs/asciidoc-writers-guide/[Asciidoc] which is a much more comprehensive definition for writing documentation to Markdown.
+
+Markdown is great for quick documentation, however by using Asciidoc it is possible to easily generate a PDF document, such as this document. There is a lot that can be done with Asciidoc, such as cross-referencing code listings and images and adding captions to the same.
+
+It can also be used to generate Markdown files that are more easily added to static website generators, although Hugo has basic support for Asciidoc.
+
+The Taskfile has setup with three tasks for the documentation:
+
+. Download the Docker image for creating the documentation
+. Create the PDF document
+. Create the Markdown version of the files
+
+This is run by using the command `task docs`.
+
+====== Markdown Generation
+
+Generating the Markdown files is a two step process, the first step is to use `asciidoctor` to generate a https://docbook.org/[Docbook] file, which is an XML definition of the document. It then uses https://pandoc.org/[Pandoc] to turn the XML into a Markdown file.
+
+All of these steps are performed by the PowerShell script, `build/scripts/ConvertTo-Markdown.ps1`, which is shown below:
+
+.Convert Asciidoc to Markdown
+[[convert_adoc_to_md_script,{listing-caption} {counter:refnum}]]
+[source,powershell,subs="attributes"]
+----
+include::../build/scripts/ConvertTo-Markdown.ps1[]
+----
+
+This script iterates around the `.adoc` files in the `docs/` directory and performs the conversion to XML and then MD on each one. The intended method of execution of the script is within the `{docs_build_docker_image}` Docker image. The image contains `pandoc`, `asciidoctor`, and `powershell`. The following shows and example of the Docker command executed by Taskfile.
+
+.Executing PowerShell script for Markdown creation
+[[convert_adoc_to_md_docker,{listing-caption} {counter:refnum}]]
+[source,bash]
+----
+docker run -v ${PWD}:/data russellseymour/pandoc-asciidoctor pwsh -command /data/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /data/docs/ -output_dir /data/outputs/docs/md
+----
+
+All of the markdown files are then uploaded as artefacts as part of the build.
 
 
 === Build Pipeline

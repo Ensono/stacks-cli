@@ -110,6 +110,9 @@ docker run -v ${PWD}:/data russellseymour/pandoc-asciidoctor pwsh -command /data
 
 All of the markdown files are then uploaded as artefacts as part of the build.
 
+.Generating the documentation
+image::images/building_documentation.png[]
+
 
 === Build Pipeline
 

@@ -121,16 +121,14 @@ func init() {
 	viper.BindPFlag("project.sourcecontrol.url", scaffoldCmd.Flags().Lookup("sourcecontrolurl"))
 	viper.BindPFlag("project.sourcecontrol.ref", scaffoldCmd.Flags().Lookup("sourcecontrolref"))
 	viper.BindPFlag("project.settingsfile", scaffoldCmd.Flags().Lookup("projectsettingsfile"))
+	viper.BindPFlag("project.cloud.region", scaffoldCmd.Flags().Lookup("cloudregion"))
+	viper.BindPFlag("project.cloud.group", scaffoldCmd.Flags().Lookup("cloudgroup"))
 
 	viper.BindPFlag("settingsfile", scaffoldCmd.Flags().Lookup("settingsfile"))
 
 	viper.BindPFlag("pipeline", scaffoldCmd.Flags().Lookup("pipeline"))
 
-	viper.BindPFlag("platform.type", scaffoldCmd.Flags().Lookup("platformtype"))
-
 	viper.BindPFlag("cloud.platform", scaffoldCmd.Flags().Lookup("cloud"))
-	viper.BindPFlag("cloud.region", scaffoldCmd.Flags().Lookup("cloudregion"))
-	viper.BindPFlag("cloud.group", scaffoldCmd.Flags().Lookup("cloudgroup"))
 
 	viper.BindPFlag("business.company", scaffoldCmd.Flags().Lookup("company"))
 	viper.BindPFlag("business.domain", scaffoldCmd.Flags().Lookup("area"))
@@ -151,6 +149,16 @@ func init() {
 
 func executeRun(ccmd *cobra.Command, args []string) {
 
+	// determine if the interactive option has been set
+	// if it has ask the user for input and then overwrite the configuration
+	// that has been specified on the command line with the values as given
+	// by the user
+	answers := config.Answers{}
+	err := answers.RunInteractive(&Config)
+	if err != nil {
+		App.Logger.Fatalf("Unable to perform interactive configuration: %s\n", err.Error())
+	}
+
 	// ensure that at least one project has been specified
 	if len(Config.Input.Project) == 1 && Config.Input.Project[0].Name == "" {
 		App.Logger.Fatalln("No projects have been defined")
@@ -164,7 +172,7 @@ func executeRun(ccmd *cobra.Command, args []string) {
 
 	// Call the scaffolding method
 	scaff := scaffold.New(&Config, App.Logger)
-	err := scaff.Run()
+	err = scaff.Run()
 	if err != nil {
 		App.Logger.Fatalf("Error running scaffold: %s", err.Error())
 	}

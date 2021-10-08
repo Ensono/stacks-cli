@@ -109,4 +109,5 @@ tasks:
   docs:setup:
     cmds:
       - docker pull russellseymour/pandoc-asciidoctor
-               
+      - mkdir -p ${PWD}/{{ .OUTPUT_DOCS_MD_DIR }}       
+      - mkdir -p ${PWD}/{{ .OUTPUT_DOCS_PDF_DIR }}      

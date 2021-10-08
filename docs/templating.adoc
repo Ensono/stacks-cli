@@ -19,8 +19,6 @@ The following table shows all of the tokens that can be used in a template strin
 | Token | Description | Example
 | `.Input.Pipeline` | The build pipeline that is being used | azdo
 | `.Input.Cloud.Platform` | Cloud platform being deployed to | azure
-| `.Input.Cloud.Region` | Cloud region resources should be setup in | ukwest
-| `.Input.Cloud.Group` | Group that the resources should be collated in | my-resource-group
 | `.Input.Business.Company` | The name of the company as specified by the user | Amido
 | `.Input.Business.Domain` | Domain of the project | website
 | `.Input.Business.Component` | Name of the component that is being configured | infra
@@ -38,5 +36,7 @@ The following table shows all of the tokens that can be used in a template strin
 | `.Project.SettingsFile` | Path to the settings file used to setup the project | `stackscli.yml`
 | `.Project.Directory.TempDir` | Full path to the temporary directory for the project | 
 | `.Project.Directory.WorkingDir` | Full path to the directory for the final project | 
+| `.Project.Cloud.Region` | Cloud region resources should be setup in | ukwest
+| `.Project.Cloud.Group` | Group that the resources should be collated in | my-resource-group
 |===
 

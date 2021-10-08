@@ -14,6 +14,7 @@ type Project struct {
 	Platform      Platform      `mapstructure:"platform"`
 	SourceControl SourceControl `mapstructure:"sourcecontrol"`
 	SettingsFile  string        `mapstructure:"settingsfile"`
+	Cloud         Cloud         `mapstructure:"cloud"`
 
 	Directory Directory // Holds the workingdir and tempdir for the project
 

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	"github.com/amido/stacks-cli/pkg/scaffold"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -30,6 +32,8 @@ func init() {
 	// - options
 	var cmdlog bool
 	var dryrun bool
+	var saveConfig bool
+	var nocleanup bool
 
 	// - project settings
 	var project_name string
@@ -106,6 +110,8 @@ func init() {
 
 	scaffoldCmd.Flags().BoolVar(&cmdlog, "cmdlog", false, "Specify if commands should be logged")
 	scaffoldCmd.Flags().BoolVar(&dryrun, "dryrun", false, "Perform a dryrun of the CLI. No changes will be made on disk")
+	scaffoldCmd.Flags().BoolVar(&saveConfig, "save", false, "Save the the configuration from interactive or command line settings. Has no effect when using a configuration file.")
+	scaffoldCmd.Flags().BoolVar(&nocleanup, "nocleanup", false, "If set, do not perform cleanup at the end of the scaffolding")
 
 	// Bind the flags to the configuration
 
@@ -143,6 +149,8 @@ func init() {
 
 	viper.BindPFlag("options.cmdlog", scaffoldCmd.Flags().Lookup("cmdlog"))
 	viper.BindPFlag("options.dryrun", scaffoldCmd.Flags().Lookup("dryrun"))
+	viper.BindPFlag("options.save", scaffoldCmd.Flags().Lookup("save"))
+	viper.BindPFlag("options.nocleanup", scaffoldCmd.Flags().Lookup("nocleanup"))
 
 	viper.BindPFlag("interactive", scaffoldCmd.Flags().Lookup("interactive"))
 }
@@ -170,6 +178,32 @@ func executeRun(ccmd *cobra.Command, args []string) {
 		App.Logger.Fatalf("Specified pipeline is not supported: %s %v\n", Config.Input.Pipeline, pipeline.GetSupported())
 	}
 
+	// Attempt to save the configuration if the option has been set
+	// Determine if a configuration file has been used, if not save the settings from the
+	// InputObject to a yaml file so it can be used again without having to input all the details
+	// on the command line again
+	configFileUsed := viper.ConfigFileUsed()
+	if configFileUsed == "" && Config.Input.Options.SaveConfig {
+
+		// determine the path to the savedConfigFile
+		savedConfigFile := filepath.Join(Config.Input.Directory.WorkingDir, "stacks.yml")
+
+		App.Logger.Infof("Saving configuration file: %s\n", savedConfigFile)
+
+		// marshal the InputObject and write out the savedConfigFile
+		data, err := yaml.Marshal(&Config.Input)
+
+		if err != nil {
+			App.HandleError(err, "warn", "Problem converting configuration to YAML syntax")
+		}
+
+		err = ioutil.WriteFile(savedConfigFile, data, 0)
+
+		if err != nil {
+			App.HandleError(err, "warn", "Problem writing configuration to file")
+		}
+	}
+
 	// Call the scaffolding method
 	scaff := scaffold.New(&Config, App.Logger)
 	err = scaff.Run()
@@ -191,10 +225,10 @@ func executeRun(ccmd *cobra.Command, args []string) {
 
 		// Clone the target repository into the temp directory
 		key := project.Framework.GetMapKey()
-		err := util.GitClone(
+		cloneDir, err := util.GitClone(
 			Config.Input.Stacks.GetSrcURL(key),
 			project.SourceControl.Ref,
-			project.Directory.TempDir,
+			Config.Input.Directory.TempDir,
 		)
 
 		// if an error occured getting the code then show an error and move onto the next project
@@ -204,12 +238,14 @@ func executeRun(ccmd *cobra.Command, args []string) {
 		}
 
 		// Read in the configuration file for the project
-		err = project.ReadSettings(project.Directory.TempDir, &Config)
+		err = project.ReadSettings(cloneDir, &Config)
 
 		if err != nil {
 			App.Logger.Errorf("Error reading settings from project settings: %s", err.Error())
 			continue
 		}
+
+		App.Logger.Infof("Read project settings from file: %s\n", project.SettingsFile)
 
 		// iterate around the init settings for the project
 		// all of these operations will occur in the temporary directory of the project
@@ -218,7 +254,7 @@ func executeRun(ccmd *cobra.Command, args []string) {
 			// log information based on the description in the settings file
 			App.Logger.Info(op.Description)
 
-			err = scaff.PerformOperation(op, &Config, &project, project.Directory.TempDir)
+			err = scaff.PerformOperation(op, &Config, &project, cloneDir)
 
 			if err != nil {
 				App.HandleError(err, "error", "Issue encountered performing init operation")
@@ -307,11 +343,15 @@ func executeRun(ccmd *cobra.Command, args []string) {
 	}
 
 	// Perform cleanup by removing the temporary directory
-	App.Logger.Info("Performing cleanup")
-	App.Logger.Infof(" - removing temporary directory: %s\n", Config.Input.Directory.TempDir)
-	err = os.RemoveAll(Config.Input.Directory.TempDir)
-	if err != nil {
-		App.Logger.Fatalf("Unable to remove temporary directory: %s", Config.Input.Directory.TempDir)
+	if Config.Input.Options.NoCleanup {
+		App.Logger.Warn("Cleanup has been disabled, please perform the cleanup manually")
+	} else {
+		App.Logger.Info("Performing cleanup")
+		App.Logger.Infof(" - removing temporary directory: %s\n", Config.Input.Directory.TempDir)
+		err = os.RemoveAll(Config.Input.Directory.TempDir)
+		if err != nil {
+			App.Logger.Fatalf("Unable to remove temporary directory: %s", Config.Input.Directory.TempDir)
+		}
 	}
 
 }

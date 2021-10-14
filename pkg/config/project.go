@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/spf13/viper"
 )
 
@@ -16,9 +17,9 @@ type Project struct {
 	SettingsFile  string        `mapstructure:"settingsfile"`
 	Cloud         Cloud         `mapstructure:"cloud"`
 
-	Directory Directory // Holds the workingdir and tempdir for the project
+	Directory Directory `yaml:"-"` // Holds the workingdir and tempdir for the project
 
-	Settings Settings // Hold the settings for the current project
+	Settings Settings `yaml:"-"` // Hold the settings for the current project
 }
 
 // GetId returns a consistent identifier for the name of the project
@@ -64,10 +65,13 @@ func (project *Project) setSettingsFilePath(path string, config *Config) error {
 		settingsFilePath = project.SettingsFile
 	}
 
-	// determine if the filename exists as it is set, if not then prepend
-	// the path to the filename if the filename is not ab absolute path
-	_, err := os.Stat(settingsFilePath)
-	if os.IsNotExist(err) && !filepath.IsAbs(settingsFilePath) {
+	// determine the path for the settings file
+	// if it is empty then set as the path + `stackscli.yml`
+	// if it is not empty and it is not absolute prepend the path to it
+	// check that the path exists
+	if settingsFilePath == "" {
+		settingsFilePath = filepath.Join(path, constants.SettingsFile)
+	} else if !filepath.IsAbs(settingsFilePath) {
 		settingsFilePath = filepath.Join(path, settingsFilePath)
 	}
 

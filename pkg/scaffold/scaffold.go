@@ -9,6 +9,7 @@ import (
 
 	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/helper"
+	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
 	"github.com/sirupsen/logrus"
 )
@@ -84,6 +85,8 @@ func (s *Scaffold) setProjectPath(name string) string {
 //			The command is set using the `command` parameter
 func (s *Scaffold) PerformOperation(operation config.Operation, cfg *config.Config, project *config.Project, path string) error {
 
+	var command string
+
 	switch operation.Action {
 	case "cmd":
 
@@ -93,11 +96,20 @@ func (s *Scaffold) PerformOperation(operation config.Operation, cfg *config.Conf
 		replacements.Input = cfg.Input
 		replacements.Project = *project
 
-		// get the command for the current action
-		command := static.FrameworkCommand(project.Framework.Type)
-		if operation.Command != "" {
-			command = operation.Command
+		// get a list of the commands that are expected to be run by something that
+		// uses the framework
+		cmdList := static.FrameworkCommand(project.Framework.Type)
+
+		// check the operation command to see if has been specified
+		// and that it is listed in the cmdList
+		if operation.Command == "" {
+			return fmt.Errorf("command has not been set for the operation")
+		} else {
+			if !util.SliceContains(cmdList, operation.Command) {
+				return fmt.Errorf("command '%s' is not is the known list of commands for '%s'", operation.Command, project.Framework.Type)
+			}
 		}
+		command = operation.Command
 
 		// run the args that have been specified through the template engine
 		args, err := cfg.RenderTemplate(operation.Arguments, replacements)

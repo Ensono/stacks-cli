@@ -226,7 +226,7 @@ func executeRun(ccmd *cobra.Command, args []string) {
 			if item.Binary == "" {
 				list += fmt.Sprintf("Framework '%s' may have been misspelled because the command for this framework cannot be determined", item.Framework)
 			} else {
-				list += fmt.Sprintf("Command '%s' for the '%s' framework cannot be located. Is '%s' installed an in your PATH?", item.Binary, item.Framework, item.Binary)
+				list += fmt.Sprintf("Command '%s' for the '%s' framework cannot be located. Is '%s' installed and in your PATH?", item.Binary, item.Framework, item.Binary)
 			}
 		}
 

@@ -75,10 +75,10 @@ folder_map:
 //go:embed stacks_frameworks.yml
 var stacks_frameworks string
 
-func FrameworkCommand(framework string) string {
-	commands := map[string]string{
-		"dotnet": "dotnet",
-		"java":   "java",
+func FrameworkCommand(framework string) []string {
+	commands := map[string][]string{
+		"dotnet": {"dotnet"},
+		"java":   {"java"},
 	}
 
 	return commands[framework]

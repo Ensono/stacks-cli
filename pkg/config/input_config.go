@@ -51,29 +51,31 @@ func (ic *InputConfig) CheckFrameworks() []models.Command {
 		if !util.SliceContains(frameworkTypes, project.Framework.Type) {
 			frameworkTypes = append(frameworkTypes, project.Framework.Type)
 
-			// get the binary for this framework type
-			binary := static.FrameworkCommand(project.Framework.Type)
+			// get the binaries for this framework type
+			binaries := static.FrameworkCommand(project.Framework.Type)
 
-			// create a command object
-			command := models.Command{
-				Framework: project.Framework.Type,
-				Binary:    binary,
-			}
+			for _, binary := range binaries {
+				// create a command object
+				command := models.Command{
+					Framework: project.Framework.Type,
+					Binary:    binary,
+				}
 
-			// if the binary is null then the framework has not been specified properly so
-			// add the command to the missing list
-			// otherwise check that the binary exists in the path
-			if binary == "" {
-				missing = append(missing, command)
-			} else {
-
-				// determine if the binary is in the path
-				_, err := exec.LookPath(command.Binary)
-
-				// if there is an error then the command cannot be found in the path, so
-				// add it to the missing slice
-				if err != nil {
+				// if the binary is null then the framework has not been specified properly so
+				// add the command to the missing list
+				// otherwise check that the binary exists in the path
+				if binary == "" {
 					missing = append(missing, command)
+				} else {
+
+					// determine if the binary is in the path
+					_, err := exec.LookPath(command.Binary)
+
+					// if there is an error then the command cannot be found in the path, so
+					// add it to the missing slice
+					if err != nil {
+						missing = append(missing, command)
+					}
 				}
 			}
 		}

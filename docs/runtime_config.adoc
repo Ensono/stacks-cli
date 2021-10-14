@@ -69,6 +69,10 @@ If not specified then the internal domain will be inferred from the external by 
 
 The `cmdlog.txt` file is created in the directory that the CLI has been run in. | false |
 | `--dryrun` | AMIDOSTACKS_DRYRUN | Perform a dryrun of all the CLI. Particularly useful when used with `--cmdlog` | false |
+| `--save` | AMIDOSTACKS_SAVE | If using the interactive or command line mode for configuring the CLI, the given configuration can be saved to a file. This allows the configuration to be replayed again at a later date.
+
+The configuration is saved to `stacks.yml` in the root of the specified working directory | false |
+| ``--nocleanup` | AMIDOSTACKS_NOCLEANUP | Do not perform cleanup operations after the scaffoling has been completed | false |
 |===
 
 === Command Log Format

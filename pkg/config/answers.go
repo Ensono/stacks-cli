@@ -239,7 +239,7 @@ func (a *Answers) RunInteractive(config *Config) error {
 	}
 
 	// Output the banner to the screen
-	fmt.Print(static.Banner)
+	fmt.Printf(static.Banner)
 
 	// ask the questions
 	err = survey.Ask(a.getCoreQuestions(), a)

@@ -1,6 +1,12 @@
 package config
 
-import "github.com/amido/stacks-cli/internal/models"
+import (
+	"os/exec"
+
+	"github.com/amido/stacks-cli/internal/config/static"
+	"github.com/amido/stacks-cli/internal/models"
+	"github.com/amido/stacks-cli/internal/util"
+)
 
 // Config is used to map the configuration onto the application models
 type InputConfig struct {
@@ -25,4 +31,54 @@ type InputConfig struct {
 	Terraform    Terraform `mapstructure:"terraform"`
 	SettingsFile string    `mapstructure:"settingsfile" json:",omitempty"`
 	Options      Options   `mapstructure:"options"`
+}
+
+// CheckFrameworks iterates around each of the projects and builds up a list of the frameworks
+// that have been specified. It will then check that each of the framework binaries
+// are present in the path.
+// If there are not then the ones that are not present are returned to the calling function
+func (ic *InputConfig) CheckFrameworks() []models.Command {
+
+	var frameworkTypes []string
+	var missing []models.Command
+
+	// iterate around the projects
+	// if the framework does not already exist in the slice, check if it the executable
+	// exists in the path
+	for _, project := range ic.Project {
+
+		// add the framework type to the frameworks if not already present
+		if !util.SliceContains(frameworkTypes, project.Framework.Type) {
+			frameworkTypes = append(frameworkTypes, project.Framework.Type)
+
+			// get the binary for this framework type
+			binary := static.FrameworkCommand(project.Framework.Type)
+
+			// create a command object
+			command := models.Command{
+				Framework: project.Framework.Type,
+				Binary:    binary,
+			}
+
+			// if the binary is null then the framework has not been specified properly so
+			// add the command to the missing list
+			// otherwise check that the binary exists in the path
+			if binary == "" {
+				missing = append(missing, command)
+			} else {
+
+				// determine if the binary is in the path
+				_, err := exec.LookPath(command.Binary)
+
+				// if there is an error then the command cannot be found in the path, so
+				// add it to the missing slice
+				if err != nil {
+					missing = append(missing, command)
+				}
+			}
+		}
+
+	}
+
+	return missing
 }

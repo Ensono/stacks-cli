@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/util"
 )
 
@@ -236,6 +237,9 @@ func (a *Answers) RunInteractive(config *Config) error {
 	if !config.Input.Interactive {
 		return err
 	}
+
+	// Output the banner to the screen
+	fmt.Print(static.Banner)
 
 	// ask the questions
 	err = survey.Ask(a.getCoreQuestions(), a)

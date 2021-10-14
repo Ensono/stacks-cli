@@ -84,6 +84,10 @@ func FrameworkCommand(framework string) []string {
 	return commands[framework]
 }
 
+// Set the banner that is written out to the screen when stacks is run
+//go:embed banner.txt
+var Banner string
+
 // Config byte parses static
 func Config(key string) []byte {
 	switch key {

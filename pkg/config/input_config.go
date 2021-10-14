@@ -23,6 +23,6 @@ type InputConfig struct {
 	Project      []Project `mapstructure:"project"`
 	Stacks       Stacks    `mapstructure:"stacks"` // Holds the information about the projects in stacks
 	Terraform    Terraform `mapstructure:"terraform"`
-	SettingsFile string    `mapstructure:"settingsfile"`
+	SettingsFile string    `mapstructure:"settingsfile" json:",omitempty"`
 	Options      Options   `mapstructure:"options"`
 }

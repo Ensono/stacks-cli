@@ -78,7 +78,7 @@ var stacks_frameworks string
 func FrameworkCommand(framework string) string {
 	commands := map[string]string{
 		"dotnet": "dotnet",
-		"java":   "maven",
+		"java":   "java",
 	}
 
 	return commands[framework]

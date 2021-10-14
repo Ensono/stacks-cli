@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -213,6 +214,30 @@ func executeRun(ccmd *cobra.Command, args []string) {
 
 	// call the func to set default values in the object
 	Config.SetDefaultValues()
+
+	// check that the framework binaries exist
+	missing := Config.Input.CheckFrameworks()
+	if len(missing) > 0 {
+
+		// iterate around the missing list
+		var list string
+		for _, item := range missing {
+
+			if item.Binary == "" {
+				list += fmt.Sprintf("Framework '%s' may have been misspelled because the command for this framework cannot be determined", item.Framework)
+			} else {
+				list += fmt.Sprintf("Command '%s' for the '%s' framework cannot be located. Is '%s' installed an in your PATH?", item.Binary, item.Framework, item.Binary)
+			}
+		}
+
+		// create the message to output to state that some binaries are missing
+		message := fmt.Sprintf(`Some of the commands required by the specified frameworks do not exist on your
+machine or the framework has been specified incorrectly.
+
+%s`, list)
+
+		App.Logger.Fatal(message)
+	}
 
 	// iterate around the projects that have been specified
 	for _, project := range Config.Input.Project {

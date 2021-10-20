@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -186,4 +187,26 @@ func Unzip(src, dest string) error {
 	}
 
 	return nil
+}
+
+// GetDefaultTempDir determines and creates a temporary directory for packages and source
+// code to be downloaded to.
+func GetDefaultTempDir() string {
+	tmpPath, err := os.MkdirTemp("", "stackscli")
+	if err != nil {
+		log.Fatalf("Unable to create temporary directory")
+	}
+	return tmpPath
+}
+
+// GetDefaultWorkingDir returns the current directory as the default working directory
+// for where projects will be created
+func GetDefaultWorkingDir() string {
+
+	workingDir, err := os.Getwd()
+	if err != nil {
+		log.Fatalf("Unable to determine current directory")
+	}
+
+	return workingDir
 }

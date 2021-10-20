@@ -4,9 +4,10 @@
 :example_domain: stacks-example.com
 :example_cloud: azure
 :example_region: ukwest
-:example_group: my-group
+:example_group: mywebapi-resources
 :example_tf_group: supporting-group
 :example_tf_storage: kjh56sdfnjnkjn
+:example_tf_container: tfstate
 :example_project_name: my-webapi
 :example_framework: dotnet
 :example_framework_option: webapi
@@ -37,7 +38,7 @@ In previous versions of the CLI, this has been referred to as the domain, but it
 | tfstorage | `{example_tf_storage}` | Name of the storage that will hold the Terraform state
 | tfcontainer | `{example_tf_container}` | Container in the storage for the state files
 | name | `{example_project_name}` | Name of the project to create in the working directory
-| framework | `{example_framwork}` | Framework being used, e.g. `dotnet` or `java`
+| framework | `{example_framework}` | Framework being used, e.g. `dotnet` or `java`
 | framework_option | `{example_framework_option}` | The option within the framework being created, e.g. `webapi`, `cqrs` or `events`
 | framework_version | `{example_framework_version}` | Version of the framework option to grab.
 |===
@@ -142,4 +143,85 @@ The resultant project, as stated by the `Project path:` statement in the screens
                         ├───Fixtures
                         ├───Steps
                         └───Stories
+----
+
+=== .NET WebApi project using the interactive mode
+
+By running the scaffolding command in interactive mode it possible to input the configuration based on a set of questions. In addition, if the `--save` flags is specified as well the configuration is saved to a YAML file in the root of the specified working directory.
+
+[source,bash]
+----
+stacks-cli scaffold -i --save
+----
+
+The values as specified in the previous configuration table have been used in the following screenshot of the interactive session.
+
+image::images/stackscli-interactive.png[]
+
+As the option to save the configuration has been set, the values that were put into the CLI have been saved in the `stacks.yml` file. This file contains all of the configuration that was used to generate the projects, which means it can be used to produce the same project stack again.
+
+[source,yaml]
+----
+interactive: true
+version: 100.98.99
+log:
+  level: info
+  format: text
+  colour: true
+directory:
+  workingdir: C:\Users\RussellSeymour\scratch\projects
+business:
+  company: MyCompany
+  project: ""
+  domain: core
+  component: backend
+cloud:
+  platform: azure
+  region: ""
+  group: ""
+network:
+  base:
+    domain:
+      internal: ""
+      external: example-stacks.com
+pipeline: azdo
+project:
+- name: my-webapi
+  framework:
+    type: dotnet
+    option: webapi
+    version: v2.0.208
+  platform:
+    type: ""
+  sourcecontrol:
+    type: github
+    url: https://github.com/russellseymour/my-webapi
+    ref: ""
+  settingsfile: ""
+  cloud:
+    platform: ""
+    region: ukwest
+    group: mywebapi-resources
+stacks:
+  dotnet:
+    webapi: https://github.com/amido/stacks-dotnet
+    cqrs: https://github.com/amido/stacks-dotnet-cqrs
+    events: https://github.com/amido/stacks-dotnet-cqrs-events
+  java:
+    webapi: https://github.com/amido/stacks-java
+    cqrs: https://github.com/amido/stacks-java-cqrs
+    events: https://github.com/amido/stacks-java-cqrs-events
+  nodejs:
+    csr: https://github.com/amido/stacks-typescript-csr
+    ssr: https://github.com/amido/stacks-typescript-ssr
+terraform:
+  backend:
+    storage: kjh56sdfnjnkjn
+    group: supporting-group
+    container: tfstate
+settingsfile: ""
+options:
+  cmdlog: false
+  dryrun: false
+
 ----

@@ -3,11 +3,12 @@ module github.com/amido/stacks-cli
 go 1.16
 
 require (
+	github.com/AlecAivazis/survey/v2 v2.3.2 // indirect
 	github.com/AlekSi/gocov-xml v0.0.0-20190121064608-3a14fb1c4737 // indirect
 	github.com/axw/gocov v1.0.0 // indirect
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89 // indirect
 	github.com/jstemmer/go-junit-report v0.9.1 // indirect
-	github.com/mattn/go-colorable v0.0.9
+	github.com/mattn/go-colorable v0.1.2
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.8.1

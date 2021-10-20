@@ -75,14 +75,18 @@ folder_map:
 //go:embed stacks_frameworks.yml
 var stacks_frameworks string
 
-func FrameworkCommand(framework string) string {
-	commands := map[string]string{
-		"dotnet": "dotnet",
-		"java":   "maven",
+func FrameworkCommand(framework string) []string {
+	commands := map[string][]string{
+		"dotnet": {"dotnet", "git"},
+		"java":   {"java", "git"},
 	}
 
 	return commands[framework]
 }
+
+// Set the banner that is written out to the screen when stacks is run
+//go:embed banner.txt
+var Banner string
 
 // Config byte parses static
 func Config(key string) []byte {

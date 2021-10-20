@@ -3,12 +3,12 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"os"
 	"strings"
 
 	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/amido/stacks-cli/internal/models"
+	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -59,7 +59,8 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	// get the default directories
-	defaultTempDir, defaultWorkingDir := getDefaultDirectories()
+	defaultTempDir := util.GetDefaultTempDir()
+	defaultWorkingDir := util.GetDefaultWorkingDir()
 
 	// Add flags that are to be used in every command
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "Path to the configuration file")
@@ -128,21 +129,4 @@ func preRun(ccmd *cobra.Command, args []string) {
 	// Set the version of the app in the configuration
 	Config.Input.Version = version
 
-}
-
-// setDefaultDirectoies sets the workingdir to the current directory and the
-// tempdir to the system temporary directory
-func getDefaultDirectories() (string, string) {
-
-	tmpPath, err := os.MkdirTemp("", "stackscli")
-	if err != nil {
-		log.Fatalf("Unable to create temporary directory")
-	}
-
-	workingDir, err := os.Getwd()
-	if err != nil {
-		log.Fatalf("Unable to determine current directory")
-	}
-
-	return tmpPath, workingDir
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/helper"
+	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
 	"github.com/sirupsen/logrus"
 )
@@ -39,15 +40,9 @@ func (s *Scaffold) Run() error {
 	return nil
 }
 
-// 1. determine action path based on input either API or config \n
-// 2. get base source \n
-// TODO: still
-// 3. generate replaceMap \n
-// 4. replace placeholders in given files
-// 5. copy to final output place
+// run iterates around all the projects that have been specified and sets up the
+// working directory for each of them
 func (s *Scaffold) run() error {
-	// invoke all helper functions from here so defer will be closed automatically on block exit
-	// defer os.RemoveAll(s.Config.Input.Directory.TempDir)
 
 	pwd, err := os.Getwd()
 	if err != nil {
@@ -72,47 +67,7 @@ func (s *Scaffold) run() error {
 	}
 
 	return err
-
-	/*
-		s.Logger.Tracef("New Project Dir: %s\n", s.Config.Input.Directory.WorkingDir)
-
-		// , s.Config.Output.ZipPath
-		if err := util.GitClone(s.Config.Self.Specific.Gitrepo, s.Config.Self.Specific.Gitref, s.Config.Output.TmpPath); err != nil {
-			s.Logger.Trace(err.Error())
-			// cleanUpNewDirOnError(s.Config.Output.NewPath)
-			return err
-		}
-
-		// Add additional config values from Repos
-
-		s.Logger.Tracef("Cloned path %s\n\n", s.Config.Output.TmpPath)
-
-		strs, e3 := s.sortFileOperations()
-		if e3 != nil {
-			s.Logger.Trace(err.Error())
-			cleanUpNewDirOnError(s.Config.Output.NewPath)
-			return err
-		}
-
-		helper.TraceInfo(fmt.Sprintf("%s", strs))
-
-		return nil
-	*/
 }
-
-/*
-func (s *Scaffold) sortFileOperations() ([]string, error) {
-
-	fileListArr, err := util.Unzip(s.Config.Output.ZipPath, s.Config.Output.UnzipPath)
-	if err != nil {
-		return nil, err
-	}
-
-	// create a map of replacements on each file
-
-	return fileListArr, nil
-}
-*/
 
 func (s *Scaffold) setProjectPath(name string) string {
 	project_path := filepath.Join(s.Config.Input.Directory.WorkingDir, name)
@@ -130,6 +85,8 @@ func (s *Scaffold) setProjectPath(name string) string {
 //			The command is set using the `command` parameter
 func (s *Scaffold) PerformOperation(operation config.Operation, cfg *config.Config, project *config.Project, path string) error {
 
+	var command string
+
 	switch operation.Action {
 	case "cmd":
 
@@ -139,11 +96,20 @@ func (s *Scaffold) PerformOperation(operation config.Operation, cfg *config.Conf
 		replacements.Input = cfg.Input
 		replacements.Project = *project
 
-		// get the command for the current action
-		command := static.FrameworkCommand(project.Framework.Type)
-		if operation.Command != "" {
-			command = operation.Command
+		// get a list of the commands that are expected to be run by something that
+		// uses the framework
+		cmdList := static.FrameworkCommand(project.Framework.Type)
+
+		// check the operation command to see if has been specified
+		// and that it is listed in the cmdList
+		if operation.Command == "" {
+			return fmt.Errorf("command has not been set for the operation")
+		} else {
+			if !util.SliceContains(cmdList, operation.Command) {
+				return fmt.Errorf("command '%s' is not is the known list of commands for '%s'", operation.Command, project.Framework.Type)
+			}
 		}
+		command = operation.Command
 
 		// run the args that have been specified through the template engine
 		args, err := cfg.RenderTemplate(operation.Arguments, replacements)

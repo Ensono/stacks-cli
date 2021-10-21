@@ -3,5 +3,5 @@ package config
 type SourceControl struct {
 	Type string `mapstructure:"type"`
 	URL  string `mapstructure:"url"`
-	Ref  string `mapstructure:"ref"`
+	Ref  string `mapstructure:"ref" yaml:",omitempty"`
 }

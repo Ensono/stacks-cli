@@ -20,6 +20,8 @@ type Project struct {
 	Directory Directory `yaml:"-"` // Holds the workingdir and tempdir for the project
 
 	Settings Settings `yaml:"-"` // Hold the settings for the current project
+
+	Phases []Phase `yaml:"-"` // Holds the phases for the operations
 }
 
 // GetId returns a consistent identifier for the name of the project
@@ -29,6 +31,9 @@ func (project *Project) GetId() string {
 }
 
 // ReadSettings reads in the settings file for the current project
+// Returns the path to the file that was read for the project settings and any errors
+// that were raised
+// The operations are also read in and the phases object is created
 func (project *Project) ReadSettings(path string, config *Config) error {
 
 	// get the path to the settings file
@@ -50,6 +55,20 @@ func (project *Project) ReadSettings(path string, config *Config) error {
 	err = v.Unmarshal(&project.Settings)
 	if err != nil {
 		return err
+	}
+
+	// create the phases of the project
+	project.Phases = []Phase{
+		{
+			Name:       "init",
+			Directory:  path,
+			Operations: project.Settings.Init.Operations,
+		},
+		{
+			Name:       "setup",
+			Directory:  project.Directory.WorkingDir,
+			Operations: project.Settings.Setup.Operations,
+		},
 	}
 
 	return nil

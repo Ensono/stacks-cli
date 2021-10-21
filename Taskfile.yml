@@ -38,12 +38,12 @@ tasks:
   test:execute:
     desc: Run Unit Tests
     cmds:
-      - pwd
-      - go install github.com/jstemmer/go-junit-report
-      - go install github.com/axw/gocov/gocov
-      - go install github.com/AlekSi/gocov-xml
+      - go get github.com/jstemmer/go-junit-report
+      - go get github.com/axw/gocov/gocov
+      - go get github.com/AlekSi/gocov-xml
       - go test ./... -v | go-junit-report > {{.OUTPUT_TEST_DIR}}/{{.REPORT_OUTPUT}}
       - go test ./... -v -coverprofile={{.OUTPUT_TEST_DIR}}/cover.out
+      - go mod tidy
 
   test:reports:
     desc: Produce reports

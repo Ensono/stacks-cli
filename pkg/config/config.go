@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -10,61 +11,13 @@ import (
 
 	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/bobesa/go-domain-util/domainutil"
+	"gopkg.in/yaml.v2"
 )
 
-// import (
-// 	"github.com/dnitsch/scaffold/internal/util"
-// 	"github.com/dnitsch/scaffold/pkg/scaffold"
-// )
-
-// func ReadSelfConfigFile(input scaffold.InputConfig) (*scaffold.SelfConfig, error) {
-// 	return readSelfConfigFile(input)
-// }
-
-// // readSelfConfigFile constructs self config for CLI based on bundle resources
-// func readSelfConfigFile(input scaffold.InputConfig) (*scaffold.SelfConfig, error) {
-
-// 	sharedT, err := ParseShared()
-// 	util.CheckErrors(err)
-
-// 	specificT, err := ParseSpecific(input.Platform, input.Deployment, input.ProjectType)
-
-// 	s := scaffold.SelfConfig{
-// 		Shared:   &sharedT,
-// 		Specific: &specificT,
-// 	}
-// 	// TODO: feat request allow overwrite of self config from outside (as long as it can be parsed back to a SelfConfig)
-// 	return &s, err
-// }
-
-type TypeDetail struct {
-	Gitrepo                  string    `yaml:"git_repo"`
-	Gitref                   string    `yaml:"git_ref"`
-	Localpath                string    `yaml:"local_path"`
-	FilenameReplacementPaths []string  `yaml:"filename_replacement_paths,omitempty"`
-	Searchvalue              string    `yaml:"search_value,omitempty"`
-	Foldermap                Foldermap `mapstructure:"folder_map"`
-}
-
-type Foldermap struct {
-	Src  string `mapstructure:"src"`
-	Dest string `mapstructure:"dest"`
-}
-
 type SelfConfig struct {
-	Shared   *TypeDetail
-	Specific *TypeDetail
-
 	ProjectPaths map[string]string
 
 	CmdLogPath string
-}
-
-type OutputConfig struct {
-	TmpPath   string
-	ZipPath   string
-	UnzipPath string
-	NewPath   string
 }
 
 type ReplaceConfig struct {
@@ -75,8 +28,82 @@ type ReplaceConfig struct {
 type Config struct {
 	Input   InputConfig
 	Self    SelfConfig
-	Output  OutputConfig
 	Replace []ReplaceConfig
+}
+
+// Check checks the configuration and ensures that there are some projects
+// to work with and that the chosen pipeline is supported
+// It also sets some defaults based on other settings in the configuration
+func (c *Config) Check() error {
+	var err error
+
+	// determine if any projects have been specified
+	if len(c.Input.Project) == 1 && c.Input.Project[0].Name == "" {
+		return fmt.Errorf("no projects have been defined")
+	}
+
+	// check to see if the the specified pipeline is supported
+	pipeline := Pipeline{}
+	if !pipeline.IsSupported(c.Input.Pipeline) {
+		return fmt.Errorf("specified pipeline is not supported - %s %v", c.Input.Pipeline, pipeline.GetSupported())
+	}
+
+	// set necessary default values
+	c.SetDefaultValues()
+
+	return err
+}
+
+// IsDryRun returns the boolean value of the dryrun option
+func (c *Config) IsDryRun() bool {
+	return c.Input.Options.DryRun
+}
+
+// UseCmdLog states of the command log should be used
+func (c *Config) UseCmdLog() bool {
+	return c.Input.Options.CmdLog
+}
+
+// NoCleanup returns a boolean stating if the app should perform cleanup functions
+func (c *Config) NoCleanup() bool {
+	return c.Input.Options.NoCleanup
+}
+
+// Clobber states if projects should be overwritten
+func (c *Config) Clobber() bool {
+	return c.Input.Options.Clobber
+}
+
+// Save saves the user's configuration to a file
+// This is only applicable if a configuration file has not been used and the option
+// to save the configuration has been set as an option
+func (c *Config) Save(usedConfig string) (string, error) {
+	var err error
+	var savedConfigFile string
+
+	// return with a nil error if a configuration file has been specified
+	// or the SaveConfig has not been set
+	if !c.Input.Options.SaveConfig {
+		return "", nil
+	} else if c.Input.Options.SaveConfig && usedConfig == "" {
+		return "", nil
+	}
+
+	// determine the path to the saveConfigFile
+	savedConfigFile = filepath.Join(c.Input.Directory.WorkingDir, "stacks.yml")
+
+	// deserialise the data from the Config.Input object
+	data, err := yaml.Marshal(&c.Input)
+	if err != nil {
+		return savedConfigFile, fmt.Errorf("problem converting configuration to YAML syntax")
+	}
+
+	err = ioutil.WriteFile(savedConfigFile, data, 0)
+	if err != nil {
+		return savedConfigFile, fmt.Errorf("problem writing configuration to file")
+	}
+
+	return savedConfigFile, err
 }
 
 // GetVersion returns the current version of the application
@@ -122,7 +149,7 @@ func (config *Config) WriteVariablesFile(project *Project, pipelineSettings Pipe
 	rendered, err := config.RenderTemplate(variableTemplate, replacements)
 
 	if err != nil {
-		return "Problem rendering variable template file", err
+		return fmt.Sprintf("Problem rendering variable template file: %s", err.Error()), err
 	}
 
 	// get the dirname of the path and ensure it exists
@@ -136,7 +163,7 @@ func (config *Config) WriteVariablesFile(project *Project, pipelineSettings Pipe
 
 	err = os.WriteFile(variableFile, []byte(rendered), 0666)
 	if err != nil {
-		return "Problem writing out variable file", err
+		return fmt.Sprintf("Problem writing out variable file: %s", err.Error()), err
 	}
 
 	return "", err
@@ -196,7 +223,7 @@ func (config *Config) WriteCmdLog(path string, cmd string) error {
 	var err error
 
 	// return empty error if not logging commands
-	if !config.Input.Options.CmdLog {
+	if !config.UseCmdLog() {
 		return err
 	}
 
@@ -214,79 +241,3 @@ func (config *Config) WriteCmdLog(path string, cmd string) error {
 
 	return err
 }
-
-/*
-// Create creates a config object based on parsed input config
-func New(data InputConfig) (*Config, error) {
-	tmpPath, err := os.MkdirTemp("", "source")
-	if err != nil {
-		return nil, err
-	}
-
-	pwd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	selfConf, err := readSelfConfigFile(data)
-	if err != nil {
-		helper.TraceInfo("Failed to read self config")
-		return nil, err
-	}
-
-	conf := Config{
-		Output: &OutputConfig{
-			NewPath:   fmt.Sprintf("%s/%s", pwd, data.ProjectName),
-			TmpPath:   tmpPath,
-			ZipPath:   fmt.Sprintf("%s/source.zip", tmpPath),
-			UnzipPath: path.Join(tmpPath, "wip", selfConf.Specific.Localpath),
-		},
-		Input: &data,
-		Self:  selfConf,
-	}
-
-	helper.TraceInfo(fmt.Sprintf("New Project Dir: %s\n", conf.Output.NewPath))
-
-	helper.TraceInfo(fmt.Sprintf("Temp Path: %s\n", conf.Output.TmpPath))
-
-	return &conf, err
-}
-
-// Create creates a config object based on bytes stream read from a config file
-func NewBytes(data []byte) (*Config, error) {
-
-	t := InputConfig{}
-
-	if err := yaml.Unmarshal(data, &t); err != nil {
-		return nil, err
-	}
-
-	conf, err := New(t)
-	return conf, err
-}
-
-// readSelfConfigFile constructs self config for CLI based on bundle resources
-func readSelfConfigFile(input InputConfig) (*SelfConfig, error) {
-	// var err error
-
-	sharedT, err := ParseLocalShared()
-	// if errShared != nil {
-	if err != nil {
-		return nil, err
-	}
-
-	specificT, err := ParseLocalSpecific(input.Platform, input.Deployment, input.ProjectType)
-
-	if err != nil {
-		return nil, err
-	}
-
-	s := SelfConfig{
-		Shared:   &sharedT,
-		Specific: &specificT,
-	}
-
-	// TODO: feat request allow overwrite of self config from outside (as long as it can be parsed back to a SelfConfig)
-	return &s, err
-}
-*/

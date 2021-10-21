@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -261,4 +262,138 @@ func TestWriteCmdLog(t *testing.T) {
 	// remove the cmdlog file from the machine
 	_ = os.Remove(config.Self.CmdLogPath)
 
+}
+
+func TestCheck(t *testing.T) {
+
+	// create a test table to iterate around
+	tables := []struct {
+		conf Config
+		test error
+		msg  string
+	}{
+		{
+			Config{
+				Input: InputConfig{
+					Project: []Project{
+						{
+							Name: "",
+						},
+					},
+				},
+			},
+			nil,
+			"An error should have been raised as no projects have been specified",
+		},
+		{
+			Config{
+				Input: InputConfig{
+					Pipeline: "fred",
+				},
+			},
+			nil,
+			"'fred' is not a valid pipeline and an error should have been raised",
+		},
+		{
+			Config{
+				Input: InputConfig{
+					Pipeline: "azdo",
+					Project: []Project{
+						{
+							Name: "my-webapi",
+						},
+					},
+				},
+			},
+			errors.New(""),
+			"No error should be raised as a valid pipeline and project exist",
+		},
+	}
+
+	for _, table := range tables {
+		conf := table.conf
+		res := conf.Check()
+
+		if res == table.test {
+			t.Error(table.msg)
+		}
+	}
+
+}
+
+func TestSave(t *testing.T) {
+
+	// setup the environment
+	// this creates a temporary directory into which the configuration
+	// can be saved
+	cleanup, dir := setupConfigTests(t)
+	defer cleanup(t)
+
+	// create the test table to work with
+	tables := []struct {
+		conf           Config
+		usedConfigFile string
+		savedFile      string
+		test           error
+		msg            string
+	}{
+		{
+			Config{
+				Input: InputConfig{
+					Options: Options{
+						SaveConfig: false,
+					},
+				},
+			},
+			"",
+			"",
+			nil,
+			"Configuration should not be saved as the option to save is false",
+		},
+		{
+			Config{
+				Input: InputConfig{
+					Options: Options{
+						SaveConfig: true,
+					},
+				},
+			},
+			"",
+			"",
+			nil,
+			"Configuration should not be saved as there is no config file set",
+		},
+		{
+			Config{
+				Input: InputConfig{
+					Directory: Directory{
+						WorkingDir: dir,
+					},
+					Options: Options{
+						SaveConfig: true,
+					},
+				},
+			},
+			"config.yml",
+			filepath.Join(dir, "stacks.yml"),
+			nil,
+			"Saved file is not saved in the expected location",
+		},
+	}
+
+	for _, table := range tables {
+		conf := table.conf
+		path, res := conf.Save(table.usedConfigFile)
+
+		if res == table.test && path != table.savedFile {
+			t.Error(table.msg)
+		}
+
+		// check to see if the path exists
+		if path != "" {
+			if _, err := os.Stat(path); os.IsNotExist(err) {
+				t.Error("Saved configuration file cannot be found")
+			}
+		}
+	}
 }

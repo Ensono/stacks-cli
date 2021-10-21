@@ -44,9 +44,10 @@ func (s *Scaffold) Run() error {
 
 	// determine if the configuration needs to be saved to a file
 	savedConfigFile, err := s.Config.Save(viper.ConfigFileUsed())
-	if err == nil {
+	if savedConfigFile != "" {
 		s.Logger.Infof("Configuration saved to file: %s", savedConfigFile)
-	} else {
+	}
+	if err != nil {
 		s.Logger.Warnf("Issue saving configuration: %s", err.Error())
 	}
 

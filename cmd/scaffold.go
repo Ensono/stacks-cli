@@ -11,15 +11,13 @@ var (
 		Use:   "scaffold",
 		Short: "Create a new project using Amido Stacks",
 		Long:  "",
-		Run:   executeRun,
+		Run:   executeScaffoldRun,
 	}
 )
 
 func init() {
 
 	// declare variables that will be populated from the command line
-	var interactive bool
-
 	// - options
 	var cmdlog bool
 	var dryrun bool
@@ -68,9 +66,6 @@ func init() {
 	rootCmd.AddCommand(scaffoldCmd)
 
 	// Configure the flags
-	// - run interactively
-	scaffoldCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "Run in interactive mode")
-
 	scaffoldCmd.Flags().StringVarP(&project_name, "name", "n", "", "Name of the project to create")
 	scaffoldCmd.Flags().StringVar(&project_vcs_type, "sourcecontrol", "github", "Type of source control being used")
 	scaffoldCmd.Flags().StringVarP(&project_vcs_url, "sourcecontrolurl", "u", "", "Url of the remote for source control")
@@ -145,11 +140,9 @@ func init() {
 	viper.BindPFlag("options.save", scaffoldCmd.Flags().Lookup("save"))
 	viper.BindPFlag("options.nocleanup", scaffoldCmd.Flags().Lookup("nocleanup"))
 	viper.BindPFlag("options.clobber", scaffoldCmd.Flags().Lookup("clobber"))
-
-	viper.BindPFlag("interactive", scaffoldCmd.Flags().Lookup("interactive"))
 }
 
-func executeRun(ccmd *cobra.Command, args []string) {
+func executeScaffoldRun(ccmd *cobra.Command, args []string) {
 
 	// Call the scaffolding method
 	scaff := scaffold.New(&Config, App.Logger)

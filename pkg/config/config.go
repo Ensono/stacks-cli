@@ -11,7 +11,7 @@ import (
 
 	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/bobesa/go-domain-util/domainutil"
-	"gopkg.in/yaml.v2"
+	yaml "github.com/goccy/go-yaml"
 )
 
 type SelfConfig struct {

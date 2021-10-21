@@ -11,9 +11,6 @@ import (
 // Config is used to map the configuration onto the application models
 type InputConfig struct {
 
-	// State if running in Interactive mode
-	Interactive bool `mapstructure:"interactive"`
-
 	// Version of the application
 	Version string
 

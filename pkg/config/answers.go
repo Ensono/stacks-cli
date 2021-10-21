@@ -232,12 +232,6 @@ func (a *Answers) RunInteractive(config *Config) error {
 
 	var err error
 
-	// return without performing any tasks if interactive mode is not
-	// enabled
-	if !config.Input.Interactive {
-		return err
-	}
-
 	// Output the banner to the screen
 	fmt.Printf(static.Banner)
 
@@ -307,15 +301,15 @@ func (a *Answers) RunInteractive(config *Config) error {
 				Region:        pa.CloudRegion,
 				ResourceGroup: pa.CloudGroup,
 			},
+			Platform: Platform{
+				Type: pa.PlatformType,
+			},
 			SettingsFile: settingsFile,
 		}
 
 		// append this to the project list on the config object
-		// if i == 0 {
-		// 	config.Input.Project[0] = project
-		// } else {
 		projectList = append(projectList, project)
-		// }
+
 	}
 
 	config.Input.Project = projectList

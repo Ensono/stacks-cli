@@ -29,7 +29,7 @@ func setupInputConfigTests(t *testing.T, create bool) (func(t *testing.T), strin
 
 			// if not running on windows set the executable bit
 			if runtime.GOOS != "windows" {
-				_ = os.Chmod(path, 0666)
+				_ = os.Chmod(path, 0555)
 			}
 		}
 	}

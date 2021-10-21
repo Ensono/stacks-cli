@@ -9,25 +9,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func setupInputConfigTests(t *testing.T) (func(t *testing.T), string) {
+func setupInputConfigTests(t *testing.T, create bool) (func(t *testing.T), string) {
 	t.Log("Setting up InputConfig test environment")
 
 	// create a temporary directory
 	tempDir := t.TempDir()
 
-	// create a new file in the tempDir to represent the framework binary
-	filename := "dotnet"
-	if runtime.GOOS == "windows" {
-		filename += ".exe"
-	}
+	// create a new file in the tempDir to represent the framework binary and git
+	if create {
+		for _, filename := range []string{"dotnet", "git"} {
 
-	path := filepath.Join(tempDir, filename)
-	file, _ := os.Create(path)
-	defer file.Close()
+			if runtime.GOOS == "windows" {
+				filename += ".exe"
+			}
 
-	// if not running on windows set the executable bit
-	if runtime.GOOS != "windows" {
-		_ = os.Chmod(path, 0666)
+			path := filepath.Join(tempDir, filename)
+			file, _ := os.Create(path)
+			defer file.Close()
+
+			// if not running on windows set the executable bit
+			if runtime.GOOS != "windows" {
+				_ = os.Chmod(path, 0555)
+			}
+		}
 	}
 
 	deferFunc := func(t *testing.T) {
@@ -42,8 +46,8 @@ func setupInputConfigTests(t *testing.T) (func(t *testing.T), string) {
 
 func TestNonExistentFrameworkBinary(t *testing.T) {
 
-	// setup the enviornment
-	cleanup, tempDir := setupInputConfigTests(t)
+	// setup the environment
+	cleanup, tempDir := setupInputConfigTests(t, false)
 	defer cleanup(t)
 
 	// set the path to the tempDir so that no files can be found
@@ -67,13 +71,13 @@ func TestNonExistentFrameworkBinary(t *testing.T) {
 	// get a list of the commands from the CheckFramework
 	missing := config.Input.CheckFrameworks()
 
-	assert.Equal(t, 1, len(missing))
+	assert.Equal(t, 2, len(missing))
 }
 
 func TestIncorrectFrameworkSet(t *testing.T) {
 
 	// setup the environment
-	cleanup, tempDir := setupInputConfigTests(t)
+	cleanup, tempDir := setupInputConfigTests(t, true)
 	defer cleanup(t)
 
 	// set the path to the tempDir so that no files can be found
@@ -97,14 +101,13 @@ func TestIncorrectFrameworkSet(t *testing.T) {
 	// get a list of the commands from the CheckFramework
 	missing := config.Input.CheckFrameworks()
 
-	assert.Equal(t, 1, len(missing))
-	assert.Equal(t, "", missing[0].Binary)
+	assert.Equal(t, 0, len(missing))
 }
 
 func TestMultipleFrameworks(t *testing.T) {
 
 	// setup the environment
-	cleanup, tempDir := setupInputConfigTests(t)
+	cleanup, tempDir := setupInputConfigTests(t, true)
 	defer cleanup(t)
 
 	// set the path to the tempDir so that no files can be found

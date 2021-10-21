@@ -116,7 +116,7 @@ func (p *Pipeline) ReplacePatterns(dir string) []error {
 
 	var err error
 	var errs []error
-	errs = make([]error, 1)
+	errs = make([]error, 0)
 
 	// Return if there are no replacements to perform
 	if len(p.Replacements) == 0 {
@@ -162,7 +162,9 @@ func (p *Pipeline) ReplacePatterns(dir string) []error {
 
 		// write out the file
 		err = os.WriteFile(buildFile, content, 0666)
-		errs = append(errs, err)
+		if err != nil {
+			errs = append(errs, err)
+		}
 
 	}
 

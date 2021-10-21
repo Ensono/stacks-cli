@@ -6,4 +6,5 @@ type Options struct {
 	DryRun     bool `mapstructure:"dryrun"`
 	SaveConfig bool `mapstructure:"save" yaml:"-"`
 	NoCleanup  bool `mapstructure:"nocleanup" yaml:"-"`
+	Clobber    bool `mapstructure:"clobber" yaml:"-"`
 }

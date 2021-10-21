@@ -72,7 +72,10 @@ The `cmdlog.txt` file is created in the directory that the CLI has been run in. 
 | `--save` | AMIDOSTACKS_SAVE | If using the interactive or command line mode for configuring the CLI, the given configuration can be saved to a file. This allows the configuration to be replayed again at a later date.
 
 The configuration is saved to `stacks.yml` in the root of the specified working directory | false |
-| ``--nocleanup` | AMIDOSTACKS_NOCLEANUP | Do not perform cleanup operations after the scaffoling has been completed | false |
+| `--nocleanup` | AMIDOSTACKS_NOCLEANUP | Do not perform cleanup operations after the scaffoling has been completed | false |
+|`--clobber` | AMIDOSTACKS_CLOBBER | Delete existing project directories when creating new ones
+
+This is a destructive operation and will result in existing projects being deleted in their entirety if there is a clash in the path | false | 
 |===
 
 === Command Log Format

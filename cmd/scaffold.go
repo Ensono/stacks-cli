@@ -150,19 +150,4 @@ func executeScaffoldRun(ccmd *cobra.Command, args []string) {
 	if err != nil {
 		App.Logger.Fatalf("Error running scaffold: %s", err.Error())
 	}
-
-	return
-
-	// determine if the interactive option has been set
-	// if it has ask the user for input and then overwrite the configuration
-	// that has been specified on the command line with the values as given
-	// by the user
-	/*
-		answers := config.Answers{}
-		err = answers.RunInteractive(&Config)
-		if err != nil {
-			App.Logger.Fatalf("Unable to perform interactive configuration: %s\n", err.Error())
-		}
-	*/
-
 }

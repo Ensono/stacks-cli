@@ -34,9 +34,6 @@ The following options can be applied to any command within the Stacks CLI.
 [options="header"]
 |===
 | Option | Environment Variable | Description | Default | Options 
-| `-i`, `--interactive` | AMIDOSTACKS_INTERACTIVE | Run the scaffold command interactively.
-
-In this mode each option will be presented in the console which requires input from the user. | false |
 | `-n`, `--name` | AMIDOSTACKS_PROJECT_NAME | Name of the project to created | | 
 | `--sourcecontrol` | AMIDOSTACKS_PROJECT_SOURCECONTROL_TYPE | Source control system to be used | `github` | 
 | `-u`, `--sourcecontrolurl` | AMIDOSTACKS_PROJECT_SOURCECONTROL_URL | URL to the remote repository | | 
@@ -73,7 +70,7 @@ The `cmdlog.txt` file is created in the directory that the CLI has been run in. 
 
 The configuration is saved to `stacks.yml` in the root of the specified working directory | false |
 | `--nocleanup` | AMIDOSTACKS_NOCLEANUP | Do not perform cleanup operations after the scaffoling has been completed | false |
-|`--clobber` | AMIDOSTACKS_CLOBBER | Delete existing project directories when creating new ones
+|`--force` | AMIDOSTACKS_FORCE | Delete existing project directories when creating new ones
 
 This is a destructive operation and will result in existing projects being deleted in their entirety if there is a clash in the path | false | 
 |===

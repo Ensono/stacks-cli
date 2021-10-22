@@ -23,7 +23,7 @@ func init() {
 	var dryrun bool
 	var saveConfig bool
 	var nocleanup bool
-	var clobber bool
+	var force bool
 
 	// - project settings
 	var project_name string
@@ -99,7 +99,7 @@ func init() {
 	scaffoldCmd.Flags().BoolVar(&dryrun, "dryrun", false, "Perform a dryrun of the CLI. No changes will be made on disk")
 	scaffoldCmd.Flags().BoolVar(&saveConfig, "save", false, "Save the the configuration from interactive or command line settings. Has no effect when using a configuration file.")
 	scaffoldCmd.Flags().BoolVar(&nocleanup, "nocleanup", false, "If set, do not perform cleanup at the end of the scaffolding")
-	scaffoldCmd.Flags().BoolVar(&clobber, "clobber", false, "If set, remove existing project directories before attempting to create new ones")
+	scaffoldCmd.Flags().BoolVar(&force, "force", false, "If set, remove existing project directories before attempting to create new ones")
 
 	// Bind the flags to the configuration
 
@@ -139,7 +139,7 @@ func init() {
 	viper.BindPFlag("options.dryrun", scaffoldCmd.Flags().Lookup("dryrun"))
 	viper.BindPFlag("options.save", scaffoldCmd.Flags().Lookup("save"))
 	viper.BindPFlag("options.nocleanup", scaffoldCmd.Flags().Lookup("nocleanup"))
-	viper.BindPFlag("options.clobber", scaffoldCmd.Flags().Lookup("clobber"))
+	viper.BindPFlag("options.force", scaffoldCmd.Flags().Lookup("force"))
 }
 
 func executeScaffoldRun(ccmd *cobra.Command, args []string) {

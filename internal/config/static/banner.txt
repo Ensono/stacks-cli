@@ -4,6 +4,6 @@
 ███████    ██    ███████ ██      █████   ███████
      ██    ██    ██   ██ ██      ██  ██       ██
 ███████    ██    ██   ██  ██████ ██   ██ ███████
-Bootstrap a templated project webapp, API and/or testing framework with supporting pipelines and infrastructure by answering just a few questions.
+Bootstrap a templated project webapp, API and/or testing framework with supporting pipelines and infrastructure.
 For more information: https://stacks.amido.com
 

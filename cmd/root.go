@@ -56,6 +56,8 @@ func init() {
 	var workingDir string
 	var tmpDir string
 
+	var nobanner bool
+
 	cobra.OnInitialize(initConfig)
 
 	// get the default directories
@@ -71,6 +73,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&workingDir, "workingdir", "w", defaultWorkingDir, "Directory to be used to create the new projects in")
 	rootCmd.PersistentFlags().StringVar(&tmpDir, "tempdir", defaultTempDir, "Temporary directory to be used by the CLI")
 
+	rootCmd.PersistentFlags().BoolVar(&nobanner, "nobanner", false, "Do not display the Stacks banner when running the command")
+
 	// Bind command line arguments
 	viper.BindPFlags(rootCmd.Flags())
 
@@ -81,6 +85,8 @@ func init() {
 
 	viper.BindPFlag("directory.working", rootCmd.PersistentFlags().Lookup("workingdir"))
 	viper.BindPFlag("directory.temp", rootCmd.PersistentFlags().Lookup("tempdir"))
+
+	viper.BindPFlag("options.nobanner", rootCmd.PersistentFlags().Lookup("nobanner"))
 }
 
 // initConfig reads in a confiig file and ENV vars if set
@@ -109,8 +115,14 @@ func initConfig() {
 	viper.MergeConfig(stacks_config)
 
 	// if a configuration file is found, read it in
-	if err := viper.MergeInConfig(); err == nil {
-		fmt.Println("Using configuration file:", viper.ConfigFileUsed())
+	// if err := viper.MergeInConfig(); err == nil {
+	// 	fmt.Println("Using configuration file:", viper.ConfigFileUsed())
+	// }
+
+	err := viper.MergeInConfig()
+	if err != nil && viper.ConfigFileUsed() != "" {
+		fmt.Printf("Unable to read in configuration file: %s", err.Error())
+		return
 	}
 }
 
@@ -129,4 +141,14 @@ func preRun(ccmd *cobra.Command, args []string) {
 	// Set the version of the app in the configuration
 	Config.Input.Version = version
 
+	// output the banner, unless it has been disabled or the parent command is completion
+	if !Config.NoBanner() && ccmd.Parent().Use != "completion" {
+		fmt.Println(static.Banner)
+	}
+
+	// output the configuration file that is being used
+	configFileUsed := viper.ConfigFileUsed()
+	if configFileUsed != "" {
+		App.Logger.Infof("Using configuration file: %s", configFileUsed)
+	}
 }

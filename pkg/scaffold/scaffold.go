@@ -282,15 +282,14 @@ func (s *Scaffold) setProjectDirs(project *config.Project) error {
 	// otherwise create them
 	if util.Exists(project.Directory.WorkingDir) {
 
-		// if Clobber is turned on, remove the directory with a warning
-		if s.Config.Clobber() {
+		// if Force is enabled, remove the directory with a warning
+		if s.Config.Force() {
 			s.Logger.Warnf("Removing existing project directory: %s", project.Directory.WorkingDir)
 
 			err = os.RemoveAll(project.Directory.WorkingDir)
 			return err
 		} else {
-			s.Logger.Warnf("Project directory already exists, skipping: %s", project.Directory.WorkingDir)
-			return nil
+			return fmt.Errorf("project directory already exists, skipping: %s", project.Directory.WorkingDir)
 		}
 	}
 

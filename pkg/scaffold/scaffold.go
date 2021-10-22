@@ -2,6 +2,7 @@ package scaffold
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -215,12 +216,19 @@ func (s *Scaffold) processProject(project config.Project) {
 		return
 	}
 
-	// Get the specified framework project based on the information supplied in
-	// the configuration
+	// Get the URL for the repository to download
 	key := project.Framework.GetMapKey()
+	srcUrl := s.Config.Input.Stacks.GetSrcURL(key)
+
+	// check that the URL is valid, if not skip this project and move onto the next one
+	_, err = url.ParseRequestURI(srcUrl)
+	if err != nil {
+		s.Logger.Errorf("Unable to download framework option as URL is invalid: %s", err.Error())
+	}
+
 	s.Logger.Infof("Retrieving framework option: %s", key)
 	dir, err := util.GitClone(
-		s.Config.Input.Stacks.GetSrcURL(key),
+		srcUrl,
 		project.SourceControl.Ref,
 		s.Config.Input.Directory.TempDir,
 	)
@@ -228,7 +236,7 @@ func (s *Scaffold) processProject(project config.Project) {
 	// if there was an error getting hold of the framework project display an error
 	// and move onto the next project
 	if err != nil {
-		s.Logger.Errorf("Error downloading the specific framework option: %s", err.Error())
+		s.Logger.Errorf("Error downloading the specified framework option: %s", err.Error())
 		return
 	}
 
@@ -337,6 +345,13 @@ func (s *Scaffold) configurePipeline(project *config.Project) {
 func (s *Scaffold) configureGitRepository(project *config.Project) {
 
 	s.Logger.Info("Configuring source control for the project")
+
+	// check that the URL specific for the remote repo is a valid URL
+	_, err := url.ParseRequestURI(project.SourceControl.URL)
+	if err != nil {
+		s.Logger.Errorf("Unable to configure remote repo: %s", err.Error())
+		return
+	}
 
 	// iterate around the static git commands
 	for _, command := range static.GitCmds {

@@ -69,9 +69,14 @@ func (c *Config) NoCleanup() bool {
 	return c.Input.Options.NoCleanup
 }
 
-// Clobber states if projects should be overwritten
-func (c *Config) Clobber() bool {
-	return c.Input.Options.Clobber
+// NoBanner returns the option to no display the Stacks banner
+func (c *Config) NoBanner() bool {
+	return c.Input.Options.NoBanner
+}
+
+// Force states if projects should be overwritten
+func (c *Config) Force() bool {
+	return c.Input.Options.Force
 }
 
 // Save saves the user's configuration to a file

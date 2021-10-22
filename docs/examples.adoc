@@ -53,7 +53,7 @@ Run the following command to create the new project in the working directory, wh
 | Bash | PowerShell
 |[source,bash,subs="attributes"]
 ----
-stacks scaffold -A {example_area} \
+stacks-cli scaffold -A {example_area} \
                 --company {example_company} \
                 --component {example_component} \
                 --domain {example_domain} \
@@ -70,7 +70,7 @@ stacks scaffold -A {example_area} \
 ----
 |[source,powershell,subs="attributes"]
 ----
-stacks scaffold -A {example_area} `
+stacks-cli scaffold -A {example_area} `
                 --company {example_company} `
                 --component {example_component} `
                 --domain {example_domain} `
@@ -145,31 +145,30 @@ The resultant project, as stated by the `Project path:` statement in the screens
                         └───Stories
 ----
 
-=== .NET WebApi project using the interactive mode
+=== .NET WebApi project using the interactive command
 
-By running the scaffolding command in interactive mode it possible to input the configuration based on a set of questions. In addition, if the `--save` flags is specified as well the configuration is saved to a YAML file in the root of the specified working directory.
+The interactive command is designed to ask questions on the command line about the configuration required for setting up Amido Stacks. It will then save this configuration out to a file that can be read in using the `scaffold` command.
 
 [source,bash]
 ----
-stacks-cli scaffold -i --save
+stacks-cli interactive
 ----
 
 The values as specified in the previous configuration table have been used in the following screenshot of the interactive session.
 
 image::images/stackscli-interactive.png[]
 
-As the option to save the configuration has been set, the values that were put into the CLI have been saved in the `stacks.yml` file. This file contains all of the configuration that was used to generate the projects, which means it can be used to produce the same project stack again.
+The resulting configuration file contains all of the configuration that was used to generate the projects, which means it can be used to produce the same project stack again.
 
 [source,yaml]
 ----
-interactive: true
 version: 100.98.99
 log:
   level: info
   format: text
   colour: true
 directory:
-  workingdir: C:\Users\RussellSeymour\scratch\projects
+  working: "C:\\Users\\RussellSeymour\\scratch\\projects"
 business:
   company: MyCompany
   project: ""
@@ -177,8 +176,6 @@ business:
   component: backend
 cloud:
   platform: azure
-  region: ""
-  group: ""
 network:
   base:
     domain:
@@ -190,16 +187,14 @@ project:
   framework:
     type: dotnet
     option: webapi
-    version: v2.0.208
+    version: v208
   platform:
-    type: ""
+    type: aks
   sourcecontrol:
     type: github
     url: https://github.com/russellseymour/my-webapi
-    ref: ""
-  settingsfile: ""
+  settingsfile: "C:\\Users\\RussellSeymour\\workspaces\\stacks\\stacks-cli\\local\\stackscli.yml"
   cloud:
-    platform: ""
     region: ukwest
     group: mywebapi-resources
 stacks:
@@ -219,9 +214,100 @@ terraform:
     storage: kjh56sdfnjnkjn
     group: supporting-group
     container: tfstate
-settingsfile: ""
 options:
   cmdlog: false
   dryrun: false
-
+  nobanner: false
 ----
+
+The command that needs to be run next is displayed at the end of the output.
+
+=== .NET WebApi project using a configuration file
+
+The CLI can be used with a configuration file to generate the Amido Stacks based projects.
+
+NOTE: The configuration file that is used in the following example is from the previous example. However, any valid configuration file can be used.
+
+[source,bash]
+----
+stacks-cli scaffold -c ./stacks.yml
+----
+
+The CLI will use the configuration file to scaffold the requested projects.
+
+.Scaffolding projects with a configuration file
+image::images/stackscli-dotnet-webapi-config-file.png[]
+
+As has been seen with using the scaffolding command with command line options, the resultant project has been created with the namespace set to the specified company name.
+
+[source,text,linenums]
+----
+└───my-webapi
+    ├───.github
+    ├───build
+    │   └───azDevOps
+    │       └───azure
+    │           └───templates
+    │               └───steps
+    │                   └───build
+    ├───contracts
+    ├───deploy
+    │   ├───azure
+    │   │   └───app
+    │   │       └───kube
+    │   ├───k8s
+    │   │   └───app
+    │   └───scripts
+    └───src
+        ├───api
+        │   ├───MyCompany.core.API
+        │   │   ├───Authentication
+        │   │   ├───Authorization
+        │   │   └───Controllers
+        │   │       ├───Category
+        │   │       ├───DOMAIN
+        │   │       └───Item
+        │   ├───MyCompany.core.API.Models
+        │   │   ├───Requests
+        │   │   └───Responses
+        │   └───MyCompany.core.API.UnitTests
+        │       └───Controllers
+        │           ├───Category
+        │           ├───DOMAIN
+        │           └───Item
+        └───tests
+            └───Functional
+                └───MyCompany.core.API.FunctionalTests
+                    ├───Builders
+                    │   └───Http
+                    ├───Configuration
+                    ├───Models
+                    └───Tests
+                        ├───Fixtures
+                        ├───Steps
+                        └───Stories
+----
+
+=== Running scaffold command again
+
+Due to the fact that the CLI does quite a lot of work, it will not attempt to create the projects if the project path already exists. For example, running the same command as before, without changing any of the settings will result in an error being displayed during the creation of the project.
+
+[source,bash]
+----
+stacks-cli scaffold -c ./stacks.yml
+----
+
+.Project protection guard
+image::images/stackscli-scaffold-project-guard.png[]
+
+As can be seen the CLI will not overwrite anything at the same target path.
+
+It is possible to change this behaviour, by adding the `--force` option to the command line. This will remove any existing directory and recreate the project in is place.
+
+[source,bash]
+----
+stacks-cli scaffold -c ./stacks.yml --force
+----
+
+.Force removal of existng project directories
+image::images/stackscli-scaffold-project-guard-force.png[]

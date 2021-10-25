@@ -100,13 +100,6 @@ stages:
             artifact: 'StacksCLI'
             path: $(Build.ArtifactsStagingDirectory)/assets
 
-        # Ensure using correct version of Golang
-        # Required to perform the build of Stacks CLI
-        - task: GoTool@0
-          displayName: Setting GO Version
-          inputs:
-            version: ${{ variables.GoVersion }}
-
         # Install Taskfile for the build to run
         - task: Bash@3
           displayName: Install Taskfile
@@ -122,8 +115,6 @@ stages:
           inputs:
             targetType: inline
             script: |
-              export GOBIN=$HOME/go/bin
-              export PATH=$PATH:$GOBIN
               task release
           env:
             VERSION_NUMBER: $(Build.BuildNumber)

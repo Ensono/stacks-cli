@@ -16,6 +16,8 @@ vars:
   REPORT_OUTPUT: report.xml
   COVERAGE_REPORT: coverage.xml
 
+# dotenv: ['.env']
+
 tasks:
   default:
     desc: Compile CLI and run tests
@@ -111,3 +113,22 @@ tasks:
       - docker pull russellseymour/pandoc-asciidoctor
       - mkdir -p ${PWD}/{{ .OUTPUT_DOCS_MD_DIR }}       
       - mkdir -p ${PWD}/{{ .OUTPUT_DOCS_PDF_DIR }}      
+
+  release:
+    desc: Create a release
+
+    cmds:
+      - |
+        pwsh -NoProfile -Command build/scripts/Publish-GitHubRelease.ps1
+
+    env:
+      # Define env vars to be used for the release
+      VERSION_NUMBER: '{{ .BUILDNUMBER }}'
+      API_KEY: '{{.API_KEY }}'
+      NOTES: '{{ .NOTES }}'
+      COMMIT_ID: '{{ .COMMITID }}'
+      ARTIFACTS_DIR: '{{ .ARTIFACTSDIR }}'
+      OWNER: '{{ .OWNER | default "amido" }}'
+      REPOSITORY: '{{ .REPOSITORY | default "stacks-cli" }}'
+      DRAFT: '{{ .DRAFT }}'
+      PRERELEASE: '{{ .PRERELEASE }}'

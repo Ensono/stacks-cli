@@ -397,3 +397,203 @@ func TestSave(t *testing.T) {
 		}
 	}
 }
+
+func TestIsDryRun(t *testing.T) {
+
+	tables := []struct {
+		cfg  Config
+		test bool
+		msg  string
+	}{
+		{
+			Config{
+				Input: InputConfig{
+					Options: Options{
+						DryRun: false,
+					},
+				},
+			},
+			false,
+			"DryRun should not be enabled",
+		},
+		{
+			Config{
+				Input: InputConfig{
+					Options: Options{
+						DryRun: true,
+					},
+				},
+			},
+			true,
+			"DryRun should be enabled",
+		},
+	}
+
+	for _, table := range tables {
+		res := table.cfg.IsDryRun()
+
+		if res != table.test {
+			t.Error(table.msg)
+		}
+	}
+}
+
+func TestUseCmdLog(t *testing.T) {
+
+	tables := []struct {
+		cfg  Config
+		test bool
+		msg  string
+	}{
+		{
+			Config{
+				Input: InputConfig{
+					Options: Options{
+						CmdLog: false,
+					},
+				},
+			},
+			false,
+			"CmdLog should not be enabled",
+		},
+		{
+			Config{
+				Input: InputConfig{
+					Options: Options{
+						CmdLog: true,
+					},
+				},
+			},
+			true,
+			"CmdLog should be enabled",
+		},
+	}
+
+	for _, table := range tables {
+		res := table.cfg.UseCmdLog()
+
+		if res != table.test {
+			t.Error(table.msg)
+		}
+	}
+}
+
+func TestNoCleanup(t *testing.T) {
+
+	tables := []struct {
+		cfg  Config
+		test bool
+		msg  string
+	}{
+		{
+			Config{
+				Input: InputConfig{
+					Options: Options{
+						NoCleanup: false,
+					},
+				},
+			},
+			false,
+			"NoCleanup should not be enabled",
+		},
+		{
+			Config{
+				Input: InputConfig{
+					Options: Options{
+						NoCleanup: true,
+					},
+				},
+			},
+			true,
+			"NoCleanup should be enabled",
+		},
+	}
+
+	for _, table := range tables {
+		res := table.cfg.NoCleanup()
+
+		if res != table.test {
+			t.Error(table.msg)
+		}
+	}
+}
+
+func TestNoBanner(t *testing.T) {
+
+	tables := []struct {
+		cfg  Config
+		test bool
+		msg  string
+	}{
+		{
+			Config{
+				Input: InputConfig{
+					Options: Options{
+						NoBanner: false,
+					},
+				},
+			},
+			false,
+			"NoBanner should not be enabled",
+		},
+		{
+			Config{
+				Input: InputConfig{
+					Options: Options{
+						NoBanner: true,
+					},
+				},
+			},
+			true,
+			"NoBanner should be enabled",
+		},
+	}
+
+	for _, table := range tables {
+		res := table.cfg.NoBanner()
+
+		if res != table.test {
+			t.Error(table.msg)
+		}
+	}
+}
+
+func TestForce(t *testing.T) {
+
+	tables := []struct {
+		cfg  Config
+		test bool
+		msg  string
+	}{
+		{
+			Config{
+				Input: InputConfig{
+					Options: Options{
+						Force: false,
+					},
+				},
+			},
+			false,
+			"Force should not be enabled",
+		},
+		{
+			Config{
+				Input: InputConfig{
+					Options: Options{
+						Force: true,
+					},
+				},
+			},
+			true,
+			"Force should be enabled",
+		},
+	}
+
+	for _, table := range tables {
+		res := table.cfg.Force()
+
+		if res != table.test {
+			t.Error(table.msg)
+		}
+	}
+}

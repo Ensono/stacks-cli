@@ -74,3 +74,51 @@ stages:
         inputs:
           pathToPublish: $(Build.SourcesDirectory)/outputs/docs
           artifactName: docs
+
+  - stage: Release
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+
+    variables:
+      - group: amido-stacks-webapp
+
+    jobs:
+
+    - job: CreateGHRelease
+
+      steps:
+        # Download the necessary artifacts from the previous stage
+        # - documentation
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: 'docs'
+            patterns: '**/*.pdf'
+            path: $(Build.ArtifactsStagingDirectory)/assets
+
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: 'StacksCLI'
+            path: $(Build.ArtifactsStagingDirectory)/assets
+
+        # Install Taskfile for the build to run
+        - task: Bash@3
+          displayName: Install Taskfile
+          inputs:
+            targetType: inline
+            script: |
+              wget https://github.com/go-task/task/releases/download/v${{ variables.TaskfileVersion }}/task_linux_amd64.tar.gz -O /tmp/task.tar.gz
+              tar zxf /tmp/task.tar.gz -C /usr/local/bin task 
+
+        # Run the tasks to build the application
+        - task: Bash@3
+          displayName: Release
+          inputs:
+            targetType: inline
+            script: |
+              task release
+          env:
+            VERSION_NUMBER: $(Build.BuildNumber)
+            API_KEY: $(GITHUB_TOKEN)
+            NOTES:
+            COMMIT_ID: $(Build.SourceVersion)  
+            ARTIFACTS_DIR: $(Build.ArtifactsStagingDirectory)/assets

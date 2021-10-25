@@ -70,6 +70,44 @@ The output of the command will be similar to the following.
 .Test and compile Stacks CLI
 image::images/taskfile_compile.png[]
 
+==== Release
+
+There is a task that performs as GitHub release and uploads the documentation and binaries that have been created.
+
+The release is done by a PowerShell script, which uses the GitHub API to do the release. By doing it like this Taskfile performs the execution of the script, so it is not done by a propriatry task in the CI/CD build pipeline.
+
+NOTE: The PowerShell script is too long to pull into the document, but can be seen in the repository `build/scripts/PublishGitHubRelease.ps1`.
+
+Actioning the release is done by running the command `task release`
+
+All of the necessary parameters can be set using environment variables, which are detailed in the following table.
+
+.Release script parameters
+[options="header"]
+|===
+| Parameter | Environment Variable | Description | Example Value
+| version | VERSION_NUMBER | Version number to be assigned to the release | 0.0.69
+| commitid | COMMIT_ID | The SHA commit id to be used to set up the release | `0E42486F2`
+| notes | NOTES | Any notes that should be displayed on the release page | 
+This is the latest release of the code
+| artifactsDir | ARTIFACTS_DIR | Directory that the artifacts to be added as assets to the release are in | `outputs`
+| artifactsList | | List of files that need to be uploaded
+
+If this is not specified then all of the files in the `artifactsDir` will be uploaded | docs.pdf
+| owner | OWNER | Name of the owner of the repository | `amido`
+| apiKey | API_KEY | Personal access token to be used to perform the release | `ghp_L9VNP06qbasd87adlTDtslQvJCFH30cig4ace2A`
+| repository | REPOSITORY | Name of the repository on which to create the release | `stacks-cli`
+| draft | DRAFT | Specify if a draft release should be created. Default: false | true
+| prerelease | PRERELEASE | Specify if a prerelease should be created. Default: true | true
+|===
+
+The main build pipeline file has a stage called Release, which downloads the necessary artifacts and then calls the `release` task on Taskfile to perform the release.
+
+The script will check to see if any of the required values are missing, if they are a message similar to the following is displayed.
+
+.Taskfile release
+image::images/taskfile-release-error.png[]
+
 ==== Build Documentation
 
 All of the documentation for the CLI is kept in the `docs/` directory of the repository. It is all written in https://asciidoctor.org/docs/asciidoc-writers-guide/[Asciidoc] which is a much more comprehensive definition for writing documentation to Markdown.

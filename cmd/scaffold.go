@@ -11,21 +11,19 @@ var (
 		Use:   "scaffold",
 		Short: "Create a new project using Amido Stacks",
 		Long:  "",
-		Run:   executeRun,
+		Run:   executeScaffoldRun,
 	}
 )
 
 func init() {
 
 	// declare variables that will be populated from the command line
-	var interactive bool
-
 	// - options
 	var cmdlog bool
 	var dryrun bool
 	var saveConfig bool
 	var nocleanup bool
-	var clobber bool
+	var force bool
 
 	// - project settings
 	var project_name string
@@ -68,9 +66,6 @@ func init() {
 	rootCmd.AddCommand(scaffoldCmd)
 
 	// Configure the flags
-	// - run interactively
-	scaffoldCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "Run in interactive mode")
-
 	scaffoldCmd.Flags().StringVarP(&project_name, "name", "n", "", "Name of the project to create")
 	scaffoldCmd.Flags().StringVar(&project_vcs_type, "sourcecontrol", "github", "Type of source control being used")
 	scaffoldCmd.Flags().StringVarP(&project_vcs_url, "sourcecontrolurl", "u", "", "Url of the remote for source control")
@@ -104,7 +99,7 @@ func init() {
 	scaffoldCmd.Flags().BoolVar(&dryrun, "dryrun", false, "Perform a dryrun of the CLI. No changes will be made on disk")
 	scaffoldCmd.Flags().BoolVar(&saveConfig, "save", false, "Save the the configuration from interactive or command line settings. Has no effect when using a configuration file.")
 	scaffoldCmd.Flags().BoolVar(&nocleanup, "nocleanup", false, "If set, do not perform cleanup at the end of the scaffolding")
-	scaffoldCmd.Flags().BoolVar(&clobber, "clobber", false, "If set, remove existing project directories before attempting to create new ones")
+	scaffoldCmd.Flags().BoolVar(&force, "force", false, "If set, remove existing project directories before attempting to create new ones")
 
 	// Bind the flags to the configuration
 
@@ -144,12 +139,10 @@ func init() {
 	viper.BindPFlag("options.dryrun", scaffoldCmd.Flags().Lookup("dryrun"))
 	viper.BindPFlag("options.save", scaffoldCmd.Flags().Lookup("save"))
 	viper.BindPFlag("options.nocleanup", scaffoldCmd.Flags().Lookup("nocleanup"))
-	viper.BindPFlag("options.clobber", scaffoldCmd.Flags().Lookup("clobber"))
-
-	viper.BindPFlag("interactive", scaffoldCmd.Flags().Lookup("interactive"))
+	viper.BindPFlag("options.force", scaffoldCmd.Flags().Lookup("force"))
 }
 
-func executeRun(ccmd *cobra.Command, args []string) {
+func executeScaffoldRun(ccmd *cobra.Command, args []string) {
 
 	// Call the scaffolding method
 	scaff := scaffold.New(&Config, App.Logger)
@@ -157,19 +150,4 @@ func executeRun(ccmd *cobra.Command, args []string) {
 	if err != nil {
 		App.Logger.Fatalf("Error running scaffold: %s", err.Error())
 	}
-
-	return
-
-	// determine if the interactive option has been set
-	// if it has ask the user for input and then overwrite the configuration
-	// that has been specified on the command line with the values as given
-	// by the user
-	/*
-		answers := config.Answers{}
-		err = answers.RunInteractive(&Config)
-		if err != nil {
-			App.Logger.Fatalf("Unable to perform interactive configuration: %s\n", err.Error())
-		}
-	*/
-
 }

@@ -32,3 +32,23 @@ func TestHandleErrorWithDefaultMessage(t *testing.T) {
 	hook.Reset()
 
 }
+
+func TestConfigureLogging(t *testing.T) {
+
+	// create the configuration logging object
+	logging := Log{
+		Level: "info",
+	}
+
+	logger, hook := test.NewNullLogger()
+
+	app := App{
+		Logger: logger,
+	}
+
+	app.ConfigureLogging(logging)
+
+	assert.Equal(t, "info", app.Logger.GetLevel().String())
+
+	hook.Reset()
+}

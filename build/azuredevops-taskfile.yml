@@ -91,7 +91,7 @@ stages:
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: 'docs'
-            patterns: '*.pdf'
+            patterns: '**/*.pdf'
             path: $(Build.ArtifactsStagingDirectory)/assets
 
         - task: DownloadPipelineArtifact@2
@@ -125,9 +125,9 @@ stages:
               export PATH=$PATH:$GOBIN
               task release
           env:
-            BUILDNUMBER: $(Build.BuildNumber)
+            VERSION_NUMBER: $(Build.BuildNumber)
             API_KEY: $(API_KEY)
-            NOTES: 
+            NOTES:
             COMMIT_ID: $(Build.SourceVersion)  
             DRAFT: 1
             ARTIFACTS_DIR: $(Build.ArtifactsStagingDirectory)/assets

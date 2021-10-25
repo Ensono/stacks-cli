@@ -103,7 +103,7 @@ if ($missing.Count -gt 0) {
     $missingVars = $missing -join "`n"
     Write-Error ("The following variables have not been set
 
-    
+
     {0}
     
 Please provide these values and try again. Names in brackets are the environment variable names" -f $missingVars)
@@ -163,7 +163,7 @@ try {
 }
 
 # Get the uploadUri that has been returned by the initial call
-$uploadUri = $result | Select-Object -ExpandProperty upload_url
+$uploadUri = $result.Content | Select-Object -ExpandProperty upload_url
 
 # Iterate around all of the artifacts that are to be uploaded
 foreach ($uploadFile in $artifactsList) {

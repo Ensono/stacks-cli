@@ -74,3 +74,43 @@ stages:
         inputs:
           pathToPublish: $(Build.SourcesDirectory)/outputs/docs
           artifactName: docs
+
+  - stage: Release
+
+    variables:
+      - group: amido-stacks-cli
+
+    jobs:
+
+    - job: CreateGHRelease
+
+      steps:
+
+        # Download the necessary artifacts from the previous stage
+        # - documentation
+        - task: DownloadPipelineArtifacts@2
+          inputs:
+            artifact: 'docs'
+            patterns: '*.pdf'
+            path: $(Build.ArtifactsStagingDirectory)/assets
+
+        - task: DownloadPipelineArtifacts@2
+          inputs:
+            artifact: 'StacksCLI'
+            path: $(Build.ArtifactsStagingDirectory)/assets
+
+        # Run the tasks to build the application
+        - task: Bash@3
+          displayName: Release
+          inputs:
+            targetType: inline
+            script: |
+              export GOBIN=$HOME/go/bin
+              export PATH=$PATH:$GOBIN
+              task release
+          env:
+            BUILDNUMBER: $(Build.BuildNumber)
+            API_KEY: $(API_KEY)
+            NOTES: 
+            COMMIT_ID: $(Build.SourceVersion)  
+            DRAFT: 1          

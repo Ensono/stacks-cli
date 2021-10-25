@@ -99,6 +99,22 @@ stages:
             artifact: 'StacksCLI'
             path: $(Build.ArtifactsStagingDirectory)/assets
 
+        # Ensure using correct version of Golang
+        # Required to perform the build of Stacks CLI
+        - task: GoTool@0
+          displayName: Setting GO Version
+          inputs:
+            version: ${{ variables.GoVersion }}
+
+        # Install Taskfile for the build to run
+        - task: Bash@3
+          displayName: Install Taskfile
+          inputs:
+            targetType: inline
+            script: |
+              wget https://github.com/go-task/task/releases/download/v${{ variables.TaskfileVersion }}/task_linux_amd64.tar.gz -O /tmp/task.tar.gz
+              tar zxf /tmp/task.tar.gz -C /usr/local/bin task 
+
         # Run the tasks to build the application
         - task: Bash@3
           displayName: Release

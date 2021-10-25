@@ -72,6 +72,15 @@ if ([string]::IsNullOrEmpty($env:PRERELEASE)) {
     $preRelease = $true
 }
 
+# Create a hash table of the environment variable names
+$envNames = @{
+    "version" = "VERSION_NUMBER"
+    "commitid" = "COMMIT_ID"
+    "apikey" = "API_KEY"
+    "owner" = "OWNER"
+    "repository" = "REPOSITORY"
+}
+
 # Check that the necessary variables have been set
 # DO this by iterating around the variable names and check that they have been set
 # if not add to the missing array so that an error can be generated
@@ -85,14 +94,19 @@ foreach ($varName in $requiredVars) {
     # If the value of the varName is empty, add to the missing list
     $var = Get-Variable -Name $varName
     if ([String]::IsNullOrEmpty($var.Value)) {
-        $missing += , $varName
+        $missing += , ("`t{0} [{1}]" -f $varName, $envNames[$varName])
     }
 }
 
 # Check the missing array, and if it is not empty, display an error message
 if ($missing.Count -gt 0) {
-    $missingVars = $missing -join ", "
-    Write-Error ("The following variables have not been set`n`n`t{0}`n`nPlease provide these values and try again" -f $missingVars)
+    $missingVars = $missing -join "`n"
+    Write-Error ("The following variables have not been set
+
+    
+    {0}
+    
+Please provide these values and try again. Names in brackets are the environment variable names" -f $missingVars)
     exit 1
 }
 
@@ -136,11 +150,17 @@ $releaseArgs = @{
     Headers = $header
     ContentType = "application/json"
     Body = (ConvertTo-JSON -InputObject $requestBody -Compress)
+    ErrorAction = "Stop"
 }
 
 # Create the release by making the API call, artifacts will be uploaded afterwards
 Write-Output ("Creating release for: {0}" -f $version)
-$result = Invoke-RestMethod @releaseArgs
+try {
+    $result = Invoke-WebRequest @releaseArgs
+} catch {
+    Write-Error $_.Exception.Message
+    exit 2
+}
 
 # Get the uploadUri that has been returned by the initial call
 $uploadUri = $result | Select-Object -ExpandProperty upload_url
@@ -166,6 +186,11 @@ foreach ($uploadFile in $artifactsList) {
     }
 
     # Perform the upload of the artifact
-    $result = Invoke-WebRequest @uploadArgs
+    try {
+        $result = Invoke-WebRequest @uploadArgs
+    } catch {
+        Write-Error ("An error has occured, cannot upload {0}: {1}" -f $uploadFile, $_.Exception.Message)
+        continue
+    }
 }
 

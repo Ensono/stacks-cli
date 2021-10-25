@@ -77,7 +77,7 @@ stages:
 
   - stage: Release
     dependsOn: Build
-    # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
     variables:
       - group: amido-stacks-webapp
@@ -122,4 +122,3 @@ stages:
             NOTES:
             COMMIT_ID: $(Build.SourceVersion)  
             ARTIFACTS_DIR: $(Build.ArtifactsStagingDirectory)/assets
-            DRAFT: 1

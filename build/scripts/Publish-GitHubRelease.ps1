@@ -75,7 +75,7 @@ if ([string]::IsNullOrEmpty($env:PRERELEASE)) {
 # if the artifactsList is empty, get all the files in the specified artifactsDir
 # otherwise find the files that have been specified
 if ($artifactsList.Count -eq 0) {
-    $artifactsList = Get-ChildItem -Path $artifactsDir
+    $artifactsList = Get-ChildItem -Path $artifactsDir -Recurse
 } else {
     $files = $artifactsList
     $artifactsList = @()

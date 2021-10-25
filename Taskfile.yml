@@ -3,7 +3,7 @@
 version: '3'
 
 env:
-  BUILDNUMBER: "100.98.99"
+  BUILDNUMBER: '{{ .BUILDNUMBER | default "100.98.99" }}'
   DOCS_DIR: docs/
   OUTPUT_DIR: outputs
   OUTPUT_TEST_DIR: "{{.OUTPUT_DIR}}/tests"

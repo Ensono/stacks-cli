@@ -72,6 +72,30 @@ if ([string]::IsNullOrEmpty($env:PRERELEASE)) {
     $preRelease = $true
 }
 
+# Check that the necessary variables have been set
+# DO this by iterating around the variable names and check that they have been set
+# if not add to the missing array so that an error can be generated
+# This is done here and not at the parameter level as some values can be set using
+# environment variables
+$requiredVars = @("version", "commitid", "owner", "apikey", "repository")
+$missing = @()
+
+foreach ($varName in $requiredVars) {
+
+    # If the value of the varName is empty, add to the missing list
+    $var = Get-Variable -Name $varName
+    if ([String]::IsNullOrEmpty($var.Value)) {
+        $missing += , $varName
+    }
+}
+
+# Check the missing array, and if it is not empty, display an error message
+if ($missing.Count -gt 0) {
+    $missingVars = $missing -join ", "
+    Write-Error ("The following variables have not been set`n`n`t{0}`n`nPlease provide these values and try again" -f $missingVars)
+    exit 1
+}
+
 # if the artifactsList is empty, get all the files in the specified artifactsDir
 # otherwise find the files that have been specified
 if ($artifactsList.Count -eq 0) {

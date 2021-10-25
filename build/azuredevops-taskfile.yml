@@ -80,17 +80,13 @@ stages:
     # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
     variables:
-      - group: amido-stacks-cli
+      - group: amido-stacks-webapp
 
     jobs:
 
     - job: CreateGHRelease
 
       steps:
-
-        - checkout: self
-          persistCredentials: true
-
         # Download the necessary artifacts from the previous stage
         # - documentation
         - task: DownloadPipelineArtifact@2
@@ -126,9 +122,6 @@ stages:
           inputs:
             targetType: inline
             script: |
-
-              echo $GIT_USER_NAME
-
               export GOBIN=$HOME/go/bin
               export PATH=$PATH:$GOBIN
               task release

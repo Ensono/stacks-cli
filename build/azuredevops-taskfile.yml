@@ -76,6 +76,8 @@ stages:
           artifactName: docs
 
   - stage: Release
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
     variables:
       - group: amido-stacks-cli
@@ -129,5 +131,4 @@ stages:
             API_KEY: $(API_KEY)
             NOTES:
             COMMIT_ID: $(Build.SourceVersion)  
-            DRAFT: 1
             ARTIFACTS_DIR: $(Build.ArtifactsStagingDirectory)/assets

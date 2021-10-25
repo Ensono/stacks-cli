@@ -77,7 +77,7 @@ stages:
 
   - stage: Release
     dependsOn: Build
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
     variables:
       - group: amido-stacks-cli
@@ -128,7 +128,8 @@ stages:
               task release
           env:
             VERSION_NUMBER: $(Build.BuildNumber)
-            API_KEY: $(API_KEY)
+            API_KEY: $(GITHUB_TOKEN)
             NOTES:
             COMMIT_ID: $(Build.SourceVersion)  
             ARTIFACTS_DIR: $(Build.ArtifactsStagingDirectory)/assets
+            DRAFT: 1

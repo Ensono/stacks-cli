@@ -3,7 +3,7 @@
 version: '3'
 
 env:
-  BUILDNUMBER: "100.98.99"
+  BUILDNUMBER: '{{ .BUILDNUMBER | default "100.98.99" }}'
   DOCS_DIR: docs/
   OUTPUT_DIR: outputs
   OUTPUT_TEST_DIR: "{{.OUTPUT_DIR}}/tests"
@@ -15,6 +15,8 @@ env:
 vars:
   REPORT_OUTPUT: report.xml
   COVERAGE_REPORT: coverage.xml
+
+# dotenv: ['.env']
 
 tasks:
   default:
@@ -38,12 +40,12 @@ tasks:
   test:execute:
     desc: Run Unit Tests
     cmds:
-      - pwd
-      - go install github.com/jstemmer/go-junit-report
-      - go install github.com/axw/gocov/gocov
-      - go install github.com/AlekSi/gocov-xml
+      - go get github.com/jstemmer/go-junit-report
+      - go get github.com/axw/gocov/gocov
+      - go get github.com/AlekSi/gocov-xml
       - go test ./... -v | go-junit-report > {{.OUTPUT_TEST_DIR}}/{{.REPORT_OUTPUT}}
       - go test ./... -v -coverprofile={{.OUTPUT_TEST_DIR}}/cover.out
+      - go mod tidy
 
   test:reports:
     desc: Produce reports
@@ -111,3 +113,22 @@ tasks:
       - docker pull russellseymour/pandoc-asciidoctor
       - mkdir -p ${PWD}/{{ .OUTPUT_DOCS_MD_DIR }}       
       - mkdir -p ${PWD}/{{ .OUTPUT_DOCS_PDF_DIR }}      
+
+  release:
+    desc: Create a release
+
+    cmds:
+      - |
+        pwsh -NoProfile -Command build/scripts/Publish-GitHubRelease.ps1
+
+    env:
+      # Define env vars to be used for the release
+      VERSION_NUMBER: '{{ .BUILDNUMBER }}'
+      API_KEY: '{{ .API_KEY }}'
+      NOTES: '{{ .NOTES }}'
+      COMMIT_ID: '{{ .COMMIT_ID }}'
+      ARTIFACTS_DIR: '{{ .ARTIFACTS_DIR }}'
+      OWNER: '{{ .OWNER | default "amido" }}'
+      REPOSITORY: '{{ .REPOSITORY | default "stacks-cli" }}'
+      DRAFT: '{{ .DRAFT }}'
+      PRERELEASE: '{{ .PRERELEASE }}'

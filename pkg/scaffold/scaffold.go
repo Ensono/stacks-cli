@@ -2,6 +2,7 @@ package scaffold
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -44,9 +45,10 @@ func (s *Scaffold) Run() error {
 
 	// determine if the configuration needs to be saved to a file
 	savedConfigFile, err := s.Config.Save(viper.ConfigFileUsed())
-	if err == nil {
+	if savedConfigFile != "" {
 		s.Logger.Infof("Configuration saved to file: %s", savedConfigFile)
-	} else {
+	}
+	if err != nil {
 		s.Logger.Warnf("Issue saving configuration: %s", err.Error())
 	}
 
@@ -214,12 +216,19 @@ func (s *Scaffold) processProject(project config.Project) {
 		return
 	}
 
-	// Get the specified framework project based on the information supplied in
-	// the configuration
+	// Get the URL for the repository to download
 	key := project.Framework.GetMapKey()
+	srcUrl := s.Config.Input.Stacks.GetSrcURL(key)
+
+	// check that the URL is valid, if not skip this project and move onto the next one
+	_, err = url.ParseRequestURI(srcUrl)
+	if err != nil {
+		s.Logger.Errorf("Unable to download framework option as URL is invalid: %s", err.Error())
+	}
+
 	s.Logger.Infof("Retrieving framework option: %s", key)
 	dir, err := util.GitClone(
-		s.Config.Input.Stacks.GetSrcURL(key),
+		srcUrl,
 		project.SourceControl.Ref,
 		s.Config.Input.Directory.TempDir,
 	)
@@ -227,7 +236,7 @@ func (s *Scaffold) processProject(project config.Project) {
 	// if there was an error getting hold of the framework project display an error
 	// and move onto the next project
 	if err != nil {
-		s.Logger.Errorf("Error downloading the specific framework option: %s", err.Error())
+		s.Logger.Errorf("Error downloading the specified framework option: %s", err.Error())
 		return
 	}
 
@@ -281,15 +290,14 @@ func (s *Scaffold) setProjectDirs(project *config.Project) error {
 	// otherwise create them
 	if util.Exists(project.Directory.WorkingDir) {
 
-		// if Clobber is turned on, remove the directory with a warning
-		if s.Config.Clobber() {
+		// if Force is enabled, remove the directory with a warning
+		if s.Config.Force() {
 			s.Logger.Warnf("Removing existing project directory: %s", project.Directory.WorkingDir)
 
 			err = os.RemoveAll(project.Directory.WorkingDir)
 			return err
 		} else {
-			s.Logger.Warnf("Project directory already exists, skipping: %s", project.Directory.WorkingDir)
-			return nil
+			return fmt.Errorf("project directory already exists, skipping: %s", project.Directory.WorkingDir)
 		}
 	}
 
@@ -337,6 +345,13 @@ func (s *Scaffold) configurePipeline(project *config.Project) {
 func (s *Scaffold) configureGitRepository(project *config.Project) {
 
 	s.Logger.Info("Configuring source control for the project")
+
+	// check that the URL specific for the remote repo is a valid URL
+	_, err := url.ParseRequestURI(project.SourceControl.URL)
+	if err != nil {
+		s.Logger.Errorf("Unable to configure remote repo: %s", err.Error())
+		return
+	}
 
 	// iterate around the static git commands
 	for _, command := range static.GitCmds {

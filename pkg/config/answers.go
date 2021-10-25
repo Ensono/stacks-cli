@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/util"
 )
 
@@ -232,15 +231,6 @@ func (a *Answers) RunInteractive(config *Config) error {
 
 	var err error
 
-	// return without performing any tasks if interactive mode is not
-	// enabled
-	if !config.Input.Interactive {
-		return err
-	}
-
-	// Output the banner to the screen
-	fmt.Printf(static.Banner)
-
 	// ask the questions
 	err = survey.Ask(a.getCoreQuestions(), a)
 	if err != nil {
@@ -307,15 +297,15 @@ func (a *Answers) RunInteractive(config *Config) error {
 				Region:        pa.CloudRegion,
 				ResourceGroup: pa.CloudGroup,
 			},
+			Platform: Platform{
+				Type: pa.PlatformType,
+			},
 			SettingsFile: settingsFile,
 		}
 
 		// append this to the project list on the config object
-		// if i == 0 {
-		// 	config.Input.Project[0] = project
-		// } else {
 		projectList = append(projectList, project)
-		// }
+
 	}
 
 	config.Input.Project = projectList

@@ -126,6 +126,9 @@ stages:
           inputs:
             targetType: inline
             script: |
+
+              echo "GIT_USER_NAME: $(GIT_USER_NAME)"
+
               export GOBIN=$HOME/go/bin
               export PATH=$PATH:$GOBIN
               task release

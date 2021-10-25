@@ -124,7 +124,7 @@ tasks:
     env:
       # Define env vars to be used for the release
       VERSION_NUMBER: '{{ .BUILDNUMBER }}'
-      API_KEY: '{{.API_KEY }}'
+      API_KEY: '{{ .API_KEY }}'
       NOTES: '{{ .NOTES }}'
       COMMIT_ID: '{{ .COMMITID }}'
       ARTIFACTS_DIR: '{{ .ARTIFACTSDIR }}'

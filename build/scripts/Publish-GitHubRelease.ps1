@@ -163,7 +163,7 @@ try {
 }
 
 # Get the uploadUri that has been returned by the initial call
-$uploadUri = $result.Content | Select-Object -ExpandProperty upload_url
+$uploadUri = $result.Content | ConvertFrom-JSON | Select-Object -ExpandProperty upload_url
 
 # Iterate around all of the artifacts that are to be uploaded
 foreach ($uploadFile in $artifactsList) {

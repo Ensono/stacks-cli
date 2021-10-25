@@ -88,6 +88,9 @@ stages:
 
       steps:
 
+        - checkout: self
+          persistCredentials: true
+
         # Download the necessary artifacts from the previous stage
         # - documentation
         - task: DownloadPipelineArtifact@2

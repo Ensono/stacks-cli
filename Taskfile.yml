@@ -63,6 +63,10 @@ tasks:
     cmds:
       - go build -ldflags "-X github.com/amido/stacks-cli/cmd.version={{.BUILDNUMBER}}" -o {{.OUTPUT_BIN_DIR}}/stacks-cli-{{.PLATFORM_OS}}-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}}
   
+    env:
+      GOOS: '{{ .PLATFORM_OS }}'
+      GOARCH: '{{ .PLATFORM_ARCH }}'
+
   compile:
     desc: Compile supports platforms
 

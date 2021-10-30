@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/amido/stacks-cli/internal/config/static"
@@ -134,37 +133,40 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 		}
 		command = operation.Command
 
-		// run the args that have been specified through the template engine
-		args, err := s.Config.RenderTemplate(operation.Arguments, replacements)
+		// run the arguments that have been specified through the template engine
+		arguments, err := s.Config.RenderTemplate(operation.Arguments, replacements)
 		if err != nil {
 			s.Logger.Errorf("Error resolving template: %s", err.Error())
 			return err
 		}
 
 		// set the command to be run if the platform is windows
-		if runtime.GOOS == "windows" {
-			args = fmt.Sprintf("/C %s %s", command, args)
-			command = "cmd"
-		}
+		// if runtime.GOOS == "windows" {
+		// 	arguments = fmt.Sprintf("/C %s %s", command, arguments)
+		// 	command = "cmd"
+		// }
+
+		// get the cmd and args from the utils.BuildCommand function
+		cmd, args := util.BuildCommand(command, arguments)
 
 		// output the command being run if in debug mode
-		s.Logger.Debugf("Command: %s %s", command, args)
+		s.Logger.Debugf("Command: %s %s", command, arguments)
 
 		// Write out the command log
-		err = s.Config.WriteCmdLog(path, fmt.Sprintf("%s %s", command, args))
+		err = s.Config.WriteCmdLog(path, fmt.Sprintf("%s %s", command, arguments))
 		if err != nil {
 			s.Logger.Warnf("Unable to write command to log: %s", err.Error())
 		}
 
 		// set the command that needs to be executed
-		cmd := exec.Command(command, args)
+		cmdLine := exec.Command(cmd, args...)
 		// cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		cmd.Dir = path
+		cmdLine.Stderr = os.Stderr
+		cmdLine.Dir = path
 
 		// only run the command if not in dryrun mode
 		if !s.Config.IsDryRun() {
-			if err = cmd.Run(); err != nil {
+			if err = cmdLine.Run(); err != nil {
 				s.Logger.Errorf("Error running command: %s", err.Error())
 				return err
 			}

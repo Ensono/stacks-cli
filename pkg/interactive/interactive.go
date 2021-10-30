@@ -53,7 +53,7 @@ func (i *Interactive) Run() error {
 	}
 
 	// write the data out to the file
-	err = ioutil.WriteFile(path, data, 0)
+	err = ioutil.WriteFile(path, data, 0666)
 
 	// output information about what to run next
 	helpText := fmt.Sprintf(`To scaffold the new projects, run the following command

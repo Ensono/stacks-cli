@@ -233,7 +233,7 @@ func (config *Config) WriteCmdLog(path string, cmd string) error {
 	}
 
 	// get a reference to the file, either to create or append to the file
-	f, err := os.OpenFile(config.Self.CmdLogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(config.Self.CmdLogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		return err
 	}

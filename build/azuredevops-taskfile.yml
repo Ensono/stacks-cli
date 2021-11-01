@@ -102,7 +102,7 @@ stages:
 
       # Run the integration tests
       - task: Bash@3
-        displayName: Build & Test
+        displayName: Execute Tests
         inputs:
           targetType: inline
           script: |

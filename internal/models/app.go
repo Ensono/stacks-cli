@@ -27,7 +27,7 @@ func (app *App) ConfigureLogging(logging Log) {
 	}
 
 	// if the log level is set to debug, add the caller to the messages
-	if ll == log.DebugLevel {
+	if ll == log.TraceLevel {
 		app.Logger.SetReportCaller(true)
 	}
 

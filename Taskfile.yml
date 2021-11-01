@@ -7,13 +7,19 @@ env:
   DOCS_DIR: docs/
   OUTPUT_DIR: outputs
   OUTPUT_TEST_DIR: "{{.OUTPUT_DIR}}/tests"
+  OUTPUT_INTTEST_DIR: "{{.OUTPUT_DIR}}/integration_tests"
   OUTPUT_BIN_DIR: "{{.OUTPUT_DIR}}/bin"
   OUTPUT_DOCS_DIR: "{{.OUTPUT_DIR}}/docs"
   OUTPUT_DOCS_PDF_DIR: "{{.OUTPUT_DOCS_DIR}}/pdf"
   OUTPUT_DOCS_MD_DIR: "{{.OUTPUT_DOCS_DIR}}/md"
 
+  # Declare env vars for the location of the necessary binaries
+  BIN_DIR: bin/
+  WORKING_DIR: .
+
 vars:
   REPORT_OUTPUT: report.xml
+  INTEGRATION_REPORT_OUTPUT: integration_report.xml
   COVERAGE_REPORT: coverage.xml
 
 # dotenv: ['.env']
@@ -33,14 +39,20 @@ tasks:
   test:
     desc: Run tests and reports
     cmds:
-      - cmd: mkdir -p {{.OUTPUT_TEST_DIR}}
       - task: test:execute
       - task: test:reports
       
+  test:setup:
+    desc: Setup the tests
+    cmds:
+      - cmd: mkdir -p {{.OUTPUT_TEST_DIR}}
+      - cmd: mkdir -p {{.OUTPUT_INTTEST_DIR}}
+      - go get github.com/jstemmer/go-junit-report
+
   test:execute:
     desc: Run Unit Tests
     cmds:
-      - go get github.com/jstemmer/go-junit-report
+      - task: test:setup
       - go get github.com/axw/gocov/gocov
       - go get github.com/AlekSi/gocov-xml
       - go test ./... -v | go-junit-report > {{.OUTPUT_TEST_DIR}}/{{.REPORT_OUTPUT}}
@@ -59,9 +71,23 @@ tasks:
       - sh: test -f {{.OUTPUT_TEST_DIR}}/cover.out
         msg: "Coverage report does not exist: {{.OUTPUT_TEST_DIR}}/cover.out"
 
+  # Run the integration tests using the binary that can be found in the BIN_DIR
+  # The test binary does not like to use the pipe symbol, so the test results are redirected to a text file
+  # and then output to go-junit-report so that the main report file can be generated
+  # The temporary report file is then deleted.
+  test:integration:
+    desc: Run Integration tests
+    cmds:
+      - task: test:setup
+      - "{{ .BIN_DIR }}/stacks-cli-{{OS}}-inttest-amd64-{{.BUILDNUMBER}} --test.v --projectdir {{ .WORKING_DIR }} --binarycmd {{ .BIN_DIR }}/stacks-cli-{{OS}}-amd64-{{.BUILDNUMBER}} > {{.OUTPUT_TEST_DIR}}/integration_report.temp.out"
+      - "cat {{.OUTPUT_TEST_DIR}}/integration_report.temp.out | go-junit-report > {{.OUTPUT_TEST_DIR}}/integration_test.xml"
+      - "rm {{.OUTPUT_TEST_DIR}}/integration_report.temp.out"
+      - go mod tidy
+
   compile:cmd:
     cmds:
       - go build -ldflags "-X github.com/amido/stacks-cli/cmd.version={{.BUILDNUMBER}}" -o {{.OUTPUT_BIN_DIR}}/stacks-cli-{{.PLATFORM_OS}}-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}}
+      - go test -tags integration -o {{.OUTPUT_BIN_DIR}}/stacks-cli-{{.PLATFORM_OS}}-inttest-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}} -c ${PWD}/testing/integration/...
   
     env:
       GOOS: '{{ .PLATFORM_OS }}'

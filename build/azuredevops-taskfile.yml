@@ -89,7 +89,7 @@ stages:
       - task: DownloadPipelineArtifact@2
         inputs: 
           artifact: StacksCLI
-          path: bin
+          path: $(Build.ArtifactStagingDirectory)/bin
 
       # Install Taskfile so that the tests can be run
       - task: Bash@3
@@ -108,8 +108,7 @@ stages:
           script: |
             task test:integration
         env:
-          BIN_DIR: bin/
-          WORKING_DIR: projects/
+          BIN_DIR: $(Build.ArtifactStagingDirectory)/bin
           BUILDNUMBER: $(Build.BuildNumber)
 
       # Upload the integration test results

@@ -68,35 +68,6 @@ func (s *Scaffold) Run() error {
 
 }
 
-// run iterates around all the projects that have been specified and sets up the
-// working directory for each of them
-// func (s *Scaffold) run() error {
-
-// 	pwd, err := os.Getwd()
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	s.Logger.Tracef("Current Dir: %s\n", pwd)
-
-// 	// Iterate around the projects that have been configured
-// 	for _, project := range s.Config.Input.Project {
-
-// 		// Determine the project path
-// 		s.Config.Self.AddPath(project, s.setProjectPath(project.Name))
-// 		s.Logger.Infof("Project path: %s\n", s.Config.Self.GetPath(project))
-// 		s.Logger.Debugf("Project ID: %s", project.GetId())
-
-// 		// create the directory
-// 		err := os.MkdirAll(s.Config.Self.GetPath(project), 0755)
-// 		if err != nil {
-// 			break
-// 		}
-// 	}
-
-// 	return err
-// }
-
 // PerformOperation performs the operation as specified by the settings file for the project
 // It is responsible for performing any template replacements using GoTemplate
 //

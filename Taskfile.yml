@@ -12,8 +12,6 @@ env:
   OUTPUT_DOCS_DIR: "{{.OUTPUT_DIR}}/docs"
   OUTPUT_DOCS_PDF_DIR: "{{.OUTPUT_DOCS_DIR}}/pdf"
   OUTPUT_DOCS_MD_DIR: "{{.OUTPUT_DOCS_DIR}}/md"
-
-  # Declare env vars for the location of the necessary binaries
   BIN_DIR: bin/
   WORKING_DIR: .
 
@@ -83,9 +81,6 @@ tasks:
       - "cat {{.OUTPUT_TEST_DIR}}/integration_report.temp.out | go-junit-report > {{.OUTPUT_TEST_DIR}}/integration_test.xml"
       - "rm {{.OUTPUT_TEST_DIR}}/integration_report.temp.out"
       - go mod tidy
-    env:
-      BIN_DIR: '{{.BIN_DIR}}'
-      WORKING_DIR: '{{.WORKING_DIR}}'
 
   compile:cmd:
     cmds:

@@ -110,6 +110,7 @@ stages:
         env:
           BIN_DIR: $(Build.ArtifactStagingDirectory)/bin
           WORKING_DIR: $(Agent.TempDirectory)/projects
+          BUILDNUMBER: $(Build.BuildNumber)
 
       # Upload the integration test results
       - task: PublishTestResults@2

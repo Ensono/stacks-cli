@@ -66,7 +66,7 @@ stages:
         displayName: Publish Binaries
         inputs:
           pathToPublish: $(Build.SourcesDirectory)/outputs/bin
-          artifactName: StacksCLI
+          artifactName: StacksCLI      
 
       # Upload the documentation
       - task: PublishBuildArtifacts@1
@@ -74,6 +74,48 @@ stages:
         inputs:
           pathToPublish: $(Build.SourcesDirectory)/outputs/docs
           artifactName: docs
+
+  - stage: Integration Tests
+    dependsOn: Build
+    condition: and(succeeded())
+
+    jobs:
+    
+    - job: Execute Functional Tests
+
+      steps:
+
+      # Download the StacksCLI and the integration_tests
+      - task: DownloadPipelineArtifact@2
+        inputs: 
+          artifact: StacksCLI
+          path: $(Build.ArtifactsStagingDirectory)/bin
+
+      # Install Taskfile so that the tests can be run
+      - task: Bash@3
+        displayName: Install Taskfile
+        inputs:
+          targetType: inline
+          script: |
+            wget https://github.com/go-task/task/releases/download/v${{ variables.TaskfileVersion }}/task_linux_amd64.tar.gz -O /tmp/task.tar.gz
+            tar zxf /tmp/task.tar.gz -C /usr/local/bin task           
+
+      # Run the integration tests
+      - task: Bash@3
+        displayName: Build & Test
+        inputs:
+          targetType: inline
+          script: |
+            task test:integration
+        env:
+          BIN_DIR: $(Build.ArtifactsStagingDirectory)/bin
+          WORKING_DIR: $(Agent.TempDirectory)/projects
+
+      # Upload the integration test results
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: JUnit
+          testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/integration_report.xml
 
   - stage: Release
     dependsOn: Build
@@ -99,6 +141,7 @@ stages:
           inputs:
             artifact: 'StacksCLI'
             path: $(Build.ArtifactsStagingDirectory)/assets
+            patterns: '!**/*inttest*'
 
         # Install Taskfile for the build to run
         - task: Bash@3

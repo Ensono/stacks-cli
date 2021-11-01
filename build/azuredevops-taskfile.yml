@@ -75,7 +75,7 @@ stages:
           pathToPublish: $(Build.SourcesDirectory)/outputs/docs
           artifactName: docs
 
-  - stage: Integration Tests
+  - stage: IntegrationTests
     dependsOn: Build
     condition: succeeded()
 

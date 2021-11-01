@@ -81,7 +81,7 @@ stages:
 
     jobs:
     
-    - job: Execute Functional Tests
+    - job: IntegrationTests
 
       steps:
 

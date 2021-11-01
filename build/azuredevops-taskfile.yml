@@ -77,7 +77,7 @@ stages:
 
   - stage: Integration Tests
     dependsOn: Build
-    condition: and(succeeded())
+    condition: succeeded()
 
     jobs:
     

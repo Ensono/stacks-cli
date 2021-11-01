@@ -89,7 +89,7 @@ stages:
       - task: DownloadPipelineArtifact@2
         inputs: 
           artifact: StacksCLI
-          path: $(Build.ArtifactsStagingDirectory)/bin
+          path: $(Build.ArtifactStagingDirectory)/bin
 
       # Install Taskfile so that the tests can be run
       - task: Bash@3
@@ -108,7 +108,7 @@ stages:
           script: |
             task test:integration
         env:
-          BIN_DIR: $(Build.ArtifactsStagingDirectory)/bin
+          BIN_DIR: $(Build.ArtifactStagingDirectory)/bin
           WORKING_DIR: $(Agent.TempDirectory)/projects
 
       # Upload the integration test results
@@ -135,12 +135,12 @@ stages:
           inputs:
             artifact: 'docs'
             patterns: '**/*.pdf'
-            path: $(Build.ArtifactsStagingDirectory)/assets
+            path: $(Build.ArtifactStagingDirectory)/assets
 
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: 'StacksCLI'
-            path: $(Build.ArtifactsStagingDirectory)/assets
+            path: $(Build.ArtifactStagingDirectory)/assets
             patterns: '!**/*inttest*'
 
         # Install Taskfile for the build to run
@@ -164,4 +164,4 @@ stages:
             API_KEY: $(GITHUB_TOKEN)
             NOTES:
             COMMIT_ID: $(Build.SourceVersion)  
-            ARTIFACTS_DIR: $(Build.ArtifactsStagingDirectory)/assets
+            ARTIFACTS_DIR: $(Build.ArtifactStagingDirectory)/assets

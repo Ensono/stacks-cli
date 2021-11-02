@@ -12,8 +12,8 @@ env:
   OUTPUT_DOCS_DIR: "{{.OUTPUT_DIR}}/docs"
   OUTPUT_DOCS_PDF_DIR: "{{.OUTPUT_DOCS_DIR}}/pdf"
   OUTPUT_DOCS_MD_DIR: "{{.OUTPUT_DOCS_DIR}}/md"
-  BIN_DIR: bin/
-  WORKING_DIR: .
+  BIN_DIR: '{{ .BIN_DIR | default "bin" }}'
+  WORKING_DIR: '{{ .WORKING_DIR | default "projects" }}'
 
 vars:
   REPORT_OUTPUT: report.xml

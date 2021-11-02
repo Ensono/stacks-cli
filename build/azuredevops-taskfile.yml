@@ -48,7 +48,6 @@ stages:
             task docs
         env:
           BUILDNUMBER: $(Build.BuildNumber)
-          OUTPUT_DIR: $(Build.SourcesDirectory)/outputs
 
       # Upload the tests and the coverage
       - task: PublishTestResults@2

@@ -123,7 +123,7 @@ stages:
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: JUnit
-          testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/integration_report.xml
+          testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/integration_test_report.xml
 
   - stage: Release
     dependsOn: Build

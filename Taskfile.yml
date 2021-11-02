@@ -84,9 +84,8 @@ tasks:
 
   compile:cmd:
     cmds:
-      - ls -l
       - go build -ldflags "-X github.com/amido/stacks-cli/cmd.version={{.BUILDNUMBER}}" -o {{.OUTPUT_BIN_DIR}}/stacks-cli-{{.PLATFORM_OS}}-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}}
-      - go test -tags integration -o {{.OUTPUT_BIN_DIR}}/stacks-cli-{{.PLATFORM_OS}}-inttest-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}} -c testing/integration/...
+      - go test -tags integration -o {{.OUTPUT_BIN_DIR}}/stacks-cli-{{.PLATFORM_OS}}-inttest-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}} -c github.com/amido/stacks-cli/testing/integration/...
   
     env:
       GOOS: '{{ .PLATFORM_OS }}'

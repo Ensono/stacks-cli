@@ -55,6 +55,7 @@ stages:
         inputs:
           testResultsFormat: JUnit
           testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/report.xml
+          testRunTitle: UnitTests
 
       - task: PublishCodeCoverageResults@1 
         inputs:
@@ -124,6 +125,7 @@ stages:
         inputs:
           testResultsFormat: JUnit
           testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/integration_test_report.xml
+          testRunTitle: IntegrationTests
 
   - stage: Release
     dependsOn: Build

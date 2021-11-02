@@ -48,13 +48,13 @@ stages:
             task docs
         env:
           BUILDNUMBER: $(Build.BuildNumber)
-          OUTPUT_DIR: $(Build.SourcesDirectory)/outputs
 
       # Upload the tests and the coverage
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: JUnit
           testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/report.xml
+          testRunTitle: UnitTests
 
       - task: PublishCodeCoverageResults@1 
         inputs:
@@ -66,7 +66,7 @@ stages:
         displayName: Publish Binaries
         inputs:
           pathToPublish: $(Build.SourcesDirectory)/outputs/bin
-          artifactName: StacksCLI
+          artifactName: StacksCLI      
 
       # Upload the documentation
       - task: PublishBuildArtifacts@1
@@ -74,6 +74,57 @@ stages:
         inputs:
           pathToPublish: $(Build.SourcesDirectory)/outputs/docs
           artifactName: docs
+
+  - stage: IntegrationTests
+    dependsOn: Build
+    condition: succeeded()
+
+    jobs:
+    
+    - job: IntegrationTests
+
+      steps:
+
+      # Ensure using correct version of Golang
+      - task: GoTool@0
+        displayName: Setting GO Version
+        inputs:
+          version: ${{ variables.GoVersion }}      
+
+      # Download the StacksCLI and the integration_tests
+      - task: DownloadPipelineArtifact@2
+        inputs: 
+          artifact: StacksCLI
+          path: $(Build.ArtifactStagingDirectory)/bin
+
+      # Install Taskfile so that the tests can be run
+      - task: Bash@3
+        displayName: Install Taskfile
+        inputs:
+          targetType: inline
+          script: |
+            wget https://github.com/go-task/task/releases/download/v${{ variables.TaskfileVersion }}/task_linux_amd64.tar.gz -O /tmp/task.tar.gz
+            tar zxf /tmp/task.tar.gz -C /usr/local/bin task           
+
+      # Run the integration tests
+      - task: Bash@3
+        displayName: Execute Tests
+        inputs:
+          targetType: inline
+          script: |
+            export GOBIN=$HOME/go/bin
+            export PATH=$PATH:$GOBIN
+            task test:integration
+        env:
+          BIN_DIR: $(Build.ArtifactStagingDirectory)/bin
+          BUILDNUMBER: $(Build.BuildNumber)
+
+      # Upload the integration test results
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: JUnit
+          testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/integration_test_report.xml
+          testRunTitle: IntegrationTests
 
   - stage: Release
     dependsOn: Build
@@ -93,12 +144,13 @@ stages:
           inputs:
             artifact: 'docs'
             patterns: '**/*.pdf'
-            path: $(Build.ArtifactsStagingDirectory)/assets
+            path: $(Build.ArtifactStagingDirectory)/assets
 
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: 'StacksCLI'
-            path: $(Build.ArtifactsStagingDirectory)/assets
+            path: $(Build.ArtifactStagingDirectory)/assets
+            patterns: '!**/*inttest*'
 
         # Install Taskfile for the build to run
         - task: Bash@3
@@ -121,4 +173,4 @@ stages:
             API_KEY: $(GITHUB_TOKEN)
             NOTES:
             COMMIT_ID: $(Build.SourceVersion)  
-            ARTIFACTS_DIR: $(Build.ArtifactsStagingDirectory)/assets
+            ARTIFACTS_DIR: $(Build.ArtifactStagingDirectory)/assets

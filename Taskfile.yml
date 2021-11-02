@@ -4,14 +4,8 @@ version: '3'
 
 env:
   BUILDNUMBER: '{{ .BUILDNUMBER | default "100.98.99" }}'
-  DOCS_DIR: docs/
-  OUTPUT_DIR: outputs
-  OUTPUT_TEST_DIR: "{{.OUTPUT_DIR}}/tests"
-  OUTPUT_INTTEST_DIR: "{{.OUTPUT_DIR}}/integration_tests"
-  OUTPUT_BIN_DIR: "{{.OUTPUT_DIR}}/bin"
-  OUTPUT_DOCS_DIR: "{{.OUTPUT_DIR}}/docs"
-  OUTPUT_DOCS_PDF_DIR: "{{.OUTPUT_DOCS_DIR}}/pdf"
-  OUTPUT_DOCS_MD_DIR: "{{.OUTPUT_DOCS_DIR}}/md"
+  DOCS_DIR: '{{ .DOCS_DIR | default "docs/" }}'
+  OUTPUT_DIR: '{{ .OUTPUT_DIR | default "outputs" }}'
   BIN_DIR: '{{ .BIN_DIR | default "bin" }}'
   WORKING_DIR: '{{ .WORKING_DIR | default "projects" }}'
 
@@ -19,6 +13,12 @@ vars:
   REPORT_OUTPUT: report.xml
   INTEGRATION_REPORT_OUTPUT: integration_report.xml
   COVERAGE_REPORT: coverage.xml
+  OUTPUT_TEST_DIR: "{{.OUTPUT_DIR}}/tests"
+  OUTPUT_INTTEST_DIR: "{{.OUTPUT_DIR}}/integration_tests"
+  OUTPUT_BIN_DIR: "{{.OUTPUT_DIR}}/bin"
+  OUTPUT_DOCS_DIR: "{{.OUTPUT_DIR}}/docs"
+  OUTPUT_DOCS_PDF_DIR: "{{.OUTPUT_DOCS_DIR}}/pdf"
+  OUTPUT_DOCS_MD_DIR: "{{.OUTPUT_DOCS_DIR}}/md"
 
 # dotenv: ['.env']
 

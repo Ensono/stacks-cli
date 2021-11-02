@@ -85,6 +85,12 @@ stages:
 
       steps:
 
+      # Ensure using correct version of Golang
+      - task: GoTool@0
+        displayName: Setting GO Version
+        inputs:
+          version: ${{ variables.GoVersion }}      
+
       # Download the StacksCLI and the integration_tests
       - task: DownloadPipelineArtifact@2
         inputs: 

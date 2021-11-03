@@ -4,7 +4,6 @@ package integration
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -120,10 +119,7 @@ func TestInteractiveSuite(t *testing.T) {
 	s.Project = *project
 	s.ProjectDir = *projectDir
 
-	// if the projectDir is . then set to the current dir
-	if s.ProjectDir == "." {
-		s.ProjectDir, _ = os.Getwd()
-	}
+	s.SetProjectDir()
 
 	// only run the interactive test when not on windows
 	// this is because the questions are repeated in the Windows console which causes

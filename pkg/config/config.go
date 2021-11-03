@@ -119,13 +119,11 @@ func (config *Config) GetVersion() string {
 
 	version = config.Input.Version
 
-	fmt.Println(version)
-
 	if version == "" {
 		version = constants.DefaultVersion
 	}
 
-	return version
+	return strings.TrimSpace(version)
 }
 
 // SetPaths sets the current project path

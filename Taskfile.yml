@@ -79,7 +79,9 @@ tasks:
       - task: test:setup
       - go get github.com/ActiveState/termtest
       - chmod +x {{.BIN_DIR}}/*
-      - "{{.BIN_DIR}}/stacks-cli-{{OS}}-inttest-amd64-{{.BUILDNUMBER}} --test.v --projectdir {{.WORKING_DIR}} --binarycmd {{.BIN_DIR}}/stacks-cli-{{OS}}-amd64-{{.BUILDNUMBER}} | go-junit-report > {{.OUTPUT_TEST_DIR}}/integration_test_report.xml"
+      - "{{.BIN_DIR}}/stacks-cli-{{OS}}-inttest-amd64-{{.BUILDNUMBER}} --test.v --projectdir {{.WORKING_DIR}} --binarycmd {{.BIN_DIR}}/stacks-cli-{{OS}}-amd64-{{.BUILDNUMBER}} | tee {{.OUTPUT_TEST_DIR}}/integration_test_report.out"
+      - "echo {{.OUTPUT_TEST_DIR}}/integration_test_report.out | go-junit-report > {{.OUTPUT_TEST_DIR}}/integration_test_report.xml"
+      - "rm {{.OUTPUT_TEST_DIR}}/integration_test_report.out"
       - go mod tidy
     ignore_error: true
 

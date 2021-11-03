@@ -206,3 +206,22 @@ func (suite *BaseIntegration) RunCommand(command string, arguments string, ignor
 	}
 	suite.CmdOutput = string(out)
 }
+
+// SetProjectDir sets the path to the project directory
+// If it has been set as "." then it will use the current directory
+// If it is a relative path then it will prepend the current directory to it
+func (suite *BaseIntegration) SetProjectDir() {
+
+	// get the current directory
+	cwd, _ := os.Getwd()
+
+	// if the project dir is just a "." then set to the current dir
+	if suite.ProjectDir == "." {
+		suite.ProjectDir = cwd
+	}
+
+	// if hte project dir is not an absolute path, prepend the cwd to it
+	if !filepath.IsAbs(suite.ProjectDir) {
+		suite.ProjectDir = filepath.Join(cwd, suite.ProjectDir)
+	}
+}

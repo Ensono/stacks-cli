@@ -125,10 +125,7 @@ func TestArgumentSuite(t *testing.T) {
 	s.Project = *project
 	s.ProjectDir = *projectDir
 
-	// if the projectDir is . then set to the current dir
-	if s.ProjectDir == "." {
-		s.ProjectDir, _ = os.Getwd()
-	}
+	s.SetProjectDir()
 
 	suite.Run(t, s)
 }

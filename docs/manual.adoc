@@ -20,5 +20,7 @@ include::build.adoc[]
 
 include::templating.adoc[]
 
+include::testing.adoc[]
+
 == Appendix
 include::appendix.adoc[]

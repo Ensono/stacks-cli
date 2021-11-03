@@ -2,6 +2,7 @@ package scaffold
 
 import (
 	"os"
+	"regexp"
 	"testing"
 
 	"github.com/amido/stacks-cli/internal/models"
@@ -29,7 +30,7 @@ func TestAnalyseMissing(t *testing.T) {
 	// create test tables
 	tables := []struct {
 		missing []models.Command
-		test    string
+		pattern string
 		msg     string
 	}{
 		{
@@ -44,9 +45,7 @@ func TestAnalyseMissing(t *testing.T) {
 					Framework: "dotnet",
 				},
 			},
-			`Some of the commands required by the specified frameworks do not exist on your machine or the framework has been specified incorrectly.
-
-Framework 'dotnet' may have been misspelled because the command for this framework cannot be determined`,
+			`(?m)Framework 'dotnet' may have been misspelled because the command for this framework cannot be determined`,
 			"An error message should be returned as there is 1 missing command",
 		},
 	}
@@ -60,7 +59,11 @@ Framework 'dotnet' may have been misspelled because the command for this framewo
 	for _, table := range tables {
 		res := scaffold.analyseMissing(table.missing)
 
-		if res != table.test {
+		// compare the result with the pattern
+		re := regexp.MustCompile(table.pattern)
+		matched := re.MatchString(res)
+
+		if !matched {
 			t.Error(table.msg)
 		}
 	}

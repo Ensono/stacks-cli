@@ -77,16 +77,17 @@ tasks:
     desc: Run Integration tests
     cmds:
       - task: test:setup
+      - go get github.com/ActiveState/termtest
       - chmod +x {{.BIN_DIR}}/*
-      - "{{.BIN_DIR}}/stacks-cli-{{OS}}-inttest-amd64-{{.BUILDNUMBER}} --test.v --projectdir {{.WORKING_DIR}} --binarycmd {{.BIN_DIR}}/stacks-cli-{{OS}}-amd64-{{.BUILDNUMBER}} > {{.OUTPUT_TEST_DIR}}/integration_report.temp.out"
-      - "cat {{.OUTPUT_TEST_DIR}}/integration_report.temp.out | go-junit-report > {{.OUTPUT_TEST_DIR}}/integration_test_report.xml"
-      - "rm {{.OUTPUT_TEST_DIR}}/integration_report.temp.out"
+      - "{{.BIN_DIR}}/stacks-cli-{{OS}}-inttest-amd64-{{.BUILDNUMBER}} --test.v --projectdir {{.WORKING_DIR}} --binarycmd {{.BIN_DIR}}/stacks-cli-{{OS}}-amd64-{{.BUILDNUMBER}} | tee {{.OUTPUT_TEST_DIR}}/integration_test_report.out"
+      - "cat {{.OUTPUT_TEST_DIR}}/integration_test_report.out | go-junit-report > {{.OUTPUT_TEST_DIR}}/integration_test_report.xml"
+      - "rm {{.OUTPUT_TEST_DIR}}/integration_test_report.out"
       - go mod tidy
 
   compile:cmd:
     cmds:
       - go build -ldflags "-X github.com/amido/stacks-cli/cmd.version={{.BUILDNUMBER}}" -o {{.OUTPUT_BIN_DIR}}/stacks-cli-{{.PLATFORM_OS}}-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}}
-      - go test -tags integration -o {{.OUTPUT_BIN_DIR}}/stacks-cli-{{.PLATFORM_OS}}-inttest-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}} -c github.com/amido/stacks-cli/testing/integration/...
+      - go test -ldflags "-X github.com/amido/stacks-cli/testing/integration.version={{.BUILDNUMBER}}" -tags integration -o {{.OUTPUT_BIN_DIR}}/stacks-cli-{{.PLATFORM_OS}}-inttest-{{.PLATFORM_ARCH}}-{{.BUILDNUMBER}}{{.PLATFORM_EXTENSION}} -c github.com/amido/stacks-cli/testing/integration/...
   
     env:
       GOOS: '{{ .PLATFORM_OS }}'

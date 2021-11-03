@@ -14,7 +14,7 @@ type Project struct {
 	Framework     Framework     `mapstructure:"framework"`
 	Platform      Platform      `mapstructure:"platform"`
 	SourceControl SourceControl `mapstructure:"sourcecontrol"`
-	SettingsFile  string        `mapstructure:"settingsfile"`
+	SettingsFile  string        `mapstructure:"settingsfile" json:",omitempty"`
 	Cloud         Cloud         `mapstructure:"cloud"`
 
 	Directory Directory `yaml:"-"` // Holds the workingdir and tempdir for the project

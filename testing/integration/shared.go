@@ -224,12 +224,4 @@ func (suite *BaseIntegration) SetProjectDir() {
 	if !filepath.IsAbs(suite.ProjectDir) {
 		suite.ProjectDir = filepath.Join(cwd, suite.ProjectDir)
 	}
-
-	// create the project dir if it does not exist
-	if !util.Exists(suite.ProjectDir) {
-		err := os.MkdirAll(suite.ProjectDir, 0666)
-		if err != nil {
-			fmt.Errorf("Unable to create project dir: %w", err)
-		}
-	}
 }

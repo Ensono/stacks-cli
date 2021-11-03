@@ -131,6 +131,7 @@ func preRun(ccmd *cobra.Command, args []string) {
 	err := viper.Unmarshal(&Config.Input)
 	if err != nil {
 		log.Fatalf("Unable to read configuration into models: %v", err)
+		App.Logger.Exit(1)
 	}
 
 	// Configure application logging

@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/amido/stacks-cli/internal/util"
@@ -49,7 +50,8 @@ func (suite *CLIAlertSuite) TestProjectAlreadyExists() {
 	suite.T().Run("CLI does not overwrite an existing project", func(t *testing.T) {
 
 		// create the pattern to match the output with
-		pattern := fmt.Sprintf("project directory already exists, skipping: %s", testProjectPath)
+		escapedTestProjectPath := strings.Replace(testProjectPath, "\\", "\\\\", -1)
+		pattern := fmt.Sprintf("project directory already exists, skipping: %s", escapedTestProjectPath)
 		t.Logf("Looking for pattern: '%s'", pattern)
 
 		re := regexp.MustCompile(pattern)

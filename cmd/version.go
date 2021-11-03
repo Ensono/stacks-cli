@@ -20,5 +20,5 @@ func init() {
 }
 
 func showVersion(ccmd *cobra.Command, args []string) {
-	fmt.Println("Version: ", Config.GetVersion())
+	fmt.Printf("Version: %s\n", Config.GetVersion())
 }

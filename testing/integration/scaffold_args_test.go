@@ -3,68 +3,45 @@
 package integration
 
 import (
-	"flag"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"testing"
 
 	"github.com/amido/stacks-cli/internal/util"
-	// "github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
-var company = flag.String("company", "MyCompany", "Name of the company")
-var project = flag.String("project", "my-webapi", "Name of the project")
-var projectDir = flag.String("projectdir", ".", "Project Directory")
-var binaryCmd = flag.String("binarycmd", "stacks-cli", "Name and path of the binary to use to run the tests")
-
 // ArgumentTestSuite sets up the suite for checking that the command line args run properly
 type ArgumentSuite struct {
-	suite.Suite
-
-	// set the name of the project to create
-	Project    string
-	ProjectDir string
-
-	// Set the name of the company for which the project is being setup for
-	Company string
-
-	// The name of the command to run
-	BinaryCmd string
-
-	// Cmdoutput to be used for analysis
-	CmdOutput string
+	BaseIntegration
 }
 
 // SetupSuite sets up the tests by running the command to test the result from
 func (suite *ArgumentSuite) SetupSuite() {
 
 	// create the command and arguments required for the tests
-	command := suite.BinaryCmd
-	arguments := fmt.Sprintf(`scaffold -A core --company %s --component backend --domain stacks-example.com
--F dotnet -n %s -p azdo -P aks --tfcontainer mywebapi --tfgroup supporting-group --tfstorage kjh56sdfnjnkjn
--O webapi --cmdlog -w %s`, suite.Company, suite.Project, suite.ProjectDir)
-
-	// use the util function to split the arguments up and run the command
-	cmd, args := util.BuildCommand(command, arguments)
-
-	// configure the exec command to execute the command
-	out, err := exec.Command(cmd, args...).Output()
-	if err != nil {
-		suite.T().Errorf("Error running command: %s", err.Error())
+	replacements := []interface{}{
+		area,
+		suite.Company,
+		component,
+		domain,
+		framework,
+		suite.Project,
+		pipeline,
+		platform,
+		tf_container,
+		tf_group,
+		tf_storage,
+		framework_option,
+		suite.ProjectDir,
 	}
-	suite.CmdOutput = string(out)
+	arguments := fmt.Sprintf(`scaffold -A %s --company %s --component %s --domain %s
+-F %s -n %s -p %s -P %s --tfcontainer %s --tfgroup %s --tfstorage %s
+-O %s --cmdlog -w %s`, replacements...)
 
-	// cmdLine.Stdout = os.Stdout
-	// cmdLine.Stderr = os.Stderr
-
-	// execute the command
-	//if err := cmdLine.Run(); err != nil {
-	//	suite.T().Errorf("Error running command: %s", err.Error())
-	//}
+	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, false)
 }
 
 // TearDownSuite removes all of the files that have been generated in this suite
@@ -124,7 +101,17 @@ func (suite *ArgumentSuite) TestNamespace() {
 	matched := re.MatchString(firstDir)
 
 	suite.Equal(true, matched)
+}
 
+// TestNoGitRepo checks that a .git directory has not been created as no remote URL
+// has been set on the CLI
+func (suite *ArgumentSuite) TestNoGitRepo() {
+
+	gitDir := filepath.Join(suite.ProjectDir, suite.Project, ".git")
+
+	exists := util.Exists(gitDir)
+
+	suite.Equal(false, exists)
 }
 
 // TestRunSuite runs the testify test suite

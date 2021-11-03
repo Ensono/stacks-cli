@@ -160,9 +160,9 @@ func (s *Scaffold) analyseMissing(missing []models.Command) string {
 	// iterate around the missing items
 	for _, item := range missing {
 		if item.Binary == "" {
-			list += fmt.Sprintf("Framework '%s' may have been misspelled because the command for this framework cannot be determined", item.Framework)
+			list += fmt.Sprintf("Framework '%s' may have been misspelled because the command for this framework cannot be determined\n", item.Framework)
 		} else {
-			list += fmt.Sprintf("Command '%s' for the '%s' framework cannot be located. Is '%s' installed and in your PATH?", item.Binary, item.Framework, item.Binary)
+			list += fmt.Sprintf("Command '%s' for the '%s' framework cannot be located. Is '%s' installed and in your PATH?\n", item.Binary, item.Framework, item.Binary)
 		}
 	}
 
@@ -193,10 +193,17 @@ func (s *Scaffold) processProject(project config.Project) {
 	key := project.Framework.GetMapKey()
 	srcUrl := s.Config.Input.Stacks.GetSrcURL(key)
 
+	// if the URL is empty, emit error message and state why this might be the case
+	if srcUrl == "" {
+		s.Logger.Errorf(`The URL for the specified framework option, %s, is empty. Have you specified the correct framework option?`, project.Framework.Option)
+		return
+	}
+
 	// check that the URL is valid, if not skip this project and move onto the next one
 	_, err = url.ParseRequestURI(srcUrl)
 	if err != nil {
 		s.Logger.Errorf("Unable to download framework option as URL is invalid: %s", err.Error())
+		return
 	}
 
 	s.Logger.Infof("Retrieving framework option: %s", key)

@@ -12,7 +12,7 @@ import (
 type InputConfig struct {
 
 	// Version of the application
-	Version string
+	Version string `yaml:"-"`
 
 	// Define the logging parameters
 	Log models.Log `mapstructure:"log"`

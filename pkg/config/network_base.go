@@ -5,6 +5,6 @@ type NetworkBase struct {
 }
 
 type DomainType struct {
-	Internal string `mapstructure:"internal"`
+	Internal string `mapstructure:"internal" json:",omitempty"`
 	External string `mapstructure:"external"`
 }

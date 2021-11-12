@@ -26,6 +26,7 @@ The following options can be applied to any command within the Stacks CLI.
 | `--logcolur` | AMIDOSTACKS_LOGCOLOUR | State if logging should include colour | | 
 | `-w`, `--workingdirectory` | AMIDOSTACKS_DIRECTORY_WORKINGDIR | Directory that the projects should be created in | `${PWD}` | 
 | `--tempdir` | AMIDOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Stacks for its temp files | System temp directory | 
+| `--nobanner` | AMIDOSTACKS_NOBANNER | Do not display the Stacks banner when running the command | `false` |
 |===
 
 ==== Scaffold Options
@@ -34,11 +35,11 @@ The following options can be applied to any command within the Stacks CLI.
 [options="header"]
 |===
 | Option | Environment Variable | Description | Default | Options 
-| `-n`, `--name` | AMIDOSTACKS_PROJECT_NAME | Name of the project to created | | 
+| `-n`, `--name` | AMIDOSTACKS_PROJECT_NAME | Name of the project to create | | 
 | `--sourcecontrol` | AMIDOSTACKS_PROJECT_SOURCECONTROL_TYPE | Source control system to be used | `github` | 
 | `-u`, `--sourcecontrolurl` | AMIDOSTACKS_PROJECT_SOURCECONTROL_URL | URL to the remote repository | | 
 | `--sourcecontrolref` | AMIDOSTACKS_PROJECT_SOURCECONTROL_REF | SHA reference or Tag to use to clone repository from. If a ref is supplied this is used over a release version package | | 
-| `--projectsettingsfile` | AMIDOSTACKS_PROJECT_SETTINGSFILE | Each project will have its own `stackscli.yml` file, however this can ber overridden with a path to a different file using this option | null |
+| `--projectsettingsfile` | AMIDOSTACKS_PROJECT_SETTINGSFILE | Each project will have its own `stackscli.yml` file, however this can ber overridden with a path to a different file using this option | `null` |
 | `-F`, `--framework` | AMIDOSTACKS_PROJECT_FRAMEWORK_TYPE | The framework that is to be used | | `dotnet`, `java`, `nodejs` 
 | `-O`, `--frameworkoption` | AMIDOSTACKS_PROJECT_FRAMEWORK_OPTION | The sort of project to be created | | `webapi`, `cqrs`, `events` 
 | `-V`, `--frameworkversion` | AMIDOSTACKS_PROJECT_FRAMEWORK_VERSION | The version of the Amido stacks project to use | `latest` | 
@@ -54,25 +55,23 @@ The following options can be applied to any command within the Stacks CLI.
 | `--tfgroup` | AMIDOSTACKS_TERRAFORM_BACKEND_GROUP | Group name of the storage account | | 
 | `--tfcontainer` | AMIDOSTACKS_TERRAFORM_BACKEND_CONTAINER | Container being used to store the data | | 
 | `-d`, `--domain` | AMIDOSTACKS_NETWORK_BASE_DOMAIN_EXTERNAL | External domain root to be used for the projects || 
-| `--internaldomain` | AMIDOSTACKS_NETWORK_BASE_DOMAIN_INTERNAL | Internal domain root to be used for projects. | |
+| `--internaldomain` | AMIDOSTACKS_NETWORK_BASE_DOMAIN_INTERNAL | Internal domain root to be used for projects. | If not specified then the internal domain will be inferred from the external by replacing the TLD with `internal`. Thus if `mydomain.com` is provided as the external domain then the internal will be set to `mydomain.internal`. |
 | `--cmdlog` | AMIDOSTACKS_OPTIONS_CMDLOG | Create a log file of all the commands that have been run during the scaffold process
 
-The command log is create in the current directory with the filename `cmdlog.txt` | false |
-| `--dryrun` | AMIDOSTACKS_OPTIONS_DRYRUN | Perform a dry run of the scaffold process. Useful for checking that things will be setup as required. No operations will be performed on the machine when run in this mode |
-
-If not specified then the internal domain will be inferred from the external by replacing the TLD with `internal`. Thus if `mydomain.com` is provided as the external domain then the internal will be set to `mydomain.internal`. |
+The command log is create in the current directory with the filename `cmdlog.txt` | `false` |
+| `--dryrun` | AMIDOSTACKS_OPTIONS_DRYRUN | Perform a dry run of the scaffold process. Useful for checking that things will be setup as required. No operations will be performed on the machine when run in this mode | `false` |
 | `--settingsfile` | AMIDOSTACKS_SETTINGSFILE | Name of the file to look for in the project | `stackscli.yml` | 
 | `--cmdlog` | AMIDOSTACKS_CMDLOG | Generate a log of all the commands that the CLI has run.
 
-The `cmdlog.txt` file is created in the directory that the CLI has been run in. | false |
-| `--dryrun` | AMIDOSTACKS_DRYRUN | Perform a dryrun of all the CLI. Particularly useful when used with `--cmdlog` | false |
+The `cmdlog.txt` file is created in the directory that the CLI has been run in. | `false` |
+| `--dryrun` | AMIDOSTACKS_DRYRUN | Perform a dryrun of all the CLI. Particularly useful when used with `--cmdlog` | `false` |
 | `--save` | AMIDOSTACKS_SAVE | If using the interactive or command line mode for configuring the CLI, the given configuration can be saved to a file. This allows the configuration to be replayed again at a later date.
 
-The configuration is saved to `stacks.yml` in the root of the specified working directory | false |
-| `--nocleanup` | AMIDOSTACKS_NOCLEANUP | Do not perform cleanup operations after the scaffoling has been completed | false |
+The configuration is saved to `stacks.yml` in the root of the specified working directory | `false` |
+| `--nocleanup` | AMIDOSTACKS_NOCLEANUP | Do not perform cleanup operations after the scaffoling has been completed | `false` |
 |`--force` | AMIDOSTACKS_FORCE | Delete existing project directories when creating new ones
 
-This is a destructive operation and will result in existing projects being deleted in their entirety if there is a clash in the path | false | 
+This is a destructive operation and will result in existing projects being deleted in their entirety if there is a clash in the path | `false` | 
 |===
 
 === Command Log Format

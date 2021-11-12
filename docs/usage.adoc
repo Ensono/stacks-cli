@@ -45,7 +45,7 @@ image::images/stackscli-global-help.png[]
 
 ==== Completion
 
-The completion adds completion scripts to any of the following shells:
+The completion command adds completion scripts to any of the following shells:
 
  - bash
  - fish

@@ -90,7 +90,7 @@ stacks-cli scaffold -A {example_area} `
 This will get the specified version of the framework project, create a new project based on the options specified and then update the build files to work with those settings. Finally it will initalise a new git repository in the new project directory. All of the commands that have been run by the CLI will be saved in the `cmdlog.txt` file in the directory that the command was run in.
 
 .CLI with command line options
-[[example_cli_cmdline,{figure-caption} {counter:refum}]]
+[[example_cli_cmdline,{figure-caption} {counter:refnum}]]
 image::images/example_dotnet_webapi_cmdline.png[]
 
 <<example_cli_cmdline>> shows the output of the command running in PowerShell. It also shows the commands that have been run in the `cmdlog.txt`.
@@ -302,7 +302,7 @@ image::images/stackscli-scaffold-project-guard.png[]
 
 As can be seen the CLI will not overwrite anything at the same target path.
 
-It is possible to change this behaviour, by adding the `--force` option to the command line. This will remove any existing directory and recreate the project in is place.
+It is possible to change this behaviour, by adding the `--force` option to the command line. This will remove any existing directory and recreate the project in its place.
 
 [source,bash]
 ----

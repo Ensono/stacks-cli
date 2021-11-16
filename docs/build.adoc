@@ -35,7 +35,7 @@ Regardless of whether the CLI is being built on a local machine or in a build ag
 | Windows | Chocolatey | `choco install go-task` 
 |===
 
-In the case of the Azure DevOps build file Taskfile is being downloaded directly from the release page of the project. This is so that we can control the version that is downloaded.
+In the case of the Azure DevOps build file, Taskfile is being downloaded directly from the release page of the project. This is so that we can control the version that is downloaded.
 
 ==== Clone the `stacks-cli` repository
 
@@ -76,7 +76,7 @@ There is a task that performs as GitHub release and uploads the documentation an
 
 The release is done by a PowerShell script, which uses the GitHub API to do the release. By doing it like this Taskfile performs the execution of the script, so it is not done by a propriatry task in the CI/CD build pipeline.
 
-NOTE: The PowerShell script is too long to pull into the document, but can be seen in the repository `build/scripts/PublishGitHubRelease.ps1`.
+NOTE: The PowerShell script is too long to pull into this document, but can be seen in the repository `build/scripts/Publish-GitHubRelease.ps1`.
 
 Actioning the release is done by running the command `task release`
 
@@ -86,26 +86,26 @@ All of the necessary parameters can be set using environment variables, which ar
 [options="header"]
 |===
 | Parameter | Environment Variable | Description | Example Value
-| version | VERSION_NUMBER | Version number to be assigned to the release | 0.0.69
+| version | VERSION_NUMBER | Version number to be assigned to the release | `0.0.69`
 | commitid | COMMIT_ID | The SHA commit id to be used to set up the release | `0E42486F2`
 | notes | NOTES | Any notes that should be displayed on the release page | 
-This is the latest release of the code
+`This is the latest release of the code`
 | artifactsDir | ARTIFACTS_DIR | Directory that the artifacts to be added as assets to the release are in | `outputs`
 | artifactsList | | List of files that need to be uploaded
 
-If this is not specified then all of the files in the `artifactsDir` will be uploaded | docs.pdf
+If this is not specified then all of the files in the `artifactsDir` will be uploaded | `docs.pdf`
 | owner | OWNER | Name of the owner of the repository | `amido`
 | apiKey | API_KEY | Personal access token to be used to perform the release | `ghp_L9VNP06qbasd87adlTDtslQvJCFH30cig4ace2A`
 | repository | REPOSITORY | Name of the repository on which to create the release | `stacks-cli`
-| draft | DRAFT | Specify if a draft release should be created. Default: false | true
-| prerelease | PRERELEASE | Specify if a prerelease should be created. Default: true | true
+| draft | DRAFT | Specify if a draft release should be created. Default: `false` | `true`
+| prerelease | PRERELEASE | Specify if a prerelease should be created. Default: `true` | `true`
 |===
 
 The main build pipeline file has a stage called Release, which downloads the necessary artifacts and then calls the `release` task on Taskfile to perform the release.
 
 The script will check to see if any of the required values are missing, if they are a message similar to the following is displayed.
 
-.Taskfile release
+.Taskfile release with missing required values
 image::images/taskfile-release-error.png[]
 
 ==== Build Documentation
@@ -156,15 +156,14 @@ image::images/building_documentation.png[]
 
 A build pipeline file exists in `./build` that controls how the CLI is compiled in Azure DevOps.
 
-The build consists of three files:
+The build consists of the following files:
 
 .Build files
 [options="header"]
 |===
 | Name | Description
 
-| `azuredevops-pipeline.yml` | Main pipeline file that AzDo uses to run the build
-| `azuredevops-compile.yml` | Template file that is repeatedly called for each of the target platforms for the CLI
+| `azuredevops-taskfile.yml` | Main pipeline file that AzDo uses to run the build
 | `azuredevops-vars.yml` | Variable template file containing variables for the build
 |===
 
@@ -175,12 +174,14 @@ The build pipeline for Azure DevOps, `build/azuredevops-taskfile.yml`, has been 
 . Install specified version of Go
 . Install Taskfile
 . Test and Compile
-.. Configure GOPATH and PATH environment variables
+.. Configure GOBIN and PATH environment variables
 .. Run default task of Taskfile
 .. Run docs task of Taskfile
 . Upload Test results
 . Upload Coverage reports
 . Upload manual
+. Run integration tests by running the test:integration task of the TaskFile
+. For releases, run release task of TaskFile
 
 All of the testing, compilation and documentation has been handled by Taskfile, the parts outside of this are to install Go and Taskfile and to upload build artefacts.
 

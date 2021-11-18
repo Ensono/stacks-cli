@@ -21,6 +21,9 @@ wget https://github.com/amido/stacks-cli/releases/download/v{stackscli_version}/
 
 ## Linux
 wget https://github.com/amido/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-linux-amd64-{stackscli_version} -O /usr/local/bin/stacks-cli
+
+## Ensure that the command is executable
+chmod +x /usr//local/bin/stacks-cli
 ----
 
 ==== Windows

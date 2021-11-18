@@ -3,15 +3,19 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
 
 	"github.com/amido/stacks-cli/internal/constants"
+	"github.com/amido/stacks-cli/internal/util"
 	"github.com/bobesa/go-domain-util/domainutil"
 	yaml "github.com/goccy/go-yaml"
+	"github.com/sirupsen/logrus"
 )
 
 type SelfConfig struct {
@@ -26,9 +30,10 @@ type ReplaceConfig struct {
 }
 
 type Config struct {
-	Input   InputConfig
-	Self    SelfConfig
-	Replace []ReplaceConfig
+	Input         InputConfig
+	Self          SelfConfig
+	Replace       []ReplaceConfig
+	FrameworkDefs []FrameworkDef
 }
 
 // Check checks the configuration and ensures that there are some projects
@@ -243,4 +248,76 @@ func (config *Config) WriteCmdLog(path string, cmd string) error {
 	}
 
 	return err
+}
+
+// ExecuteCommand executes the command and arguments that have been supplied to the function
+func (config *Config) ExecuteCommand(path string, logger *logrus.Logger, command string, arguments string, show bool) (string, error) {
+
+	var result bytes.Buffer
+	var err error
+	var mwriter io.Writer
+	var writers []io.Writer
+
+	// get the command and arguments
+	cmd, args := util.BuildCommand(command, arguments)
+
+	// output the command being run if in debug mode
+	logger.Debugf("Command: %s %s", command, arguments)
+
+	// Write out the command log
+	err = config.WriteCmdLog(path, fmt.Sprintf("%s %s", command, arguments))
+	if err != nil {
+		logger.Warnf("Unable to write command to log: %s", err.Error())
+	}
+
+	// add the result to the writers
+	writers = append(writers, &result)
+
+	// add the stdout to the multiwriter if being displayed
+	if show {
+		writers = append(writers, os.Stdout)
+	}
+
+	// declare multiwrite to that stdout can be read into a variable
+	//	if show {
+	mwriter = io.MultiWriter(writers...)
+	//	} else {
+	//		mwriter = io.MultiWriter(&result)
+	//	}
+
+	// set the command that needs to be executed
+	cmdLine := exec.Command(cmd, args...)
+	// cmd.Stdout = os.Stdout
+	// cmdLine.Stderr = os.Stderr
+	cmdLine.Stdout = mwriter
+	cmdLine.Stderr = mwriter
+	cmdLine.Dir = path
+
+	// only run the command if not in dryrun mode
+	if !config.IsDryRun() {
+		if err = cmdLine.Run(); err != nil {
+			logger.Errorf("Error running command: %s", err.Error())
+			return strings.TrimSpace(result.String()), err
+		}
+	}
+
+	return strings.TrimSpace(result.String()), err
+}
+
+// GetFrameworkCommands gets the list of commands that are associated with
+// the specified framework. This is so that their existence on the PATH can
+// be checked
+func (config *Config) GetFrameworkCommands(framework string) []string {
+
+	var result []string
+
+	// get the commands that have been specified for the framework
+	for _, f := range config.FrameworkDefs {
+		if f.Name == framework {
+			result = f.Commands
+			break
+		}
+	}
+
+	return result
 }

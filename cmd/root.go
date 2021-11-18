@@ -10,6 +10,7 @@ import (
 	"github.com/amido/stacks-cli/internal/models"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
+	yaml "github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -151,5 +152,12 @@ func preRun(ccmd *cobra.Command, args []string) {
 	configFileUsed := viper.ConfigFileUsed()
 	if configFileUsed != "" {
 		App.Logger.Infof("Using configuration file: %s", configFileUsed)
+	}
+
+	// set the framework definitions on the config object
+	framework_defs := static.Config("framework_defs")
+	err = yaml.Unmarshal(framework_defs, &Config.FrameworkDefs)
+	if err != nil {
+		App.Logger.Fatalf("Unable to parse framework definition data: %s", err.Error())
 	}
 }

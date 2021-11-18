@@ -110,38 +110,11 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 			return err
 		}
 
-		// get the cmd and args from the utils.BuildCommand function
-		// cmd, args := util.BuildCommand(command, arguments)
-
-		_, err = s.Config.ExecuteCommand(path, s.Logger, command, arguments, true)
+		// Execute the command and check that it worked
+		_, err = s.Config.ExecuteCommand(path, s.Logger, command, arguments, false)
 		if err != nil {
 			s.Logger.Errorf("Issue running command: %s", err.Error())
 		}
-
-		/*
-			// output the command being run if in debug mode
-			s.Logger.Debugf("Command: %s %s", command, arguments)
-
-			// Write out the command log
-			err = s.Config.WriteCmdLog(path, fmt.Sprintf("%s %s", command, arguments))
-			if err != nil {
-				s.Logger.Warnf("Unable to write command to log: %s", err.Error())
-			}
-
-			// set the command that needs to be executed
-			cmdLine := exec.Command(cmd, args...)
-			// cmd.Stdout = os.Stdout
-			cmdLine.Stderr = os.Stderr
-			cmdLine.Dir = path
-
-			// only run the command if not in dryrun mode
-			if !s.Config.IsDryRun() {
-				if err = cmdLine.Run(); err != nil {
-					s.Logger.Errorf("Error running command: %s", err.Error())
-					return err
-				}
-			}
-		*/
 	}
 
 	return nil

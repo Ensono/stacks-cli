@@ -287,11 +287,13 @@ func (config *Config) ExecuteCommand(path string, logger *logrus.Logger, command
 
 	// set the command that needs to be executed
 	cmdLine := exec.Command(cmd, args...)
-	// cmd.Stdout = os.Stdout
-	// cmdLine.Stderr = os.Stderr
 	cmdLine.Stdout = mwriter
 	cmdLine.Stderr = mwriter
-	cmdLine.Dir = path
+
+	// set the path for the command, if it exists
+	if util.Exists(path) {
+		cmdLine.Dir = path
+	}
 
 	// only run the command if not in dryrun mode
 	if !config.IsDryRun() {

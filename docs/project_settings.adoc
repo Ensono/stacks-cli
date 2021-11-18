@@ -14,11 +14,33 @@ The following table details the structure of the settings file.
 [options="header"]
 |===
 | Parameter | Description | Example | Allowed Values 
-| `framework` | The framework that the project is based on. | `dotnet` | `dotnet`, `java`, `node` 
+| `framework` | The framework that the project is based on. | | 
 | `pipeline` | This is a list of the supported pipelines and the associated files | |
 | `init.operations` | List of operations that need to be performed on the temporary project directory | | 
 | `setup.operations` | List of operations that need to be performed on the project directory | |
 |===
+
+The following table shows the options that can be specified for a framework
+
+.Framework Options
+[options="header"]
+|===
+| Parameter | Description | Example | Allowed Values
+| `name` | Name of the framework that this project targets | `dotnet`, `java`
+| `commands` | A list of the commands and the versions that are required for the project
+
+This is a list, so multiple commands and versions can be specified in the yaml file | |
+| `commands.name` | Name of the command to be checked | `dotnet` | |
+| `commands.version` | This is a semantic version constraint that the command version must conform to
+
+So to ensure that the `dotnet` command is version `3.1` the following version string can be used `>= 3.1, < 3.2` | `>= 3.1, < 3.2` | Any valid semver constraint 
+|===
+
+NOTE: If no command or version is specified then the command that is found on the machine that the CLI is running on will be used without checking.
+
+IMPORTANT: It is possible to ignore the results of the version check when the CLI is running by using the `force` option, but remember that it is a destructive operation and it will delete any existing projects that exist in the same path.
+
+Not all version numbers conform to semantic versioning. For example Java tends to add characters to the version number, e.g. `1.8.0_301`. To get around this the CLI tries to make the version semver compliant by removing the `_`, so the version tested will be `1.8.0301` which is a valid semver.
 
 The next table shows the options for the operations.
 
@@ -87,40 +109,47 @@ The following code listing shows an example settings file.
 [[project_settings_file,{listing-caption} {counter:refnum}]]
 [source,yaml]
 ----
-framework: dotnet // <1>
+framework: 
+  name: dotnet // <1>
+  commands: // <2>
+    - name: dotnet // <3>
+      version: ">= 3.1, < 3.2" // <4>
 
 pipeline:
-  - type: azdo //<2>
+  - type: azdo //<5>
     files:
-       - name: build // <3>
+       - name: build // <6>
          path: build/azDevOps/azure/azure-pipelines-netcore-k8s.yml
-       - name: variable // <4>
+       - name: variable // <7>
          path: build/azDevOps/azure/azuredevops-vars.yml 
-    replacements: // <5>
+    replacements: // <8>
         - pattern: ^.*myvalue$ 
           value: Foo Bar
 
-init: // <6>
-  operations: // <7>
-    - action: cmd // <8>
-      args: new stacks-docs -n {{ .Input.Business.Company }}.{{ .Input.Business.Domain }} // <9>
-      desc: Create a project using the "stacks-docs" project // <10>
+init: // <9>
+  operations: // <10>
+    - action: cmd // <11>
+      args: new stacks-docs -n {{ .Input.Business.Company }}.{{ .Input.Business.Domain }} // <12>
+      desc: Create a project using the "stacks-docs" project // <13>
 
-setup: // <11>
+setup: // <14>
    operations:
 ----
 
 <1> Sets the framework that the commands should be run for
-<2> Specify the pipeline that is being targeted
-<3> Name and path to the build pipeline file in the repository, for the specified pipeline system
-<4> Name and path to the variable template in the repository
-<5> List of replacements that should be made in the specified build file
-<6> Perform operations on the temporary project directory
-<7> List any number of operations that need to be performed
-<8> States the action that needs to be performed
-<9> The arguments that need to be passed to the framework command, in this case `dotnet`
-<10> Description of the operation, this will be displayed in the log output when the CLI is executed
-<11> Define operations that need to be performed after the project has been created
+<2> Specify the commands for which the version number should be checked
+<3> The name of the command to get the version number for
+<4> The version constraint that the version number should be checked against
+<5> Specify the pipeline that is being targeted
+<6> Name and path to the build pipeline file in the repository, for the specified pipeline system
+<7> Name and path to the variable template in the repository
+<8> List of replacements that should be made in the specified build file
+<9> Perform operations on the temporary project directory
+<10> List any number of operations that need to be performed
+<11> States the action that needs to be performed
+<12> The arguments that need to be passed to the framework command, in this case `dotnet`
+<13> Description of the operation, this will be displayed in the log output when the CLI is executed
+<14> Define operations that need to be performed after the project has been created
 
 This example shows one action that needs to be performed on the project before it has been created in the user specified working directory.
 

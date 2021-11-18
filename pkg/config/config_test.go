@@ -9,7 +9,10 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/util"
+	yaml "github.com/goccy/go-yaml"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -594,6 +597,73 @@ func TestForce(t *testing.T) {
 
 		if res != table.test {
 			t.Error(table.msg)
+		}
+	}
+}
+
+func TestExecuteCommand(t *testing.T) {
+
+	// Create a logger
+	config := Config{}
+	logger := log.New()
+
+	// setup the environment
+	cleanup, dir := setupConfigTests(t)
+	defer cleanup(t)
+
+	// create the command and arguments that need to be run
+	command := "echo"
+	arguments := "HelloWorld!"
+
+	// call the ExecuteCommand to run the command and get the result
+	result, err := config.ExecuteCommand(dir, logger, command, arguments, false)
+
+	// perform the necessary tests
+	assert.Equal(t, nil, err)
+	assert.Equal(t, "HelloWorld!", result)
+
+}
+
+func TestGetFrameworkCommands(t *testing.T) {
+
+	config := Config{}
+
+	// get the static data and unmarshal into a config object
+	framework_defs := static.Config("framework_defs")
+	err := yaml.Unmarshal(framework_defs, &config.FrameworkDefs)
+	if err != nil {
+		t.Errorf("Error parsing the framework definitions: %s", err.Error())
+	}
+
+	// create the testing tables that are required
+	tables := []struct {
+		name    string
+		count   int
+		message string
+	}{
+		{
+			"dotnet",
+			2,
+			"Commands should contain 2 elements",
+		},
+		{
+			"java",
+			2,
+			"Commands should contain 2 elements",
+		},
+		{
+			"notvalid",
+			0,
+			"Commands should contain no elements",
+		},
+	}
+
+	for _, table := range tables {
+
+		res := config.GetFrameworkCommands(table.name)
+
+		if len(res) != table.count {
+			t.Error(table.message)
 		}
 	}
 }

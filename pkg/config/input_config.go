@@ -3,7 +3,6 @@ package config
 import (
 	"os/exec"
 
-	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/models"
 	"github.com/amido/stacks-cli/internal/util"
 )
@@ -34,7 +33,7 @@ type InputConfig struct {
 // that have been specified. It will then check that each of the framework binaries
 // are present in the path.
 // If there are not then the ones that are not present are returned to the calling function
-func (ic *InputConfig) CheckFrameworks() []models.Command {
+func (ic *InputConfig) CheckFrameworks(config *Config) []models.Command {
 
 	var frameworkTypes []string
 	var missing []models.Command
@@ -49,7 +48,7 @@ func (ic *InputConfig) CheckFrameworks() []models.Command {
 			frameworkTypes = append(frameworkTypes, project.Framework.Type)
 
 			// get the binaries for this framework type
-			binaries := static.FrameworkCommand(project.Framework.Type)
+			binaries := config.GetFrameworkCommands(project.Framework.Type)
 
 			for _, binary := range binaries {
 				// create a command object

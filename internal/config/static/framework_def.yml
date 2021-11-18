@@ -1,0 +1,17 @@
+- name: dotnet
+  commands:
+    - dotnet
+    - git
+  version:
+    command: dotnet
+    arguments: --version
+    pattern: (?P<version>.*)
+
+- name: java
+  commands:
+    - java
+    - git
+  version:
+    command: java
+    arguments: -version
+    pattern: '"(?P<version>.*)"'

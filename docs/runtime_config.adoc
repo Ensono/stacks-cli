@@ -69,9 +69,11 @@ The `cmdlog.txt` file is created in the directory that the CLI has been run in. 
 
 The configuration is saved to `stacks.yml` in the root of the specified working directory | `false` |
 | `--nocleanup` | AMIDOSTACKS_NOCLEANUP | Do not perform cleanup operations after the scaffoling has been completed | `false` |
-|`--force` | AMIDOSTACKS_FORCE | Delete existing project directories when creating new ones
+|`--force` | AMIDOSTACKS_FORCE | *This is a destructive operation*
 
-This is a destructive operation and will result in existing projects being deleted in their entirety if there is a clash in the path | `false` | 
+By using `force` the CLI will delete any projects, of the same name, that already exist in the working directory and then create the new project in its place.
+
+It will also continue to run if the command version checks fail. For example if the project calls for `dotnet` version 3.1 and you have 5.0.303, the CLI would not normally continue, but with `force` this will be ignored and the process will continue. | `false` | 
 |===
 
 === Command Log Format

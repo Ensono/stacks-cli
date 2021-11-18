@@ -6,6 +6,8 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/amido/stacks-cli/internal/config/static"
+	yaml "github.com/goccy/go-yaml"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -68,8 +70,15 @@ func TestNonExistentFrameworkBinary(t *testing.T) {
 	}
 	config.Input.Project = append(config.Input.Project, project)
 
+	// get the static data and unmarshal into a config object
+	framework_defs := static.Config("framework_defs")
+	err = yaml.Unmarshal(framework_defs, &config.FrameworkDefs)
+	if err != nil {
+		t.Errorf("Error parsing the framework definitions: %s", err.Error())
+	}
+
 	// get a list of the commands from the CheckFramework
-	missing := config.Input.CheckFrameworks()
+	missing := config.Input.CheckFrameworks(&config)
 
 	assert.Equal(t, 2, len(missing))
 }
@@ -99,7 +108,7 @@ func TestIncorrectFrameworkSet(t *testing.T) {
 	config.Input.Project = append(config.Input.Project, project)
 
 	// get a list of the commands from the CheckFramework
-	missing := config.Input.CheckFrameworks()
+	missing := config.Input.CheckFrameworks(&config)
 
 	assert.Equal(t, 0, len(missing))
 }
@@ -135,8 +144,15 @@ func TestMultipleFrameworks(t *testing.T) {
 	}
 	config.Input.Project = projects
 
+	// get the static data and unmarshal into a config object
+	framework_defs := static.Config("framework_defs")
+	err = yaml.Unmarshal(framework_defs, &config.FrameworkDefs)
+	if err != nil {
+		t.Errorf("Error parsing the framework definitions: %s", err.Error())
+	}
+
 	// get a list of the commands from the CheckFramework
-	missing := config.Input.CheckFrameworks()
+	missing := config.Input.CheckFrameworks(&config)
 
 	assert.Equal(t, 1, len(missing))
 	assert.Equal(t, "java", missing[0].Framework)

@@ -1,6 +1,14 @@
-=== Azure DevOps Variable Template
+=== Static values
+
+To make updating easier the CLI utilises a feature in Go that allows text to be embedded into variable at build time. This means that the files are just ext files that do not have to be escaped within the Go code itself.
+
+A number of items are embedded using this technique.
+
+==== Azure DevOps Variable Template
 
 The following listing shows the built in template that is used for the variable template if one is not set in the project settings file.
+
+Location: `internal/config/static/azdo_veriable_template.yml`
 
 .Azure DevOps Variable Template
 [[azdo_variable_template,{listing-caption} {counter:refnum}]]
@@ -8,3 +16,55 @@ The following listing shows the built in template that is used for the variable 
 ----
 include::../internal/config/static/azdo_variable_template.yml[]
 ----
+
+==== Banner Text
+
+The banner that is seen when the CLI runs is configured as a text file
+
+Location: `internal/config/static/banner.txt`
+
+.Banner text
+[[banner_text,{listing-caption} {counter:refnum}]]
+[source,txt,subs="attributes"]
+----
+include::../internal/config/static/banner.txt[]
+----
+
+==== Framework Definitions
+
+Each framework has a number of commands that are associated, which are run as part of the scaffolding process. This files contains a list of those applications, which is used to ensure that the programs exist on the machine before any scaffolding is performed.
+
+Additionally the project settings file can specify version constraints on any approved application. The file contains the arguments that should be run to get the version of that particular command. It also has the regular expression pattern to extract that version number from the output.
+
+This data is read into the config object and has functions that allow the list of commands and versions to be returned.
+
+Location: `internal/config/static/framework_def.yml`
+
+.Framework Definitions
+[[framework_definitions,{listing-caption} {counter:refnum}]]
+[source,yaml,subs="attributes"]
+----
+include::../internal/config/static/framework_def.yml[]
+----
+
+==== Stacks Frameworks
+
+The CLI needs to know which repositories are associated with each of the different combination of frameworks and projects.
+
+To do this the CLI reads in the following data into the `framework` object.
+
+Location: `internal/config/static/stacks_frameworks.yml`
+
+.Stacks Frameworks
+[[stacks_frameworks,{listing-caption} {counter:refnum}]]
+[source,yaml,subs="attributes"]
+----
+include::../internal/config/static/stacks_frameworks.yml[]
+----
+
+To get the correct URL, the CLI will use the configuration that has been set for the project, e.g.
+
+- framework, e.g. `dotnet`
+- frameworkoption, e.g. `webapi`
+
+As this is read into the configuration, it is possible to override the data at runtime using a configuration file.

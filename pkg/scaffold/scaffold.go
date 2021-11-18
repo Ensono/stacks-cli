@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -52,7 +51,7 @@ func (s *Scaffold) Run() error {
 	}
 
 	// Analyse the projects and the frameworks that have been chosen
-	missing := s.Config.Input.CheckFrameworks()
+	missing := s.Config.Input.CheckFrameworks(s.Config)
 	errText := s.analyseMissing(missing)
 	if errText != "" {
 		s.Logger.Fatal(errText)
@@ -91,7 +90,7 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 
 		// get a list of the commands that are expected to be run by something that
 		// uses the framework
-		cmdList := static.FrameworkCommand(project.Framework.Type)
+		cmdList := s.Config.GetFrameworkCommands(project.Framework.Type)
 
 		// check the operation command to see if has been specified
 		// and that it is listed in the cmdList
@@ -111,36 +110,10 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 			return err
 		}
 
-		// set the command to be run if the platform is windows
-		// if runtime.GOOS == "windows" {
-		// 	arguments = fmt.Sprintf("/C %s %s", command, arguments)
-		// 	command = "cmd"
-		// }
-
-		// get the cmd and args from the utils.BuildCommand function
-		cmd, args := util.BuildCommand(command, arguments)
-
-		// output the command being run if in debug mode
-		s.Logger.Debugf("Command: %s %s", command, arguments)
-
-		// Write out the command log
-		err = s.Config.WriteCmdLog(path, fmt.Sprintf("%s %s", command, arguments))
+		// Execute the command and check that it worked
+		_, err = s.Config.ExecuteCommand(path, s.Logger, command, arguments, false)
 		if err != nil {
-			s.Logger.Warnf("Unable to write command to log: %s", err.Error())
-		}
-
-		// set the command that needs to be executed
-		cmdLine := exec.Command(cmd, args...)
-		// cmd.Stdout = os.Stdout
-		cmdLine.Stderr = os.Stderr
-		cmdLine.Dir = path
-
-		// only run the command if not in dryrun mode
-		if !s.Config.IsDryRun() {
-			if err = cmdLine.Run(); err != nil {
-				s.Logger.Errorf("Error running command: %s", err.Error())
-				return err
-			}
+			s.Logger.Errorf("Issue running command: %s", err.Error())
 		}
 	}
 
@@ -226,6 +199,31 @@ func (s *Scaffold) processProject(project config.Project) {
 	if err != nil {
 		s.Logger.Errorf("Error reading settings from project settings: %s", err.Error())
 		return
+	}
+
+	// check to see if any framework commands have been set and check the
+	// version if they have
+	incorrect := project.Settings.CheckCommandVersions(s.Config, s.Logger, project.Directory.WorkingDir)
+	if len(incorrect) > 0 {
+
+		var parts []string
+
+		for _, wrong := range incorrect {
+			// iterate around the incorrect versions and create the body of the text to output
+			parts = append(parts,
+				fmt.Sprintf("\tVersion constraint for '%s' is '%s', but found '%s'", wrong.Binary, wrong.VersionRequired, wrong.VersionFound),
+			)
+		}
+
+		s.Logger.Errorf("Unable to process project as framework versions are incorrect.\n\n%s", strings.Join(parts, "\n"))
+
+		// there are issues with the versions of the commands, so move onto the next project
+		// but only if Force is not set
+		if s.Config.Force() {
+			s.Logger.Warn("Continuing as the `force` option has been set. Your project may not configure properly with incorrect command versions")
+		} else {
+			return
+		}
 	}
 
 	// iterate around the phases of the project and the operations contained therin

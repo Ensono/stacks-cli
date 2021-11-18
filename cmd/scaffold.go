@@ -36,6 +36,11 @@ func init() {
 	var framework_type string
 	var framework_option string
 	var framework_version string
+	var framework_property_1 string
+	var framework_property_2 string
+	var framework_property_3 string
+	var framework_property_4 string
+	var framework_property_5 string
 
 	// - platform settings
 	var platform_type string
@@ -76,6 +81,13 @@ func init() {
 	scaffoldCmd.Flags().StringVarP(&framework_option, "frameworkoption", "O", "", "Option of the chosen framework to use")
 	scaffoldCmd.Flags().StringVarP(&framework_version, "frameworkversion", "V", "latest", "Version of the framework package to download")
 
+	// get the properties from the command line
+	scaffoldCmd.Flags().StringVar(&framework_property_1, "frameworkprop1", "", "Property to pass to the project settings")
+	scaffoldCmd.Flags().StringVar(&framework_property_2, "frameworkprop2", "", "Property to pass to the project settings")
+	scaffoldCmd.Flags().StringVar(&framework_property_3, "frameworkprop3", "", "Property to pass to the project settings")
+	scaffoldCmd.Flags().StringVar(&framework_property_4, "frameworkprop4", "", "Property to pass to the project settings")
+	scaffoldCmd.Flags().StringVar(&framework_property_5, "frameworkprop5", "", "Property to pass to the project settings")
+
 	scaffoldCmd.Flags().StringVarP(&platform_type, "platformtype", "P", "", "Type of platform being deployed to")
 
 	scaffoldCmd.Flags().StringVarP(&pipeline, "pipeline", "p", "", "Pipeline to use for CI/CD")
@@ -107,9 +119,6 @@ func init() {
 	// only one can be specified on the command line and in Environment variables
 	// Viper works out that this is a slice and will bind to the first element of the slice
 	viper.BindPFlag("project.name", scaffoldCmd.Flags().Lookup("name"))
-	viper.BindPFlag("project.framework.type", scaffoldCmd.Flags().Lookup("framework"))
-	viper.BindPFlag("project.framework.option", scaffoldCmd.Flags().Lookup("frameworkoption"))
-	viper.BindPFlag("project.framework.version", scaffoldCmd.Flags().Lookup("frameworkversion"))
 	viper.BindPFlag("project.platform.type", scaffoldCmd.Flags().Lookup("platformtype"))
 	viper.BindPFlag("project.sourcecontrol.type", scaffoldCmd.Flags().Lookup("sourcecontrol"))
 	viper.BindPFlag("project.sourcecontrol.url", scaffoldCmd.Flags().Lookup("sourcecontrolurl"))
@@ -117,6 +126,18 @@ func init() {
 	viper.BindPFlag("project.settingsfile", scaffoldCmd.Flags().Lookup("projectsettingsfile"))
 	viper.BindPFlag("project.cloud.region", scaffoldCmd.Flags().Lookup("cloudregion"))
 	viper.BindPFlag("project.cloud.group", scaffoldCmd.Flags().Lookup("cloudgroup"))
+
+	// configure the project framework settings
+	viper.BindPFlag("project.framework.type", scaffoldCmd.Flags().Lookup("framework"))
+	viper.BindPFlag("project.framework.option", scaffoldCmd.Flags().Lookup("frameworkoption"))
+	viper.BindPFlag("project.framework.version", scaffoldCmd.Flags().Lookup("frameworkversion"))
+
+	// -- bind the framework properties to the project framework
+	viper.BindPFlag("project.framework.properties.prop1", scaffoldCmd.Flags().Lookup("frameworkprop1"))
+	viper.BindPFlag("project.framework.properties.prop2", scaffoldCmd.Flags().Lookup("frameworkprop2"))
+	viper.BindPFlag("project.framework.properties.prop3", scaffoldCmd.Flags().Lookup("frameworkprop4"))
+	viper.BindPFlag("project.framework.properties.prop4", scaffoldCmd.Flags().Lookup("frameworkprop4"))
+	viper.BindPFlag("project.framework.properties.prop5", scaffoldCmd.Flags().Lookup("frameworkprop5"))
 
 	viper.BindPFlag("settingsfile", scaffoldCmd.Flags().Lookup("settingsfile"))
 

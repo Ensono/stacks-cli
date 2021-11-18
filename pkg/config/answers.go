@@ -28,15 +28,16 @@ type Answers struct {
 // ProjectAnswers are the list of answers that are provided for each project defined
 // on the command line
 type ProjectAnswers struct {
-	Name              string `survey:"name"`
-	FrameworkType     string `survey:"framework_type"`
-	FrameworkOption   string `survey:"framework_option"`
-	FrameworkVersion  string `survey:"framework_version"`
-	PlatformType      string `survey:"platform_type"`
-	SourceControlType string `survey:"source_control_type"`
-	SourceControlUrl  string `survey:"source_control_url"`
-	CloudRegion       string `survey:"cloud_region"`
-	CloudGroup        string `survey:"cloud_group"`
+	Name                string `survey:"name"`
+	FrameworkType       string `survey:"framework_type"`
+	FrameworkOption     string `survey:"framework_option"`
+	FrameworkVersion    string `survey:"framework_version"`
+	FrameworkProperties string `survey:"framework_properties`
+	PlatformType        string `survey:"platform_type"`
+	SourceControlType   string `survey:"source_control_type"`
+	SourceControlUrl    string `survey:"source_control_url"`
+	CloudRegion         string `survey:"cloud_region"`
+	CloudGroup          string `survey:"cloud_group"`
 }
 
 // getCoreQuestions returns the list of questions that need to be answered in interactive
@@ -184,6 +185,13 @@ func (a *Answers) getProjectQuestions() []*survey.Question {
 			Validate: survey.Required,
 		},
 		{
+			Name: "framework_properties",
+			Prompt: &survey.Input{
+				Message: "Specify any additional framework properties. (Use a comma to separate each one).",
+				Default: "",
+			},
+		},
+		{
 			Name: "platform_type",
 			Prompt: &survey.Select{
 				Message: "What platform is being used",
@@ -279,6 +287,12 @@ func (a *Answers) RunInteractive(config *Config) error {
 		err = survey.Ask(a.getProjectQuestions(), &pa)
 		if err != nil {
 			continue
+		}
+
+		// check to see if any properties have been specified, and if they have
+		// create a properties object to work with the
+		if pa.FrameworkProperties != "" {
+
 		}
 
 		// create a struct for the project

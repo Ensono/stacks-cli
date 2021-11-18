@@ -85,6 +85,8 @@ func (suite *InteractiveSuite) TestInteractiveMode() {
 	cp.SendLine(framework_option)
 	cp.Expect("Which version of the framework option do you require?")
 	cp.SendLine("")
+	cp.Expect("Specify any additional framework properties. (Use a comma to separate each one).")
+	cp.SendLine("")
 	cp.Expect("What platform is being used")
 	cp.SendLine(platform)
 	cp.Expect("Please select the source control system being used")

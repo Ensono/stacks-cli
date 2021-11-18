@@ -33,7 +33,7 @@ type ProjectAnswers struct {
 	FrameworkType       string `survey:"framework_type"`
 	FrameworkOption     string `survey:"framework_option"`
 	FrameworkVersion    string `survey:"framework_version"`
-	FrameworkProperties string `survey:"framework_properties`
+	FrameworkProperties string `survey:"framework_properties"`
 	PlatformType        string `survey:"platform_type"`
 	SourceControlType   string `survey:"source_control_type"`
 	SourceControlUrl    string `survey:"source_control_url"`

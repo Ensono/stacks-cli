@@ -153,3 +153,28 @@ setup: // <14>
 
 This example shows one action that needs to be performed on the project before it has been created in the user specified working directory.
 
+=== Examples
+
+The GO template package is very powerful and allows advanced configuration in a settings file. This section shows some examples of what can be achieved.
+
+==== Setting a default value
+
+The framework properties that can be specified on a project allow extra information to be specified in the CLI configuration that is passed to the template. This information does not have to be set, but a default value maybe required in the template.
+
+For example, in the `stacks-dotnet-cqrs-events` project we need to be able to pass in `servicebus` or `eventhub` based on the selection from the user. However if this selection is not made then the project settings file should still work as expected. It is not possible to default the property to a known value as these properties will be used by other languages, so the value needs to have a default in the template.
+
+To achieve this the `or` template function needs to be used. This function takes values and will use the first value that has been set.
+
+The following listing shows a snippet of the project settings file for a project.
+
+.Setting default value using Go template
+[source=yaml,linenum]
+----
+- action: cmd
+  cmd: dotnet
+  args: new stacks-cqrs-events-app -n {{ .Input.Business.Company }}.{{ .Input.Business.Domain }} -o {{ .Project.Directory.WorkingDir }} -e {{ or .Project.Framework.Properties.Prop1 "servicebus"}}  
+----
+
+In this example all of the values for the parameters come from the `.Input` or `.Project` object (as detailed in the <<_templating>> section).
+
+The last parameter to be set is defined as `{{ or .Project.Framework.Properties.Prop1 "servicebus" }}`. This will set the `-e` parameter to the value set in the property if that is set or default to "servicebus".

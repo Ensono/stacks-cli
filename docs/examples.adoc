@@ -169,8 +169,7 @@ log:
 directory:
   working: "C:\\Users\\RussellSeymour\\scratch\\projects"
 business:
-  company: MyCompany
-  project: ""
+  company: My Company
   domain: core
   component: backend
 cloud:
@@ -178,7 +177,6 @@ cloud:
 network:
   base:
     domain:
-      internal: ""
       external: example-stacks.com
 pipeline: azdo
 project:
@@ -192,7 +190,6 @@ project:
   sourcecontrol:
     type: github
     url: https://github.com/russellseymour/my-webapi
-  settingsfile: "C:\\Users\\RussellSeymour\\workspaces\\stacks\\stacks-cli\\local\\stackscli.yml"
   cloud:
     region: ukwest
     group: mywebapi-resources

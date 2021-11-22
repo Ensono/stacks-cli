@@ -80,6 +80,8 @@ stacks-cli interactive
 
 Please see the <<.NET WebApi project using the interactive mode>> section for an example of how this command can be used.
 
+The CLI allows properties to be set that influence the way that the project is scaffolded. Up to five of these properties can be set. However the interactive command only asks once if properties are required. To set more than property, please separate the values using a comma.
+
 ==== Scaffold
 
 The `scaffold` command is the main command that will be used. This downloads the specified projects, customises them and sets them up in the specified directory. To see the help for this command run the following:

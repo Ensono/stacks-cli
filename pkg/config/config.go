@@ -278,12 +278,13 @@ func (config *Config) ExecuteCommand(path string, logger *logrus.Logger, command
 		writers = append(writers, os.Stdout)
 	}
 
-	// declare multiwrite to that stdout can be read into a variable
-	//	if show {
+	// add stderr to the mwriter, if running in loglevel greater than info
+	levels := []string{"debug", "trace"}
+	if util.SliceContains(levels, strings.ToLower(logger.GetLevel().String())) {
+		writers = append(writers, os.Stderr)
+	}
+
 	mwriter = io.MultiWriter(writers...)
-	//	} else {
-	//		mwriter = io.MultiWriter(&result)
-	//	}
 
 	// set the command that needs to be executed
 	cmdLine := exec.Command(cmd, args...)

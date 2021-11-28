@@ -21,12 +21,13 @@ The following options can be applied to any command within the Stacks CLI.
 |===
 | Option | Environment Variable | Description | Default | Options 
 | `-c`, `--config` | AMIDOSTACKS_CONFIG | Path to the configuration file to use | | 
-| `-l`, `--loglevel` | AMIDOSTACKS_LOGLEVEL | Level of logging to be used | `info` | `debug`, `info`, `warning`, `error`, `fatal` 
-| `-f`, `--logformat` | AMIDOSTACKS_LOGFORMAT | Output type of the logging | `text` | `text`, `json` 
-| `--logcolur` | AMIDOSTACKS_LOGCOLOUR | State if logging should include colour | | 
+| `-l`, `--loglevel` | AMIDOSTACKS_LOG_LEVEL | Level of logging to be used | `info` | `debug`, `info`, `warning`, `error`, `fatal` 
+| `-f`, `--logformat` | AMIDOSTACKS_LOG_FORMAT | Output type of the logging | `text` | `text`, `json` 
+| `--logcolur` | AMIDOSTACKS_LOG_COLOUR | State if logging should include colour | | 
 | `-w`, `--workingdirectory` | AMIDOSTACKS_DIRECTORY_WORKINGDIR | Directory that the projects should be created in | `${PWD}` | 
 | `--tempdir` | AMIDOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Stacks for its temp files | System temp directory | 
-| `--nobanner` | AMIDOSTACKS_NOBANNER | Do not display the Stacks banner when running the command | `false` |
+| `--nobanner` | AMIDOSTACKS_OPTIONS_NOBANNER | Do not display the Stacks banner when running the command | `false` |
+| `--nocliversion` | AMIDOSTACKS_OPTIONS_NOCLIVERSION | Do not perform a version check for the latest version of the Amido Stacks CLI | `false` |
 |===
 
 ==== Scaffold Options

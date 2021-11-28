@@ -214,6 +214,7 @@ options:
   cmdlog: false
   dryrun: false
   nobanner: false
+  nocliversion: false
 ----
 
 The command that needs to be run next is displayed at the end of the output.

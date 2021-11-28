@@ -138,3 +138,18 @@ This is not terribly helpful to understand what is happening. This is ocurring b
 
 .Showing commands using debug log level
 image::images/stackscli-op-debug.png[]
+
+=== CLI Version Check
+
+The Stacks CLI is constantly evolving and as such there are new versions being released frequently. To help ensure that you are running the most up to date version, it will check the releases for the CLI and compare that version against the one that you are running. If there is a mismatch then the CLI will inform you of the newer version.
+
+NOTE: This check does not prevent normal operation if you have an older version. However you _may_ find that some things do not work as you intend.
+
+.Stacks CLI version check
+image::images/stackscli-version-check.png[]
+
+This is a simple version check, it does not update the CLI for you, but does provide a link to the latest version for download and information purposes.
+
+The version check can be turned off using the `--nocliversion` option or the `options.nocliversion` in a configuration file or using the `AMIDOSTACKS_OPTIONS_NOCLIVERSION` environment variable.
+
+The CLI will not attempt to perform a version check if it is not able to resolve the address for GitHub, in which case it assumes that it is running in an offline environment.

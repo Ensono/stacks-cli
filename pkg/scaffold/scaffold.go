@@ -182,7 +182,7 @@ func (s *Scaffold) processProject(project config.Project) {
 	s.Logger.Infof("Retrieving framework option: %s", key)
 	dir, err := util.GitClone(
 		srcUrl,
-		project.SourceControl.Ref,
+		project.Framework.Version,
 		s.Config.Input.Directory.TempDir,
 	)
 

@@ -184,7 +184,7 @@ project:
   framework:
     type: dotnet
     option: webapi
-    version: v208
+    version: v3.0.232
   platform:
     type: aks
   sourcecontrol:

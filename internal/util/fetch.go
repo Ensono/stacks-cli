@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 )
@@ -13,9 +12,7 @@ import (
 // GitClone uses standard network library to fetch a defined commit and avoids bloating the binary
 func GitClone(repoUrl, commitHash, tmpPath string) (string, error) {
 
-	if commitHash == "" {
-		commitHash = "master"
-	}
+	commitHash = getDefaultCommitHash(commitHash)
 
 	// get the URL to be used to clone the repo from
 	archiveUrl := ArchiveUrl(repoUrl, commitHash)
@@ -41,7 +38,7 @@ func GitClone(repoUrl, commitHash, tmpPath string) (string, error) {
 	}
 
 	// unzip the downloaded files to the tempdir for the project
-	err = Unzip(zipPath, tmpPath)
+	tempRepoDir, err := Unzip(zipPath, tmpPath)
 	if err != nil {
 		return "", err
 	}
@@ -49,21 +46,20 @@ func GitClone(repoUrl, commitHash, tmpPath string) (string, error) {
 	// remove the zip file
 	_ = os.Remove(zipPath)
 
-	// return the path to the unpacked repo
-	_, repoName := path.Split(repoUrl)
-	cloneDir := filepath.Join(tmpPath, fmt.Sprintf("%s-%s", repoName, commitHash))
-
-	return cloneDir, nil
-
+	return tempRepoDir, nil
 }
 
 // ArchiveUrl returns the archive url for the repo at a given commit hash or branch or v release
 func ArchiveUrl(repoUrl, commitHash string) string {
 
-	// of the commitHash is empty, set as master
-	if commitHash == "" {
-		commitHash = "master"
-	}
+	commitHash = getDefaultCommitHash(commitHash)
 
 	return strings.Join([]string{strings.TrimSuffix(repoUrl, ".git"), fmt.Sprintf("archive/%s.zip", commitHash)}, "/")
+}
+
+func getDefaultCommitHash(hash string) string {
+	if hash == "" {
+		hash = "latest"
+	}
+	return hash
 }

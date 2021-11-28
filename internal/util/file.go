@@ -130,11 +130,11 @@ func CopySymLink(source, dest string) error {
 // Unzip will decompress a zip archive, moving all files and folders
 // within the zip file (parameter 1) to an output directory (parameter 2).
 // Returns all unzipped files (abs path)
-func Unzip(src, dest string) error {
+func Unzip(src, dest string) (string, error) {
 
 	r, err := zip.OpenReader(src)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer r.Close()
 
@@ -146,7 +146,7 @@ func Unzip(src, dest string) error {
 
 		// Check for ZipSlip. More Info: http://bit.ly/2MsjAWE
 		if !strings.HasPrefix(filePath, filepath.Clean(dest)+string(os.PathSeparator)) {
-			return fmt.Errorf("%s: illegal file path", filePath)
+			return "", fmt.Errorf("%s: illegal file path", filePath)
 		}
 
 		// if the file is a directory, create it
@@ -159,25 +159,25 @@ func Unzip(src, dest string) error {
 
 		// Make the file
 		if err = os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
-			return err
+			return "", err
 		}
 
 		// read the content of the current file so it can be set in the destination file
 		outFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		// open the current file
 		rc, err := file.Open()
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		// copy the content of the current to the new one
 		_, err = io.Copy(outFile, rc)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		// close the files
@@ -186,7 +186,11 @@ func Unzip(src, dest string) error {
 
 	}
 
-	return nil
+	// get the directory in the dest which is the cloned dir
+	files, _ := os.ReadDir(dest)
+	tmpRepoDir := filepath.Join(dest, files[0].Name())
+
+	return tmpRepoDir, nil
 }
 
 // GetDefaultTempDir determines and creates a temporary directory for packages and source

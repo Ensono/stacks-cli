@@ -15,3 +15,7 @@
     command: java
     arguments: -version
     pattern: '"(?P<version>.*)"'
+
+- name: infra
+  commands:
+    - git

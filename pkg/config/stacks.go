@@ -4,6 +4,7 @@ type Stacks struct {
 	Dotnet Dotnet `mapstructure:"dotnet"`
 	Java   Java   `mapstructure:"java"`
 	NodeJS NodeJS `mapstructure:"nodejs"`
+	Infra  Infra  `mapstructure:"infra"`
 }
 
 type Dotnet struct {
@@ -23,6 +24,10 @@ type NodeJS struct {
 	SSR string `mapstructure:"ssr"`
 }
 
+type Infra struct {
+	AKS string `mapstructure:"aks"`
+}
+
 // GetSrcURLMap returns a map of the source control repositores
 func (stacks *Stacks) GetSrcURLMap() map[string]string {
 
@@ -35,6 +40,7 @@ func (stacks *Stacks) GetSrcURLMap() map[string]string {
 		"java_events":   stacks.Java.Events,
 		"nodejs_csr":    stacks.NodeJS.CSR,
 		"nodejs_ssr":    stacks.NodeJS.SSR,
+		"infra_aks":     stacks.Infra.AKS,
 	}
 
 	return srcUrls

@@ -75,7 +75,7 @@ func (s *Scaffold) Run() error {
 //		copy - copies data from the temporary dir to the working dir
 //		cmd - run a command on the local machine
 //			The command is set using the `command` parameter
-func (s *Scaffold) PerformOperation(operation config.Operation, project *config.Project, path string) error {
+func (s *Scaffold) PerformOperation(operation config.Operation, project *config.Project, path string, cloneDir string) error {
 
 	var command string
 
@@ -115,6 +115,11 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 		if err != nil {
 			s.Logger.Errorf("Issue running command: %s", err.Error())
 		}
+	case "copy":
+
+		// copy the repository from the cloned directory to the project working directory
+		// do not copy the git configuration folder
+		util.CopyDirectory(cloneDir, path)
 	}
 
 	return nil
@@ -234,7 +239,7 @@ func (s *Scaffold) processProject(project config.Project) {
 			s.Logger.Info(op.Description)
 
 			// perform the operation
-			err = s.PerformOperation(op, &project, phase.Directory)
+			err = s.PerformOperation(op, &project, phase.Directory, dir)
 
 			if err != nil {
 				s.Logger.Errorf("issue encountered performing '%s' operation: %s", phase.Name, err.Error())
@@ -303,7 +308,11 @@ func (s *Scaffold) configurePipeline(project *config.Project) {
 		msg, err := s.Config.WriteVariablesFile(project, pipelineSettings, replacements)
 
 		if err == nil {
-			s.Logger.Info("Created pipeline variable file")
+			if msg == "" {
+				s.Logger.Info("Created pipeline variable file")
+			} else {
+				s.Logger.Warn(msg)
+			}
 		} else {
 			s.Logger.Error(msg)
 		}
@@ -346,7 +355,7 @@ func (s *Scaffold) configureGitRepository(project *config.Project) {
 		}
 
 		// call the PerformOperation function
-		err := s.PerformOperation(op, project, project.Directory.WorkingDir)
+		err := s.PerformOperation(op, project, project.Directory.WorkingDir, "")
 
 		if err != nil {
 			s.Logger.Error(err.Error())

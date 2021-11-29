@@ -69,7 +69,12 @@ func (p *Pipeline) GetVariableTemplate(workingDir string) string {
 
 	// if the variableTemplate has been set attempt to find the file and read in its contents
 	if templateVarPath != "" {
-		path := filepath.Join(workingDir, templateVarPath)
+
+		// update the path if it is not an absolute path
+		path := templateVarPath
+		if !filepath.IsAbs(path) {
+			path = filepath.Join(workingDir, templateVarPath)
+		}
 
 		if util.Exists(path) {
 			content, _ := ioutil.ReadFile(path)

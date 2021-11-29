@@ -12,7 +12,7 @@ import (
 type Project struct {
 	Name          string        `mapstructure:"name"`
 	Framework     Framework     `mapstructure:"framework"`
-	Platform      Platform      `mapstructure:"platform"`
+	Platform      Platform      `mapstructure:"platform" json:",omitempty"`
 	SourceControl SourceControl `mapstructure:"sourcecontrol"`
 	SettingsFile  string        `mapstructure:"settingsfile" json:",omitempty"`
 	Cloud         Cloud         `mapstructure:"cloud"`

@@ -29,7 +29,6 @@ func init() {
 	var project_name string
 	var project_vcs_type string
 	var project_vcs_url string
-	var project_vcs_ref string
 	var project_settings_file string
 
 	// - framework settings
@@ -74,7 +73,6 @@ func init() {
 	scaffoldCmd.Flags().StringVarP(&project_name, "name", "n", "", "Name of the project to create")
 	scaffoldCmd.Flags().StringVar(&project_vcs_type, "sourcecontrol", "github", "Type of source control being used")
 	scaffoldCmd.Flags().StringVarP(&project_vcs_url, "sourcecontrolurl", "u", "", "Url of the remote for source control")
-	scaffoldCmd.Flags().StringVar(&project_vcs_ref, "sourcecontrolref", "", "SHA reference or Tag to use to clone repo from")
 	scaffoldCmd.Flags().StringVar(&project_settings_file, "projectsettingsfile", "", "Path to a settings file to use for the project")
 
 	scaffoldCmd.Flags().StringVarP(&framework_type, "framework", "F", "", "Framework for the project")
@@ -122,7 +120,7 @@ func init() {
 	viper.BindPFlag("project.platform.type", scaffoldCmd.Flags().Lookup("platformtype"))
 	viper.BindPFlag("project.sourcecontrol.type", scaffoldCmd.Flags().Lookup("sourcecontrol"))
 	viper.BindPFlag("project.sourcecontrol.url", scaffoldCmd.Flags().Lookup("sourcecontrolurl"))
-	viper.BindPFlag("project.sourcecontrol.ref", scaffoldCmd.Flags().Lookup("sourcecontrolref"))
+
 	viper.BindPFlag("project.settingsfile", scaffoldCmd.Flags().Lookup("projectsettingsfile"))
 	viper.BindPFlag("project.cloud.region", scaffoldCmd.Flags().Lookup("cloudregion"))
 	viper.BindPFlag("project.cloud.group", scaffoldCmd.Flags().Lookup("cloudgroup"))

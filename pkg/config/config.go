@@ -153,6 +153,11 @@ func (config *Config) WriteVariablesFile(project *Project, pipelineSettings Pipe
 	variableFile = pipelineSettings.GetFilePath("file", project.Directory.WorkingDir, "variable")
 	variableTemplate = pipelineSettings.GetVariableTemplate(project.Directory.WorkingDir)
 
+	// if the variable file has not been set then return
+	if variableFile == "" {
+		return "Variable file has not been defined in the project settings", nil
+	}
+
 	// render the variable file
 	rendered, err := config.RenderTemplate(variableTemplate, replacements)
 

@@ -151,86 +151,101 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 	return questions
 }
 
-func (a *Answers) getProjectQuestions() []*survey.Question {
+func (a *Answers) getProjectQuestions(qType string) []*survey.Question {
 
-	var questions = []*survey.Question{
-		{
-			Name: "name",
-			Prompt: &survey.Input{
-				Message: "What is the project name?",
+	var questions []*survey.Question
+
+	// use the qType to determine which questions need to be asked
+	switch qType {
+	case "pre":
+		questions = []*survey.Question{
+			{
+				Name: "name",
+				Prompt: &survey.Input{
+					Message: "What is the project name?",
+				},
+				Validate: survey.Required,
 			},
-			Validate: survey.Required,
-		},
-		{
-			Name: "framework_type",
-			Prompt: &survey.Select{
-				Message: "What framework should be used for the project?",
-				Options: []string{"dotnet", "java"},
+			{
+				Name: "framework_type",
+				Prompt: &survey.Select{
+					Message: "What framework should be used for the project?",
+					Options: []string{"dotnet", "java", "infra"},
+				},
+				Validate: survey.Required,
 			},
-			Validate: survey.Required,
-		},
-		{
-			Name: "framework_option",
-			Prompt: &survey.Select{
-				Message: "Which style of the framework do you require?",
-				Options: []string{"webapi", "cqrs", "events"},
+		}
+	case "dotnet", "java":
+		questions = []*survey.Question{
+			{
+				Name: "framework_option",
+				Prompt: &survey.Select{
+					Message: "Which option of the framework do you require?",
+					Options: []string{"webapi", "cqrs", "events"},
+				},
+				Validate: survey.Required,
 			},
-			Validate: survey.Required,
-		},
-		{
-			Name: "framework_version",
-			Prompt: &survey.Input{
-				Message: "Which version of the framework option do you require?",
-				Default: "latest",
+			{
+				Name: "framework_properties",
+				Prompt: &survey.Input{
+					Message: "Specify any additional framework properties. (Use a comma to separate each one).",
+					Default: "",
+				},
 			},
-			Validate: survey.Required,
-		},
-		{
-			Name: "framework_properties",
-			Prompt: &survey.Input{
-				Message: "Specify any additional framework properties. (Use a comma to separate each one).",
-				Default: "",
+		}
+	case "infra":
+		questions = []*survey.Question{
+			{
+				Name: "framework_option",
+				Prompt: &survey.Select{
+					Message: "Which type of infrastructure is required?",
+					Options: []string{"aks"},
+					Default: "aks",
+				},
+				Validate: survey.Required,
 			},
-		},
-		{
-			Name: "platform_type",
-			Prompt: &survey.Select{
-				Message: "What platform is being used",
-				Options: []string{"aks"},
-				Default: "aks",
+		}
+	case "post":
+		questions = []*survey.Question{
+			{
+				Name: "framework_version",
+				Prompt: &survey.Input{
+					Message: "Which version of the framework option do you require?",
+					Default: "latest",
+				},
+				Validate: survey.Required,
 			},
-			Validate: survey.Required,
-		},
-		{
-			Name: "source_control_type",
-			Prompt: &survey.Select{
-				Message: "Please select the source control system being used",
-				Options: []string{"github"},
-				Default: "github",
+			{
+				Name: "source_control_type",
+				Prompt: &survey.Select{
+					Message: "Please select the source control system being used",
+					Options: []string{"github"},
+					Default: "github",
+				},
+				Validate: survey.Required,
 			},
-			Validate: survey.Required,
-		},
-		{
-			Name: "source_control_url",
-			Prompt: &survey.Input{
-				Message: "What is the URL of the remote repository?",
+			{
+				Name: "source_control_url",
+				Prompt: &survey.Input{
+					Message: "What is the URL of the remote repository?",
+				},
+				Validate: survey.Required,
 			},
-			Validate: survey.Required,
-		},
-		{
-			Name: "cloud_region",
-			Prompt: &survey.Input{
-				Message: "Which cloud region should be used?",
+			{
+				Name: "cloud_region",
+				Prompt: &survey.Input{
+					Message: "Which cloud region should be used?",
+				},
+				Validate: survey.Required,
 			},
-			Validate: survey.Required,
-		},
-		{
-			Name: "cloud_group",
-			Prompt: &survey.Input{
-				Message: "What is the name of the group for all the resources?",
+			{
+				Name: "cloud_group",
+				Prompt: &survey.Input{
+					Message: "What is the name of the group for all the resources?",
+				},
+				Validate: survey.Required,
 			},
-			Validate: survey.Required,
-		},
+		}
 	}
 
 	return questions
@@ -284,8 +299,24 @@ func (a *Answers) RunInteractive(config *Config) error {
 		fmt.Printf("\nConfiguring project: %d\n", i+1)
 
 		// ask the project questions
+		// this is done in 3 stages so that the different options of the framework can be
+		// modified based on the main framework that has been specified
 		pa := ProjectAnswers{}
-		err = survey.Ask(a.getProjectQuestions(), &pa)
+
+		// - pre questions
+		err = survey.Ask(a.getProjectQuestions("pre"), &pa)
+		if err != nil {
+			continue
+		}
+
+		// - specific questions based on the framework selected
+		err = survey.Ask(a.getProjectQuestions(pa.FrameworkType), &pa)
+		if err != nil {
+			continue
+		}
+
+		// - post questions
+		err = survey.Ask(a.getProjectQuestions("post"), &pa)
 		if err != nil {
 			continue
 		}

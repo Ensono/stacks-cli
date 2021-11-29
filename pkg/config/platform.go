@@ -1,5 +1,5 @@
 package config
 
 type Platform struct {
-	Type string `mapstructure:"type"`
+	Type string `mapstructure:"type" json:",omitempty"`
 }

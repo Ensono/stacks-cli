@@ -78,9 +78,9 @@ func (suite *CLIAlertSuite) TestAppsNotFoundInPathEnvVar() {
 
 	// set the path according to the os
 	if runtime.GOOS == "windows" {
-		path = "C:/Windows/System32"
+		path = ".;bin;C:/Windows/System32"
 	} else {
-		path = "/usr/sbin"
+		path = ".:bin:/usr/sbin"
 	}
 
 	err := os.Setenv("PATH", path)
@@ -97,6 +97,7 @@ func (suite *CLIAlertSuite) TestAppsNotFoundInPathEnvVar() {
 		// create the pattern to match the output
 		pattern := "Command 'dotnet' for the 'dotnet' framework cannot be located."
 		t.Logf("Looking for pattern: %s", pattern)
+		t.Logf(suite.CmdOutput)
 
 		re := regexp.MustCompile(pattern)
 		matched := re.MatchString(suite.CmdOutput)
@@ -181,6 +182,61 @@ func (suite *CLIAlertSuite) TestIncorrectFrameworkOption() {
 
 	// reset the framework option
 	framework_option = oldFrameworkOption
+}
+
+// TestCLIVersionCheck tests that the cli is correctly stating that there is a newer version
+// of the CLI available
+// This works because although the built version will be the latest one, it has not been published
+// on GitHub yet so that will be the latest version
+func (suite *CLIAlertSuite) TestCLIVersionCheck() {
+
+	// write out a configuration file
+	// write out a configuration file
+	configFile := suite.BaseIntegration.WriteConfigFile()
+
+	// create test table to use
+	tables := []struct {
+		title     string
+		arguments string
+		pattern   string
+		test      bool
+		msg       string
+	}{
+		{
+			title:     "Ensure CLI advises of newer version of software",
+			arguments: fmt.Sprintf("scaffold -c %s --nobanner", configFile),
+			pattern:   "A newer release version of the Stacks CLI is available",
+			test:      true,
+			msg:       "CLI should perform a version check against the latest version",
+		},
+		{
+			title:     "CLI version check is not performed",
+			arguments: fmt.Sprintf("scaffold -c %s --nobanner --nocliversion", configFile),
+			pattern:   "A newer release version of the Stacks CLI is available",
+			test:      false,
+			msg:       "No version check should be attempted as the --nocliversion argument has been specified",
+		},
+	}
+
+	// iterate around the test tables
+	for _, table := range tables {
+
+		// run the command with the table arguments
+		suite.BaseIntegration.RunCommand(suite.BinaryCmd, table.arguments, false)
+
+		suite.T().Run(table.title, func(t *testing.T) {
+
+			// see if the specified pattern exists in the output
+			t.Logf("Looking for pattern: %s", table.pattern)
+
+			re := regexp.MustCompile(table.pattern)
+			matched := re.MatchString(suite.CmdOutput)
+
+			if table.test != matched {
+				t.Error(table.msg)
+			}
+		})
+	}
 }
 
 // TestCLIAlertSuite runs the suite of tests to check that the CLI responds in the

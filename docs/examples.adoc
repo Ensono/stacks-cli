@@ -11,7 +11,7 @@
 :example_project_name: my-webapi
 :example_framework: dotnet
 :example_framework_option: webapi
-:example_framework_version: v0.0.208
+:example_framework_version: v3.0.232
 
 == Examples
 
@@ -38,8 +38,11 @@ In previous versions of the CLI, this has been referred to as the domain, but it
 | tfstorage | `{example_tf_storage}` | Name of the storage that will hold the Terraform state
 | tfcontainer | `{example_tf_container}` | Container in the storage for the state files
 | name | `{example_project_name}` | Name of the project to create in the working directory
-| framework | `{example_framework}` | Framework being used, e.g. `dotnet` or `java`
-| framework_option | `{example_framework_option}` | The option within the framework being created, e.g. `webapi`, `cqrs` or `events`
+| framework | `{example_framework}` | Framework being used, e.g. `dotnet`, `java` or `infra`
+| framework_option | `{example_framework_option}` | The option within the framework being created.
+
+For `dotnet` or `java` the options are `webapi`, `cqrs` or `events`.
+For `infra` the options are `aks`.
 | framework_version | `{example_framework_version}` | Version of the framework option to grab.
 |===
 
@@ -205,6 +208,8 @@ stacks:
   nodejs:
     csr: https://github.com/amido/stacks-typescript-csr
     ssr: https://github.com/amido/stacks-typescript-ssr
+  infra:
+    aks: https://github.com/amido/stacks-infrastructure-aks
 terraform:
   backend:
     storage: kjh56sdfnjnkjn

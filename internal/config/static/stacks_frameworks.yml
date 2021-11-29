@@ -10,3 +10,5 @@ stacks:
   nodejs:
     csr: https://github.com/amido/stacks-typescript-csr
     ssr: https://github.com/amido/stacks-typescript-ssr
+  infra:
+    aks: https://github.com/amido/stacks-infrastructure-aks/

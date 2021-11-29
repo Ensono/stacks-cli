@@ -78,9 +78,9 @@ func (suite *CLIAlertSuite) TestAppsNotFoundInPathEnvVar() {
 
 	// set the path according to the os
 	if runtime.GOOS == "windows" {
-		path = "C:/Windows/System32"
+		path = ".;bin;C:/Windows/System32"
 	} else {
-		path = "/usr/sbin"
+		path = ".:bin:/usr/sbin"
 	}
 
 	err := os.Setenv("PATH", path)
@@ -97,6 +97,7 @@ func (suite *CLIAlertSuite) TestAppsNotFoundInPathEnvVar() {
 		// create the pattern to match the output
 		pattern := "Command 'dotnet' for the 'dotnet' framework cannot be located."
 		t.Logf("Looking for pattern: %s", pattern)
+		t.Logf(suite.CmdOutput)
 
 		re := regexp.MustCompile(pattern)
 		matched := re.MatchString(suite.CmdOutput)

@@ -1,8 +1,12 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net"
+	"net/http"
 	"strings"
 
 	"github.com/amido/stacks-cli/internal/config/static"
@@ -57,7 +61,8 @@ func init() {
 	var workingDir string
 	var tmpDir string
 
-	var nobanner bool
+	var noBanner bool
+	var noCLIVersionCheck bool
 
 	cobra.OnInitialize(initConfig)
 
@@ -74,7 +79,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&workingDir, "workingdir", "w", defaultWorkingDir, "Directory to be used to create the new projects in")
 	rootCmd.PersistentFlags().StringVar(&tmpDir, "tempdir", defaultTempDir, "Temporary directory to be used by the CLI")
 
-	rootCmd.PersistentFlags().BoolVar(&nobanner, "nobanner", false, "Do not display the Stacks banner when running the command")
+	rootCmd.PersistentFlags().BoolVar(&noBanner, "nobanner", false, "Do not display the Stacks banner when running the command")
+	rootCmd.PersistentFlags().BoolVar(&noCLIVersionCheck, "nocliversion", false, "Do not check for latest version of the CLI")
 
 	// Bind command line arguments
 	viper.BindPFlags(rootCmd.Flags())
@@ -88,6 +94,8 @@ func init() {
 	viper.BindPFlag("directory.temp", rootCmd.PersistentFlags().Lookup("tempdir"))
 
 	viper.BindPFlag("options.nobanner", rootCmd.PersistentFlags().Lookup("nobanner"))
+	viper.BindPFlag("options.nocliversion", rootCmd.PersistentFlags().Lookup("nocliversion"))
+
 }
 
 // initConfig reads in a confiig file and ENV vars if set
@@ -148,6 +156,9 @@ func preRun(ccmd *cobra.Command, args []string) {
 		fmt.Println(static.Banner)
 	}
 
+	// Call method to determine if this version of the CLI is the latest one
+	checkCLIVersion()
+
 	// output the configuration file that is being used
 	configFileUsed := viper.ConfigFileUsed()
 	if configFileUsed != "" {
@@ -159,5 +170,60 @@ func preRun(ccmd *cobra.Command, args []string) {
 	err = yaml.Unmarshal(framework_defs, &Config.FrameworkDefs)
 	if err != nil {
 		App.Logger.Fatalf("Unable to parse framework definition data: %s", err.Error())
+	}
+}
+
+func checkCLIVersion() {
+
+	// do not perform version check if it has been turned off
+	if Config.Input.Options.NoCLIVersion {
+		return
+	}
+
+	// use a DNS lookup to check that github can be accessed
+	// this is so that the check is not performed if the the environment is not
+	// connected to the internet
+	_, err := net.LookupIP("github.com")
+	if err != nil {
+		return
+	}
+
+	// set the url to get the latest release version of stacks CLI
+	url := "https://api.github.com/repos/amido/stacks-cli/releases?per_page=1"
+
+	resp, err := http.Get(url)
+	if err != nil {
+		App.Logger.Errorf("Unable to access Stacks CLI release page: %s", err.Error())
+		return
+	}
+
+	defer resp.Body.Close()
+
+	// read all the data returned
+	data, _ := ioutil.ReadAll(resp.Body)
+
+	var releaseMap []map[string]interface{}
+
+	// unmarshal the JSON into the map
+	err = json.Unmarshal(data, &releaseMap)
+	if err != nil {
+		App.Logger.Errorf("Unable to read latest version data: %s", err.Error())
+		return
+	}
+
+	// use semantic version checks to see if the current version of the app is the latest
+	// version
+	settings := config.Settings{}
+
+	// get values from the map
+	latestVersion := releaseMap[0]["tag_name"].(string)
+	releaseUrl := releaseMap[0]["url"].(string)
+
+	// create a version constraint
+	constraint := fmt.Sprintf("= %s", strings.Replace(latestVersion, "v", "", -1))
+	uptodate := settings.CompareVersion(constraint, Config.GetVersion(), App.Logger)
+
+	if !uptodate {
+		fmt.Printf("A newer release version of the Stacks CLI is available, %s, you are running version %s.\n\nMore information at %s\n\n", latestVersion, Config.GetVersion(), releaseUrl)
 	}
 }

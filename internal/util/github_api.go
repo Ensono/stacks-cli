@@ -25,9 +25,15 @@ func CallGitHubAPI(url string) (map[string]interface{}, error) {
 
 	// unmarshal the data into the map
 	err = json.Unmarshal(body, &data)
-	if err != nil {
 
+	if err != nil {
 		return data, fmt.Errorf("unable to read the data from the API: %s", err.Error())
+	}
+
+	if resp.StatusCode == 403 {
+
+		// forbidden likely suggests that API access has been rate limited for the hour
+		err = fmt.Errorf("error from GitHub: %s", data["message"])
 	}
 
 	return data, err

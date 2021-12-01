@@ -157,6 +157,24 @@ func (suite *BaseIntegration) WriteConfigFile() string {
 					ResourceGroup: cloud_group,
 				},
 			},
+			{
+				Name: fmt.Sprintf("%s-3", suite.Project),
+				Framework: config.Framework{
+					Type:   framework,
+					Option: framework_option,
+				},
+				Platform: config.Platform{
+					Type: platform,
+				},
+				SourceControl: config.SourceControl{
+					Type: "github",
+					URL:  "",
+				},
+				Cloud: config.Cloud{
+					Region:        cloud_region,
+					ResourceGroup: cloud_group,
+				},
+			},
 		},
 		Stacks: stacks.Stacks,
 		Terraform: config.Terraform{

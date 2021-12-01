@@ -37,21 +37,35 @@ func (suite *CLIAlertSuite) SetupSuite() {
 func (suite *CLIAlertSuite) TestProjectAlreadyExists() {
 
 	// create the project directory before running the cli
-	testProjectPath := filepath.Join(suite.ProjectDir, fmt.Sprintf("%s-1", suite.Project))
-	err := util.CreateIfNotExists(testProjectPath, 066)
+	// - create an empty directory to check it is overwritten
+	testProject1Path := filepath.Join(suite.ProjectDir, fmt.Sprintf("%s-1", suite.Project))
+	err := util.CreateIfNotExists(testProject1Path, 066)
 	if err != nil {
 		suite.T().Errorf("Unable to create project dir: %s", err.Error())
 	}
+
+	// - create a directory with one file in it to check that it is not overwritten
+	testProject3Path := filepath.Join(suite.ProjectDir, fmt.Sprintf("%s-3", suite.Project))
+	err = util.CreateIfNotExists(testProject3Path, 066)
+	if err != nil {
+		suite.T().Errorf("Unable to create project dir: %s", err.Error())
+	}
+	testProject3File := filepath.Join(testProject3Path, "project.json")
+	file, err := os.Create(testProject3File)
+	if err != nil {
+		suite.T().Errorf("Unable to create project file: %s", err.Error())
+	}
+	file.Close()
 
 	// run the command and then check the output
 	arguments := fmt.Sprintf("scaffold -c %s --nobanner", suite.ConfigFile)
 	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, false)
 
-	suite.T().Run("CLI does not overwrite an existing project", func(t *testing.T) {
+	suite.T().Run("CLI overwrites exiting empty project dir", func(t *testing.T) {
 
 		// create the pattern to match the output with
-		escapedTestProjectPath := strings.Replace(testProjectPath, "\\", "\\\\", -1)
-		pattern := fmt.Sprintf("project directory already exists, skipping: %s", escapedTestProjectPath)
+		escapedTestProject1Path := strings.Replace(testProject1Path, "\\", "\\\\\\\\", -1)
+		pattern := fmt.Sprintf("Overwriting empty directory: %s", escapedTestProject1Path)
 		t.Logf("Looking for pattern: '%s'", pattern)
 
 		re := regexp.MustCompile(pattern)
@@ -64,6 +78,19 @@ func (suite *CLIAlertSuite) TestProjectAlreadyExists() {
 		dir := filepath.Join(suite.ProjectDir, fmt.Sprintf("%s-2", suite.Project))
 		exists := util.Exists(dir)
 		assert.Equal(t, true, exists)
+	})
+
+	suite.T().Run("CLI does not overwrite an existing project", func(t *testing.T) {
+
+		// create the pattern to match the output with
+		escapedTestProject3Path := strings.Replace(testProject3Path, "\\", "\\\\\\\\", -1)
+		pattern := fmt.Sprintf("project directory already exists, skipping: %s", escapedTestProject3Path)
+		t.Logf("Looking for pattern: '%s'", pattern)
+
+		re := regexp.MustCompile(pattern)
+		matched := re.MatchString(suite.CmdOutput)
+
+		assert.Equal(t, true, matched)
 	})
 }
 
@@ -78,9 +105,9 @@ func (suite *CLIAlertSuite) TestAppsNotFoundInPathEnvVar() {
 
 	// set the path according to the os
 	if runtime.GOOS == "windows" {
-		path = ".;bin;C:/Windows/System32"
+		path = "C:/Windows/System32"
 	} else {
-		path = ".:bin:/usr/sbin"
+		path = "/usr/sbin"
 	}
 
 	err := os.Setenv("PATH", path)
@@ -90,7 +117,7 @@ func (suite *CLIAlertSuite) TestAppsNotFoundInPathEnvVar() {
 
 	// run the command and then check the output
 	arguments := fmt.Sprintf("scaffold -c %s --nobanner", suite.ConfigFile)
-	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, true)
+	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, false)
 
 	suite.T().Run("`dotnet` binary cannot be located", func(t *testing.T) {
 
@@ -205,7 +232,7 @@ func (suite *CLIAlertSuite) TestCLIVersionCheck() {
 		{
 			title:     "Ensure CLI advises of newer version of software",
 			arguments: fmt.Sprintf("scaffold -c %s --nobanner", configFile),
-			pattern:   "A newer release version of the Stacks CLI is available",
+			pattern:   "A newer release version of the Stacks CLI is available|API rate limit exceeded",
 			test:      true,
 			msg:       "CLI should perform a version check against the latest version",
 		},

@@ -57,6 +57,17 @@ func (s *Scaffold) Run() error {
 		s.Logger.Fatal(errText)
 	}
 
+	// create the temporary directory if it does not exist
+	if !util.Exists(s.Config.Input.Directory.TempDir) {
+		err := os.MkdirAll(s.Config.Input.Directory.TempDir, os.ModePerm)
+		if err != nil {
+			return fmt.Errorf("Unable to create temporary directory: %s", s.Config.Input.Directory.TempDir)
+		}
+	}
+
+	// Cleanup the temporary dir after all the projects have been processed
+	defer s.cleanup()
+
 	// iterate around the projects that have been specified and
 	// process each one in turn
 	for _, project := range s.Config.Input.Project {
@@ -254,9 +265,6 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	// configure the git repository
 	s.configureGitRepository(&project)
-
-	// cleanup
-	s.cleanup()
 
 }
 

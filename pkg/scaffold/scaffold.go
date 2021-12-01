@@ -200,6 +200,7 @@ func (s *Scaffold) processProject(project config.Project) {
 		srcUrl,
 		project.Framework.Version,
 		s.Config.Input.Directory.TempDir,
+		s.Config.Input.Options.Token,
 	)
 
 	// if there was an error getting hold of the framework project display an error

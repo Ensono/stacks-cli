@@ -9,10 +9,10 @@ import (
 )
 
 // GitClone uses standard network library to fetch a defined commit and avoids bloating the binary
-func GitClone(repoUrl, ref, tmpPath string) (string, error) {
+func GitClone(repoUrl, ref, tmpPath string, token string) (string, error) {
 
 	// get the URL to be used to clone the repo from
-	archiveUrl, err := ArchiveUrl(repoUrl, ref)
+	archiveUrl, err := ArchiveUrl(repoUrl, ref, token)
 	if err != nil {
 		return "", err
 	}
@@ -50,21 +50,25 @@ func GitClone(repoUrl, ref, tmpPath string) (string, error) {
 }
 
 // ArchiveUrl returns the archive url for the repo at a given commit hash or branch or v release
-func ArchiveUrl(repoUrl, ref string) (string, error) {
+func ArchiveUrl(repoUrl, ref string, token string) (string, error) {
 
 	var zipUrl string
 	var err error
 
 	// get the apiUrl from the method
-	apiUrl := BuildGitHubAPIUrl(repoUrl, ref, false)
+	apiUrl := BuildGitHubAPIUrl(repoUrl, ref, false, token)
 
-	// call the github api to get the url to the zip file to download
-	zipUrl, err = GetGitHubArchiveUrl(apiUrl)
+	if token == "" {
+		zipUrl = apiUrl
+	} else {
+		// call the github api to get the url to the zip file to download
+		zipUrl, err = GetGitHubArchiveUrl(apiUrl, token)
+	}
 
 	// if the zipUrl has not been found then drop back to the archive URL
 	if zipUrl == "" && err == nil {
-		apiUrl = BuildGitHubAPIUrl(repoUrl, ref, true)
-		zipUrl, err = GetGitHubArchiveUrl(apiUrl)
+		apiUrl = BuildGitHubAPIUrl(repoUrl, ref, true, token)
+		zipUrl, err = GetGitHubArchiveUrl(apiUrl, token)
 	}
 
 	return zipUrl, err

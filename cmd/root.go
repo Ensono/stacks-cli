@@ -62,6 +62,8 @@ func init() {
 	var noBanner bool
 	var noCLIVersionCheck bool
 
+	var githubToken string
+
 	cobra.OnInitialize(initConfig)
 
 	// get the default directories
@@ -79,6 +81,8 @@ func init() {
 
 	rootCmd.PersistentFlags().BoolVar(&noBanner, "nobanner", false, "Do not display the Stacks banner when running the command")
 	rootCmd.PersistentFlags().BoolVar(&noCLIVersionCheck, "nocliversion", false, "Do not check for latest version of the CLI")
+
+	rootCmd.PersistentFlags().StringVar(&githubToken, "token", "", "GitHub token to perform authenticated requests against the GitHub API")
 
 	// Bind command line arguments
 	viper.BindPFlags(rootCmd.Flags())
@@ -184,14 +188,15 @@ func preRun(ccmd *cobra.Command, args []string) {
 func checkCLIVersion() {
 
 	// do not perform version check if it has been turned off
-	if Config.Input.Options.NoCLIVersion {
+	// or no token has been supplied
+	if Config.Input.Options.NoCLIVersion || Config.Input.Options.Token == "" {
 		return
 	}
 
 	App.Logger.Info("Checking for latest version of CLI")
 
 	url := fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", constants.GitHubRef)
-	releaseMap, err := util.CallGitHubAPI(url)
+	releaseMap, err := util.CallGitHubAPI(url, Config.Input.Options.Token)
 
 	if err != nil {
 		App.Logger.Errorf("Unable to get latest CLI version: %s", err.Error())

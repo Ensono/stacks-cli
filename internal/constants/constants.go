@@ -22,4 +22,8 @@ const (
 	// SettingsFile is the default filename to be used when looking for the file in
 	// a project that is to be used with stacks
 	SettingsFile = "stackscli.yml"
+
+	// GitHubRef is the org/name of the stacks-cli
+	// This is used as on github api calls
+	GitHubRef = "amido/stacks-cli"
 )

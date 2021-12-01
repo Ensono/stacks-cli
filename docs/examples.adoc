@@ -306,6 +306,10 @@ As can be seen the CLI will not overwrite anything at the same target path.
 
 It is possible to change this behaviour, by adding the `--force` option to the command line. This will remove any existing directory and recreate the project in its place.
 
+NOTE: If the project directory already exists but it is empty, e.g. it does not contain any files or directories, then the CLI will continue to use the directory and warn that it has done so.
+
+image::images/stackscli-overwrite-empty-dir.png[]
+
 [source,bash]
 ----
 stacks-cli scaffold -c ./stacks.yml --force

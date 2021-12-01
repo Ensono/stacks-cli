@@ -194,15 +194,16 @@ func (s *Scaffold) processProject(project config.Project) {
 	// if there was an error getting hold of the framework project display an error
 	// and move onto the next project
 	if err != nil {
-		s.Logger.Errorf("Error downloading the specified framework option: %s", err.Error())
+		s.Logger.Errorf("Issue downloading the specified framework option\n\tURL: %s\n\tError: %s", dir, err.Error())
 		return
 	}
 
 	// attempt to read in the settings for the framework option
-	err = project.ReadSettings(dir, s.Config)
 	s.Logger.Infof("Attempting to read project settings: %s", project.SettingsFile)
+	err = project.ReadSettings(dir, s.Config)
 	if err != nil {
 		s.Logger.Errorf("Error reading settings from project settings: %s", err.Error())
+		s.Logger.Info("Please ensure you are running the latest version of the CLI")
 		return
 	}
 
@@ -280,7 +281,14 @@ func (s *Scaffold) setProjectDirs(project *config.Project) error {
 			err = os.RemoveAll(project.Directory.WorkingDir)
 			return err
 		} else {
-			return fmt.Errorf("project directory already exists, skipping: %s", project.Directory.WorkingDir)
+
+			// determine if the dir is empty, if it is then allow overwriting
+			empty, _ := util.IsEmpty(project.Directory.WorkingDir)
+			if empty {
+				s.Logger.Warnf("Overwriting empty directory: %s", project.Directory.WorkingDir)
+			} else {
+				return fmt.Errorf("project directory already exists, skipping: %s", project.Directory.WorkingDir)
+			}
 		}
 	}
 

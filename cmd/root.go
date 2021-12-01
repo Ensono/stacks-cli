@@ -195,6 +195,7 @@ func checkCLIVersion() {
 
 	if err != nil {
 		App.Logger.Errorf("Unable to get latest CLI version: %s", err.Error())
+		return
 	}
 
 	// use semantic version checks to see if the current version of the app is the latest

@@ -121,6 +121,9 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 			return err
 		}
 
+		// expand any OS based variables on the template
+		arguments = os.ExpandEnv(arguments)
+
 		// Execute the command and check that it worked
 		_, err = s.Config.ExecuteCommand(path, s.Logger, command, arguments, false)
 		if err != nil {
@@ -203,6 +206,9 @@ func (s *Scaffold) processProject(project config.Project) {
 		s.Config.Input.Options.Token,
 	)
 
+	// set the clonedir as the project temporary directory
+	project.Directory.TempDir = dir
+
 	// if there was an error getting hold of the framework project display an error
 	// and move onto the next project
 	if err != nil {
@@ -277,7 +283,6 @@ func (s *Scaffold) setProjectDirs(project *config.Project) error {
 	var err error
 
 	project.Directory.WorkingDir = filepath.Join(s.Config.Input.Directory.WorkingDir, project.Name)
-	project.Directory.TempDir = filepath.Join(s.Config.Input.Directory.TempDir, project.Name)
 
 	// check to see if the workingdir already exists, if it does return an error
 	// otherwise create them

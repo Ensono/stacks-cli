@@ -198,11 +198,24 @@ func Unzip(src, dest string) (string, error) {
 // as and when it is required
 func GetDefaultTempDir() string {
 
+	var tmpPath string
+
 	// determine the directory within the temp dir to use
 	dir := fmt.Sprintf("stackscli%s", RandomString(10))
 
-	// set the tempDir path using the dir name and the os.TempDir value
-	tmpPath := filepath.Join(os.TempDir(), dir)
+	// set the tempDir path based
+	// On Windows this has to be defined slightly differently because the os.TempDir() returns
+	// the env var $TMP, or $TEMP which uses the 8.3 naming convention. In normal circumstances
+	// this is OK, however dotnet does not like using the short name
+	// For example this dir `C:\Users\RussellSeymour\AppData\Local\Temp` will come out as
+	// `C:\Users\RUSSEL~1\AppData\Local\Temp`. So detect Windows and set the tempdir using the $UserProfile
+	// environment var and then append AppData\Local\Temp to it
+	// Other OSes will use thje os.TempDir
+	if runtime.GOOS == "windows" {
+		tmpPath = filepath.Join(os.Getenv("USERPROFILE"), "AppData", "Local", "Temp", dir)
+	} else {
+		tmpPath = filepath.Join(os.TempDir(), dir)
+	}
 
 	return tmpPath
 }

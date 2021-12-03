@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/amido/stacks-cli/internal/util"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -86,6 +87,8 @@ func TestArgsSuite(t *testing.T) {
 	// define the paths for the suite
 	s.ProjectPath = filepath.Join(s.ProjectDir, s.Project)
 
+	s.Assert = assert.New(t)
+
 	s.SetProjectDir()
 
 	suite.Run(t, s)
@@ -99,9 +102,7 @@ func (suite *ArgsSuite) TestProject() {
 
 		exists := util.Exists(suite.ProjectPath)
 
-		if !exists {
-			suite.T().Errorf("Project should exist: %s", suite.ProjectPath)
-		}
+		suite.Assert.Equal(true, exists, "Project should exist: %s", suite.ProjectPath)
 	})
 
 	// ensure that the devops variable template exists
@@ -109,9 +110,7 @@ func (suite *ArgsSuite) TestProject() {
 		path := filepath.Join(suite.ProjectPath, "build", "azDevOps", "azure", "azuredevops-vars.yml")
 		exists := util.Exists(path)
 
-		if !exists {
-			suite.T().Errorf("Azure DevOps variable template file should exist: %s", path)
-		}
+		suite.Assert.Equal(true, exists, "Project should exist: %s", "Azure DevOps variable template file should exist: %s", path)
 	})
 
 	// check that no git repo has been created as no remote URL has been supplied
@@ -119,9 +118,7 @@ func (suite *ArgsSuite) TestProject() {
 		path := filepath.Join(suite.ProjectPath, ".git")
 		exists := util.Exists(path)
 
-		if exists {
-			suite.T().Error("Directory should not have been configured as a git repository")
-		}
+		suite.Assert.Equal(false, exists, "Directory should not have been configured as a git repository")
 	})
 
 	// check that the project files have been namespaced with the companu name properly
@@ -150,9 +147,7 @@ func (suite *ArgsSuite) TestProject() {
 		re := regexp.MustCompile(pattern)
 		matched := re.MatchString(firstDir)
 
-		if !matched {
-			suite.T().Error("Project files should be namespaced with the company name")
-		}
+		suite.Assert.Equal(true, matched, "Project files should be namespaced with the company name")
 	})
 }
 
@@ -162,9 +157,7 @@ func (suite *ArgsSuite) TestCmdLogExists() {
 	path := filepath.Join(suite.ProjectDir, "cmdlog.txt")
 	exists := util.Exists(path)
 
-	if !exists {
-		suite.T().Errorf("cmdlog file should exist: %s", path)
-	}
+	suite.Assert.Equal(true, exists, "cmdlog file should exist: %s", path)
 }
 
 // TestSavedConfig checks that the configuration has been saved to a file
@@ -173,7 +166,5 @@ func (suite *ArgsSuite) TestSavedConfig() {
 	path := filepath.Join(suite.ProjectDir, "stacks.yml")
 	exists := util.Exists(path)
 
-	if !exists {
-		suite.T().Errorf("saved config file should exist: %s", path)
-	}
+	suite.Assert.Equal(true, exists, "saved config file should exist: %s", path)
 }

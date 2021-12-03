@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/amido/stacks-cli/internal/util"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -100,6 +101,8 @@ func TestCLIAlertSuite(t *testing.T) {
 	s.ProjectPath3 = filepath.Join(s.ProjectDir, fmt.Sprintf("%s-3", s.Project))
 	s.Project3File = filepath.Join(s.ProjectPath3, "project.json")
 
+	s.BaseIntegration.Assert = assert.New(t)
+
 	s.SetProjectDir()
 
 	suite.Run(t, s)
@@ -111,9 +114,7 @@ func (suite *CLIAlertSuite) TestConfigFileExists() {
 
 	exists := util.Exists(suite.ConfigFile)
 
-	if !exists {
-		suite.T().Error("Configuration file does not exist")
-	}
+	suite.Assert.Equal(true, exists, "Configuration file does not exist")
 }
 
 // TestProjectDir already exists checks that the CLI has detected a project directory
@@ -132,17 +133,14 @@ func (suite *CLIAlertSuite) TestProjectDirAlreadyExists() {
 
 		matched := suite.CheckCmdOutput(pattern)
 
-		if !matched {
-			suite.T().Error("CLI should overwrite empty directory")
-		}
+		suite.Assert.Equal(true, matched, "CLI should overwrite empty directory")
 	})
 
 	suite.T().Run("Second project is created", func(t *testing.T) {
 
 		exists := util.Exists(suite.ProjectPath2)
-		if !exists {
-			suite.T().Error("CLI should create the directory for the second project")
-		}
+
+		suite.Assert.Equal(true, exists, "CLI should create the directory for the second project")
 	})
 
 	suite.T().Run("CLI does not overwrite and existing project directory", func(t *testing.T) {
@@ -152,9 +150,7 @@ func (suite *CLIAlertSuite) TestProjectDirAlreadyExists() {
 
 		matched := suite.CheckCmdOutput(pattern)
 
-		if !matched {
-			suite.T().Error("CLI should not overwrite an existing directory, with data in it")
-		}
+		suite.Assert.Equal(true, matched, "CLI should not overwrite an existing directory, with data in it")
 	})
 }
 
@@ -185,14 +181,14 @@ func (suite *CLIAlertSuite) TestFrameworkAppsNotFound() {
 	// set the OS path to the path that has been defined
 	err = os.Setenv("PATH", path)
 	if err != nil {
-		suite.T().Fatalf("Unable to set temporary PATH environment variable: %s", err.Error())
+		suite.Assert.Fail("Unable to set temporary PATH environment variable: %s", err.Error())
 	}
 
 	// Reset thePATH env var at the end of the test
 	reset := func() {
 		err = os.Setenv("PATH", envPath)
 		if err != nil {
-			suite.T().Fatalf("Unable to reset PATH environment variable: %s", err.Error())
+			suite.Assert.Fail("Unable to reset PATH environment variable: %s", err.Error())
 		}
 	}
 	defer reset()
@@ -227,9 +223,7 @@ func (suite *CLIAlertSuite) TestFrameworkAppsNotFound() {
 		suite.T().Run(fmt.Sprintf("`%s` command cannot be located", table.binary), func(t *testing.T) {
 			matched := suite.CheckCmdOutput(table.pattern)
 
-			if !matched {
-				suite.T().Error(table.msg)
-			}
+			suite.Assert.Equal(true, matched, table.msg)
 		})
 	}
 }
@@ -249,9 +243,7 @@ func (suite *CLIAlertSuite) TestMalformedConfigFile() {
 		pattern := "(?i)unable to read in configuration file"
 		matched := suite.CheckCmdOutput(pattern)
 
-		if !matched {
-			suite.T().Error("CLI should error attempting to read in configuration file")
-		}
+		suite.Assert.Equal(true, matched, "CLI should error attempting to read in configuration file")
 	})
 }
 
@@ -268,8 +260,6 @@ func (suite *CLIAlertSuite) TestIncorrectFrameworkOption() {
 		pattern := fmt.Sprintf("(?i)the url for the specified framework option, %s, is empty", suite.FrameworkOption)
 		matched := suite.CheckCmdOutput(pattern)
 
-		if !matched {
-			suite.T().Error("CLI should error because the framework option is invalid")
-		}
+		suite.Assert.Equal(true, matched, "CLI should error because the framework option is invalid")
 	})
 }

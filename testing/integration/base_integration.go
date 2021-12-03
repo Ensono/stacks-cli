@@ -16,6 +16,7 @@ import (
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
 	yaml "github.com/goccy/go-yaml"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -62,6 +63,8 @@ type BaseIntegration struct {
 	CmdOutput string
 
 	ConfigFilename string
+
+	Assert *assert.Assertions
 }
 
 // ClearDir clears all of the files and folders within the specified

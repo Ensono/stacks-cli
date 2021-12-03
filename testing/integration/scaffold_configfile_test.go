@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/amido/stacks-cli/internal/util"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -59,6 +60,8 @@ func TestConfigFileSuite(t *testing.T) {
 	s.ProjectPath1 = filepath.Join(s.ProjectDir, fmt.Sprintf("%s-1", s.Project))
 	s.ProjectPath2 = filepath.Join(s.ProjectDir, fmt.Sprintf("%s-2", s.Project))
 
+	s.Assert = assert.New(t)
+
 	s.SetProjectDir()
 
 	suite.Run(t, s)
@@ -73,9 +76,7 @@ func (suite *ConfigFileSuite) TestProject1() {
 
 		exists := util.Exists(suite.ProjectPath1)
 
-		if !exists {
-			suite.T().Errorf("Project should exist: %s", suite.ProjectPath1)
-		}
+		suite.Assert.Equal(true, exists, "Project directory should exist: %s", suite.ProjectPath1)
 	})
 
 	// ensure that the devops variable template exists
@@ -83,9 +84,7 @@ func (suite *ConfigFileSuite) TestProject1() {
 		path := filepath.Join(suite.ProjectPath1, "build", "azDevOps", "azure", "azuredevops-vars.yml")
 		exists := util.Exists(path)
 
-		if !exists {
-			suite.T().Errorf("Azure DevOps variable template file should exist: %s", path)
-		}
+		suite.Assert.Equal(true, exists, "Azure DevOps variable template file should exist: %s", path)
 	})
 
 	// ensure that a git repo exists
@@ -93,9 +92,7 @@ func (suite *ConfigFileSuite) TestProject1() {
 		path := filepath.Join(suite.ProjectPath1, ".git")
 		exists := util.Exists(path)
 
-		if !exists {
-			suite.T().Error("Directory should have been configured as a git repository")
-		}
+		suite.Assert.Equal(true, exists, "Directory should have been configured as a git repository")
 	})
 
 	// check that the remote has been set in the git repo
@@ -117,9 +114,7 @@ func (suite *ConfigFileSuite) TestProject1() {
 		re := regexp.MustCompile(pattern)
 		matched := re.MatchString(string(config))
 
-		if !matched {
-			suite.T().Error("Git should have been configured with remote repo")
-		}
+		suite.Assert.Equal(true, matched, "Git should have been configured with remote repo")
 	})
 
 	// check that the project files have been namespaced with the companu name properly
@@ -148,9 +143,7 @@ func (suite *ConfigFileSuite) TestProject1() {
 		re := regexp.MustCompile(pattern)
 		matched := re.MatchString(firstDir)
 
-		if !matched {
-			suite.T().Error("Project files should be namespaced with the company name")
-		}
+		suite.Assert.Equal(true, matched, "Project files should be namespaced with the company name '%s': %s", suite.Company, firstDir)
 	})
 }
 
@@ -162,9 +155,7 @@ func (suite *ConfigFileSuite) TestProject2() {
 
 		exists := util.Exists(suite.ProjectPath2)
 
-		if !exists {
-			suite.T().Errorf("Project should exist: %s", suite.ProjectPath1)
-		}
+		suite.Assert.Equal(true, exists, "Project should exist: %s", suite.ProjectPath1)
 	})
 
 	// ensure that the devops variable template exists
@@ -172,18 +163,14 @@ func (suite *ConfigFileSuite) TestProject2() {
 		path := filepath.Join(suite.ProjectPath2, "build", "azDevOps", "azure", "azuredevops-vars.yml")
 		exists := util.Exists(path)
 
-		if !exists {
-			suite.T().Errorf("Azure DevOps variable template file should exist: %s", path)
-		}
+		suite.Assert.Equal(true, exists, "Azure DevOps variable template file should exist: %s", path)
 	})
 
 	suite.T().Run("Git repo has not been configured", func(t *testing.T) {
 		path := filepath.Join(suite.ProjectPath2, fmt.Sprintf("%s-2", suite.Project), ".git")
 		exists := util.Exists(path)
 
-		if exists {
-			suite.T().Error("Project should not have been configured as a Git repository")
-		}
+		suite.Assert.Equal(false, exists, "Project should not have been configured as a Git repository")
 	})
 }
 
@@ -193,7 +180,5 @@ func (suite *ConfigFileSuite) TestCmdLogDoesNotExist() {
 	path := filepath.Join(suite.ProjectDir, "cmdlog")
 	exists := util.Exists(path)
 
-	if exists {
-		suite.T().Errorf("cmdlog file should not exist: %s", path)
-	}
+	suite.Assert.Equal(false, exists, "Cmdlog file should not exist: %s", path)
 }

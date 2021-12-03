@@ -9,9 +9,10 @@ import (
 	"testing"
 
 	"github.com/ActiveState/termtest"
-	"github.com/amido/stacks-cli/internal/util"
-	"github.com/stretchr/testify/require"
 
+	"github.com/amido/stacks-cli/internal/util"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -36,6 +37,8 @@ func TestInteractiveSuite(t *testing.T) {
 	s.Company = *company
 	s.Project = *project
 	s.ProjectDir = *projectDir
+
+	s.BaseIntegration.Assert = assert.New(t)
 
 	s.SetProjectDir()
 
@@ -124,9 +127,7 @@ func (suite *InteractiveSuite) TestInteractiveMode() {
 
 		exists := util.Exists(configFile)
 
-		if !exists {
-			suite.T().Error("Configuration file should exist")
-		}
+		suite.Assert.Equal(true, exists, "Configuration file should exist")
 	})
 
 }
@@ -206,8 +207,6 @@ func (suite *InteractiveSuite) TestInteractiveModeInfra() {
 
 		exists := util.Exists(configFile)
 
-		if !exists {
-			suite.T().Error("configuration file should exist")
-		}
+		suite.Assert.Equal(true, exists, "Configuration file should exist")
 	})
 }

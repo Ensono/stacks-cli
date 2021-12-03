@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -25,6 +26,8 @@ func TestVersionSuite(t *testing.T) {
 	s.Company = *company
 	s.Project = *project
 	s.ProjectDir = *projectDir
+
+	s.Assert = assert.New(t)
 
 	s.SetProjectDir()
 
@@ -47,8 +50,6 @@ func (suite *VersionSuite) TestVersionNumber() {
 
 		matched := suite.CheckCmdOutput(pattern)
 
-		if !matched {
-			suite.T().Error("Version number should be the same as the CLI being tested")
-		}
+		suite.Assert.Equal(true, matched, "Version number should be the same as the CLI being tested")
 	})
 }

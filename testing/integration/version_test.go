@@ -4,11 +4,9 @@ package integration
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -16,31 +14,6 @@ import (
 // of the binary being tested is correct
 type VersionSuite struct {
 	BaseIntegration
-}
-
-// TestVersionNumber checks the output of the version command of the
-// CLI and matches it against the version held in the integration test
-func (suite *VersionSuite) TestVersionNumber() {
-
-	// run the command and then check the output
-	arguments := "version"
-	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, false)
-
-	suite.T().Run("CLI is the correct version", func(t *testing.T) {
-
-		// escape the . in the version number
-		escaped := strings.Replace(version, ".", `\.`, -1)
-
-		// create the pattern to match the output with
-		pattern := fmt.Sprintf(`Version:\s+%s`, escaped)
-
-		t.Logf("Looking for pattern: '%s'", pattern)
-
-		re := regexp.MustCompile(pattern)
-		matched := re.MatchString(suite.CmdOutput)
-
-		assert.Equal(t, true, matched)
-	})
 }
 
 // TestVersionSuite runs the suite of tests to check that the CLI is the correct
@@ -56,4 +29,26 @@ func TestVersionSuite(t *testing.T) {
 	s.SetProjectDir()
 
 	suite.Run(t, s)
+}
+
+// TestVersionNumber checks the output of the version command of the
+// CLI and matches it against the version held in the integration test
+func (suite *VersionSuite) TestVersionNumber() {
+
+	// run the command and then check the output
+	arguments := "version"
+	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, false)
+
+	suite.T().Run("CLI is the correct version", func(t *testing.T) {
+
+		// escape the . in the version number
+		escaped := strings.Replace(version, ".", `\.`, -1)
+		pattern := fmt.Sprintf(`Version:\s+%s`, escaped)
+
+		matched := suite.CheckCmdOutput(pattern)
+
+		if !matched {
+			suite.T().Error("Version number should be the same as the CLI being tested")
+		}
+	})
 }

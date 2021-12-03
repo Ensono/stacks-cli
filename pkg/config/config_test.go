@@ -361,10 +361,10 @@ func TestSave(t *testing.T) {
 					},
 				},
 			},
-			"",
+			"config.yml",
 			"",
 			nil,
-			"Configuration should not be saved as there is no config file set",
+			"Configuration should not be saved as a configuration file has been used",
 		},
 		{
 			Config{
@@ -377,7 +377,7 @@ func TestSave(t *testing.T) {
 					},
 				},
 			},
-			"config.yml",
+			"",
 			filepath.Join(dir, "stacks.yml"),
 			nil,
 			"Saved file is not saved in the expected location",

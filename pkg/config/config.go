@@ -95,7 +95,7 @@ func (c *Config) Save(usedConfig string) (string, error) {
 	// or the SaveConfig has not been set
 	if !c.Input.Options.SaveConfig {
 		return "", nil
-	} else if c.Input.Options.SaveConfig && usedConfig == "" {
+	} else if c.Input.Options.SaveConfig && usedConfig != "" {
 		return "", nil
 	}
 
@@ -220,7 +220,7 @@ func (config *Config) SetDefaultValues() {
 
 	// Set the currentdirectory to the path that the CLI is currently running in
 	cwd, _ := os.Getwd()
-	config.Self.CmdLogPath = filepath.Join(cwd, "cmdlog.txt")
+	config.Self.CmdLogPath = filepath.Join(config.Input.Directory.WorkingDir, "cmdlog.txt")
 
 	// If the working directory that has been set for the projects is relative, prepend the
 	// the current directory to it

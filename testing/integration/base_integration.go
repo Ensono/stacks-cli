@@ -9,6 +9,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strings"
 
 	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/util"
@@ -23,6 +25,7 @@ var version string
 // - the following properties can be set on the command line when running he
 var company = flag.String("company", "MyCompany", "Name of the company")
 var project = flag.String("project", "my-webapi", "Name of the project")
+var framework_version = flag.String("version", "latest", "Version, branch or tag of the framework to use")
 var projectDir = flag.String("projectdir", ".", "Project Directory")
 var binaryCmd = flag.String("binarycmd", "stacks-cli", "Name and path of the binary to use to run the tests")
 
@@ -58,13 +61,13 @@ type BaseIntegration struct {
 	// Cmdoutput to be used for analysis
 	CmdOutput string
 
-	ConfigFileName string
+	ConfigFilename string
 }
 
 // ClearDir clears all of the files and folders within the specified
 // directory. This is primarily used by the TearDown function of the test suites
 // This is so that the parent directory does not get removed
-func ClearDir(dir string) error {
+func (suite *BaseIntegration) ClearDir(dir string) error {
 	files, err := filepath.Glob(filepath.Join(dir, "*"))
 
 	if err != nil {
@@ -82,10 +85,14 @@ func ClearDir(dir string) error {
 	return err
 }
 
-func (suite *BaseIntegration) WriteConfigFile() string {
+func (suite *BaseIntegration) WriteConfigFile(filename string) string {
 
-	if suite.ConfigFileName == "" {
-		suite.ConfigFileName = "stacks.yml"
+	if suite.ConfigFilename == "" {
+		suite.ConfigFilename = "stacks.yml"
+	}
+
+	if filename != "" {
+		suite.ConfigFilename = filename
 	}
 
 	// read in the static frameworks so that they can be added to the configuration file
@@ -124,8 +131,9 @@ func (suite *BaseIntegration) WriteConfigFile() string {
 			{
 				Name: fmt.Sprintf("%s-1", suite.Project),
 				Framework: config.Framework{
-					Type:   framework,
-					Option: framework_option,
+					Type:    framework,
+					Option:  framework_option,
+					Version: *framework_version,
 				},
 				Platform: config.Platform{
 					Type: platform,
@@ -142,8 +150,9 @@ func (suite *BaseIntegration) WriteConfigFile() string {
 			{
 				Name: fmt.Sprintf("%s-2", suite.Project),
 				Framework: config.Framework{
-					Type:   framework,
-					Option: framework_option,
+					Type:    framework,
+					Option:  framework_option,
+					Version: *framework_version,
 				},
 				Platform: config.Platform{
 					Type: platform,
@@ -160,8 +169,9 @@ func (suite *BaseIntegration) WriteConfigFile() string {
 			{
 				Name: fmt.Sprintf("%s-3", suite.Project),
 				Framework: config.Framework{
-					Type:   framework,
-					Option: framework_option,
+					Type:    framework,
+					Option:  framework_option,
+					Version: *framework_version,
 				},
 				Platform: config.Platform{
 					Type: platform,
@@ -193,7 +203,7 @@ func (suite *BaseIntegration) WriteConfigFile() string {
 		suite.T().Fatalf("Error serializing configuration: %s", err.Error())
 	}
 
-	configFile := filepath.Join(suite.ProjectDir, suite.ConfigFileName)
+	configFile := filepath.Join(suite.ProjectDir, suite.ConfigFilename)
 
 	err = ioutil.WriteFile(configFile, data, 0666)
 
@@ -242,4 +252,59 @@ func (suite *BaseIntegration) SetProjectDir() {
 	if !filepath.IsAbs(suite.ProjectDir) {
 		suite.ProjectDir = filepath.Join(cwd, suite.ProjectDir)
 	}
+}
+
+// CreateDirectories creates any number of directories in the project directory
+// This is used by test suites to create directories and test that the CLI does
+// not clobber non-empty dirs
+func (suite *BaseIntegration) CreateDirs(dirs []string) {
+
+	var errors []string
+
+	// iterate around the dirs and create each one
+	for _, dir := range dirs {
+		err := util.CreateIfNotExists(dir, os.ModePerm)
+		if err != nil {
+			errors = append(errors, fmt.Sprintf("unable to create project directory '%s': %s", dir, err.Error()))
+		}
+	}
+
+	if len(errors) > 0 {
+		suite.T().Fatalf(strings.Join(errors, "\n"))
+	}
+}
+
+// SetDotnetVersion sets the version of dotnet to use in the tests
+// It will create the necessary global.json file
+func (suite *BaseIntegration) SetDotnetVersion(version string) {
+
+	// create the JSON string to declare the version to use
+	sdkVersion := fmt.Sprintf(`{"sdk": {"version": "%s"}}`, version)
+
+	// define the globalJsonPath
+	globalJsonPath := filepath.Join(suite.ProjectDir, "global.json")
+
+	// delete the file if it exists
+	if util.Exists(globalJsonPath) {
+		err := os.Remove(globalJsonPath)
+		if err != nil {
+			fmt.Errorf("unable to remove global.json file: %s", err.Error())
+		}
+	}
+
+	ioutil.WriteFile(globalJsonPath, []byte(sdkVersion), os.ModePerm)
+
+}
+
+// CheckCmdOutput checks the output of the command against the supplied pattern and
+// returns a boolean stating if that pattern has been found
+func (suite *BaseIntegration) CheckCmdOutput(pattern string) bool {
+	var result bool
+
+	suite.T().Logf("Looking for pattern: %s", pattern)
+
+	re := regexp.MustCompile(pattern)
+	result = re.MatchString(suite.CmdOutput)
+
+	return result
 }

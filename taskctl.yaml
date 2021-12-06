@@ -1,0 +1,135 @@
+
+contexts:
+  buildenv:
+    executable:
+      bin: docker
+      args:
+        - run
+        - --rm
+        - -v
+        - ${PWD}:/app
+        - -w
+        - /app
+        - russellseymour/stacks-golang:1.16.11
+
+  inttestenv:
+    executable:
+      bin: docker
+      args:
+        - run
+        - --rm
+        - -v
+        - ${PWD}:/app
+        - russellseymour/dotnet-git:6
+
+  docsenv:
+    executable:
+      bin: docker
+      args:
+        - run
+        - --rm
+        - -v
+        - ${PWD}:/app
+        - russellseymour/pandoc-asciidoctor
+
+tasks:
+
+  buildnumber:
+    command:
+      - if [ "X$BUILDNUMBER" == "X" ]; then echo "100.98.99"; else echo "${BUILDNUMBER}"; fi
+    exportAs: BUILDNUMBER
+
+  clean:
+    description: Clean old builds
+    command:
+      - rm -rf outputs
+
+  compile:
+    description: Compile CLI and Integration Tests
+    context: buildenv
+    command:
+      - go build -ldflags "-X github.com/amido/stacks-cli/cmd.version=${BUILDNUMBER}" -o /app/outputs/bin/stacks-cli-${GOOS}-${GOARCH}-${BUILDNUMBER}${EXTENSION}
+      - go test -ldflags "-X github.com/amido/stacks-cli/testing/integration.version=${BUILDNUMBER}" -tags integration -o /app/outputs/bin/stacks-cli-${GOOS}-inttest-${GOARCH}-${BUILDNUMBER}${EXTENSION} -c github.com/amido/stacks-cli/testing/integration/...
+    variations:
+      - GOOS: windows
+        GOARCH: amd64
+        EXTENSION: ".exe"
+      - GOOS: linux
+        GOARCH: amd64
+        EXTENSION:
+      - GOOS: darwin
+        GOARCH: amd64
+        EXTENSION:                 
+
+  docs:pdf:
+    context: docsenv
+    description: Generate PDF documentation
+    command:
+      - mkdir -p outputs/docs/pdf
+      - asciidoctor-pdf -a pdf-theme=/app/docs/styles/theme.yml -a pdf-fontsdir="/app/docs/styles/fonts;GEM_FONTS_DIR" -a doctype="book" -a stackscli_version="${BUILDNUMBER}" -o "Stacks CLI Manual - ${BUILDNUMBER}.pdf" -a toc -D /app/outputs/docs/pdf /app/docs/manual.adoc
+
+  docs:markdown:
+    context: docsenv
+    description: Create Markdown docs
+    command:
+      - mkdir -p outputs/docs/md
+      - pwsh -command /app/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /app/docs -output_dir /app/outputs/docs/md
+
+  test:unit:
+    context: buildenv
+    description: Run Unit Tests
+    command:
+      - mkdir -p outputs/tests
+      - go test ./... | go-junit-report > outputs/tests/report.xml
+      - go test ./... -v -coverprofile=outputs/tests/coverage.txt
+      - coverage.sh
+      - rm outputs/tests/coverage.txt
+
+  test:int:
+    context: inttestenv
+    description: Run Integration Tests
+    
+    command:
+      - mkdir -p outputs/tests
+      - chmod +x {{ .TEST_BINARY }}
+      - chmod +x {{ .CLI_BINARY }}
+      - "{{ .TEST_BINARY }} -test.v -projectdir /app/local/inttest -binarycmd {{ .CLI_BINARY }} | tee outputs/tests/integration_test_report.out"
+
+    env:
+      BUILDNUMBER: $BUILD_BUILDNUMBER
+
+  test:int:generate_report:
+    context: buildenv
+    command:
+      - cat /app/outputs/tests/integration_test_report.out | go-junit-report > outputs/tests/integration_test_report.xml
+      - rm /app/outputs/tests/integration_test_report.out
+
+pipelines:
+
+  build:
+    - task: clean
+    - task: buildnumber
+    - pipeline: docs
+      depends_on: 
+        - clean
+        - buildnumber
+    - task: test:unit
+      depends_on: clean
+    - task: compile
+      depends_on:
+        - clean
+        - buildnumber
+
+  docs:
+    - task: docs:pdf
+    - task: docs:markdown
+
+  inttest:
+    - task: test:int
+      variables:
+        BIN_DIR: /app/outputs/bin
+        TEST_BINARY: "{{ .BIN_DIR }}/stacks-cli-linux-inttest-amd64-${BUILDNUMBER}"
+        CLI_BINARY: "{{.BIN_DIR}}/stacks-cli-linux-amd64-${BUILDNUMBER}"
+    - task: test:int:generate_report
+      depends_on: test:int
+

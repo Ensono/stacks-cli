@@ -81,6 +81,8 @@ tasks:
     command:
       - echo $GOBIN
       - echo $PATH
+      - which go-junit-report
+      - ls -l /go/bin
       - mkdir -p outputs/tests
       - chmod 0777 outputs/tests
       - go test ./... | go-junit-report > outputs/tests/report.xml

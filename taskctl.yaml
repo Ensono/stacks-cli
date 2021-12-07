@@ -10,8 +10,6 @@ contexts:
         - ${PWD}:/app
         - -w
         - /app
-        - -u
-        - root
         - russellseymour/stacks-golang:1.16.11
 
   inttestenv:
@@ -81,6 +79,7 @@ tasks:
     context: buildenv
     description: Run Unit Tests
     command:
+      - pwd && ls -l && ls -l outputs && id
       - mkdir -p outputs/tests
       - pwd && ls -l outputs && id
       - go test ./... | go-junit-report > outputs/tests/report.xml

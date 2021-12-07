@@ -80,6 +80,7 @@ tasks:
     description: Run Unit Tests
     command:
       - mkdir -p outputs/tests
+      - ls -l outputs && id
       - go test ./... | go-junit-report > outputs/tests/report.xml
       - go test ./... -v -coverprofile=outputs/tests/coverage.txt
       - coverage.sh

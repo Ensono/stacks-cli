@@ -42,7 +42,7 @@ stages:
         inputs:
           targetType: inline
           script: |
-            taskctl test:unit
+            taskctl build
         env:
           BUILDNUMBER: $(Build.BuildNumber)
 

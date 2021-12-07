@@ -20,6 +20,8 @@ contexts:
         - --rm
         - -v
         - ${PWD}:/app
+        - -w
+        - /app
         - russellseymour/dotnet-git:6
 
   docsenv:
@@ -30,13 +32,16 @@ contexts:
         - --rm
         - -v
         - ${PWD}:/app
+        - -w
+        - /app
         - russellseymour/pandoc-asciidoctor
 
 tasks:
 
   buildnumber:
+    context: buildenv
     command:
-      - if [ "X$BUILDNUMBER" == "X" ]; then echo "100.98.99"; else echo "${BUILDNUMBER}"; fi
+      - pwsh -Command /app/build/scripts/Set-BuildNumber.ps1
     exportAs: BUILDNUMBER
 
   clean:
@@ -44,22 +49,17 @@ tasks:
     command:
       - rm -rf outputs
 
-  compile:
+  _compile:
     description: Compile CLI and Integration Tests
     context: buildenv
     command:
-      - go build -ldflags "-X github.com/amido/stacks-cli/cmd.version=${BUILDNUMBER}" -o /app/outputs/bin/stacks-cli-${GOOS}-${GOARCH}-${BUILDNUMBER}${EXTENSION}
-      - go test -ldflags "-X github.com/amido/stacks-cli/testing/integration.version=${BUILDNUMBER}" -tags integration -o /app/outputs/bin/stacks-cli-${GOOS}-inttest-${GOARCH}-${BUILDNUMBER}${EXTENSION} -c github.com/amido/stacks-cli/testing/integration/...
-    variations:
-      - GOOS: windows
-        GOARCH: amd64
-        EXTENSION: ".exe"
-      - GOOS: linux
-        GOARCH: amd64
-        EXTENSION:
-      - GOOS: darwin
-        GOARCH: amd64
-        EXTENSION:                 
+      - pwsh -Command /app/build/scripts/Invoke-Compile.ps1 -BuildNumber $BUILDNUMBER
+
+  _docs:
+    description: Build Docs for Stacks CLI
+    context: docsenv
+    command:
+      - pwsh -Command /app/build/scripts/Build-Docs.ps1 -BuildNumber $BUILDNUMBER -BasePath /app
 
   docs:pdf:
     context: docsenv
@@ -80,56 +80,48 @@ tasks:
     description: Run Unit Tests
     command:
       - pwsh -command /app/build/scripts/Invoke-UnitTests.ps1
-      #- mkdir -p outputs/tests
-      #- chmod 0777 outputs/tests
-      #- unittests.sh
-      #- rm outputs/tests/coverage.txt
 
   test:int:
     context: inttestenv
     description: Run Integration Tests
     
     command:
-      - mkdir -p outputs/tests
-      - chmod +x {{ .TEST_BINARY }}
-      - chmod +x {{ .CLI_BINARY }}
-      - "{{ .TEST_BINARY }} -test.v -projectdir /app/local/inttest -binarycmd {{ .CLI_BINARY }} | tee outputs/tests/integration_test_report.out"
-
-    env:
-      BUILDNUMBER: $BUILD_BUILDNUMBER
+      - pwsh -Command /app/build/scripts/Invoke-IntegrationTests.ps1 -build_number $BUILDNUMBER -RunTests
 
   test:int:generate_report:
     context: buildenv
     command:
-      - cat /app/outputs/tests/integration_test_report.out | go-junit-report > outputs/tests/integration_test_report.xml
-      - rm /app/outputs/tests/integration_test_report.out
+      - pwsh -Command /app/build/scripts/Invoke-IntegrationTests.ps1 -build_number $BUILDNUMBER -Report
 
 pipelines:
 
   build:
     - task: clean
     - task: buildnumber
-    - pipeline: docs
+    - task: _docs
       depends_on: 
         - clean
         - buildnumber
     - task: test:unit
       depends_on: clean
-    - task: compile
+    - task: _compile
       depends_on:
         - clean
         - buildnumber
 
   docs:
-    - task: docs:pdf
-    - task: docs:markdown
+    - task: buildnumber
+    - task: _docs
+      depends_on: buildnumber
 
   inttest:
+    - task: buildnumber
     - task: test:int
-      variables:
-        BIN_DIR: /app/outputs/bin
-        TEST_BINARY: "{{ .BIN_DIR }}/stacks-cli-linux-inttest-amd64-${BUILDNUMBER}"
-        CLI_BINARY: "{{.BIN_DIR}}/stacks-cli-linux-amd64-${BUILDNUMBER}"
+      depends_on: buildnumber
     - task: test:int:generate_report
       depends_on: test:int
 
+  compile:
+    - task: buildnumber
+    - task: _compile
+      depends_on: buildnumber

@@ -10,6 +10,8 @@ contexts:
         - ${PWD}:/app
         - -w
         - /app
+        - -u
+        - root
         - russellseymour/stacks-golang:1.16.11
 
   inttestenv:

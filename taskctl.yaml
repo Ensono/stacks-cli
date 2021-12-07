@@ -79,10 +79,10 @@ tasks:
     context: buildenv
     description: Run Unit Tests
     command:
-      - pwd && ls -l && id
+      - echo $GOBIN
+      - echo $PATH
       - mkdir -p outputs/tests
       - chmod 0777 outputs/tests
-      - pwd && ls -l outputs && id
       - go test ./... | go-junit-report > outputs/tests/report.xml
       - go test ./... -v -coverprofile=outputs/tests/coverage.txt
       - coverage.sh

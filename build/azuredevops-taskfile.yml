@@ -42,6 +42,8 @@ stages:
         inputs:
           targetType: inline
           script: |
+            export GOBIN=/go/bin
+            export PATH=$PATH:$GOBIN
             taskctl test:unit
         env:
           BUILDNUMBER: $(Build.BuildNumber)

@@ -44,8 +44,7 @@ stages:
           script: |
             export GOBIN=$HOME/go/bin
             export PATH=$PATH:$GOBIN
-            mkdir -p outputs/tests
-            id
+            mkdir -p outputs
             taskctl build
         env:
           BUILDNUMBER: $(Build.BuildNumber)

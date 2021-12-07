@@ -111,8 +111,6 @@ stages:
         inputs:
           targetType: inline
           script: |
-            export GOBIN=$HOME/go/bin
-            export PATH=$PATH:$GOBIN
             taskctl inttest
         env:
           BIN_DIR: $(Build.ArtifactStagingDirectory)/bin

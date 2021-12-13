@@ -21,7 +21,7 @@ param (
     $coverage_file = "coverage.xml"
 )
 
-# Set the tempo coverage file
+# Set the temp coverage file
 $temp_coverage = [IO.Path]::Combine($output_dir, "coverage.txt")
 
 # If the output directory does not exist, create it
@@ -51,7 +51,9 @@ Write-Output $cmd
 
 (get-childitem outputs).Name
 Write-Output "------"
-(get-childitem outputs/tests).Name
+get-childitem outputs/tests
+get-childitem outputs/tests/coverage
+get-content outputs/tests/coverage
 
 # Remove the temporary coverage file
 if (Test-Path -Path $temp_coverage) {

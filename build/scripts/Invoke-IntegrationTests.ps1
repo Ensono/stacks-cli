@@ -22,7 +22,14 @@ param (
 
     [switch]
     # If set generate the report
-    $report
+    $report,
+
+    [string]
+    # Project directory to use to write out files
+    # and new projects
+    # Will be created if does not exist. Relative path will be appended to the 
+    # current directory
+    $projectDir = "inttest"
 )
 
 # If the output directory does not exist, create it
@@ -47,8 +54,21 @@ if ($IsLinux) {
 
 # Run the tests if they have been specified
 if ($runtests) {
-    $cmd = "{0} --test.v --projectdir /app/local/inttest --binarycmd `"{1}`" | Tee-Object -FilePath {2}" -f
+
+    # determine the path to the projectDir
+    if (![System.IO.Path]::IsPathRooted($projectDir)) {
+        $projectDir = [IO.Path]::Combine($pwd, $projectDir)
+    }
+
+    # ensure that the project dir exists
+    if (!(Test-Path -Path $projectDir)) {
+        Write-Output ("Creating project dir: {0}" -f $projectDir)
+        New-Item -ItemType Directory -Path $projectDir
+    }
+
+    $cmd = "{0} --test.v --projectdir {1} --binarycmd {2} | Tee-Object -FilePath {3}" -f
                 $test_binary,
+                $projectDir,
                 $cli_binary,
                 $temp_report_file
 

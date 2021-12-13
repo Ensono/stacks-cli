@@ -46,6 +46,9 @@ if ($runtests) {
                 $cli_binary,
                 $temp_report_file
 
+    dir outputs/bin
+    Write-Output $cmd
+
     Invoke-Expression -Command $cmd
 }
 

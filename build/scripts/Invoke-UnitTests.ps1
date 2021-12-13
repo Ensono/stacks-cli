@@ -45,11 +45,13 @@ Write-Output "Generating Coverage report"
 $cmd = ("go test ./... -v -coverprofile={0}" -f $temp_coverage)
 Write-Output $cmd
 Invoke-Expression -Command $cmd
-Write-Output $cmd
-$cmd = ("gocovcer < {0} > {1}" -f $temp_coverage, $coverage_path)
 
-get-childitem outputs
-get-childitem outputs/tests
+$cmd = ("gocovcer < {0} > {1}" -f $temp_coverage, $coverage_path)
+Write-Output $cmd
+
+(get-childitem outputs).Name
+Write-Output "------"
+(get-childitem outputs/tests).Name
 
 # Remove the temporary coverage file
 if (Test-Path -Path $temp_coverage) {

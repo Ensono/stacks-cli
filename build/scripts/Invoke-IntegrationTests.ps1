@@ -41,12 +41,12 @@ $cli_binary = [IO.Path]::Combine("/", "app", "outputs", "bin", $("stacks-cli-lin
 
 # Run the tests if they have been specified
 if ($runtests) {
-    $cmd = "{0} --test.v --projectdir /app/local/inttest --binarycmd {1} | Tee-Object -FilePath {2}" -f
+    $cmd = "{0} --test.v --projectdir /app/local/inttest --binarycmd `"{1}`" | Tee-Object -FilePath {2}" -f
                 $test_binary,
                 $cli_binary,
                 $temp_report_file
 
-    dir outputs/bin
+    (gci outputs/bin).Name
     Write-Output $cmd
 
     Invoke-Expression -Command $cmd

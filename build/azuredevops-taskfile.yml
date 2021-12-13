@@ -46,6 +46,15 @@ stages:
         env:
           BUILDNUMBER: $(Build.BuildNumber)
 
+      - task: Bash@3
+        displayName: Outputs
+        inputs:
+          targetType: inline
+          script: |
+            apt-get install -y tree
+            tree outputs
+
+
       # Upload the tests and the coverage
       - task: PublishTestResults@2
         inputs:

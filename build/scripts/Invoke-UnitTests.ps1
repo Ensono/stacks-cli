@@ -46,7 +46,7 @@ $cmd = ("go test ./... -v -coverprofile={0}" -f $temp_coverage)
 Write-Output $cmd
 Invoke-Expression -Command $cmd
 
-$cmd = ("gocovcer < {0} > {1}" -f $temp_coverage, $coverage_path)
+$cmd = ("gocover < {0} > {1}" -f $temp_coverage, $coverage_path)
 Write-Output $cmd
 
 (get-childitem outputs).Name
@@ -56,6 +56,6 @@ get-childitem outputs/tests/coverage
 get-content outputs/tests/coverage
 
 # Remove the temporary coverage file
-if (Test-Path -Path $temp_coverage) {
-    Remove-Item -Path $temp_coverage
-}
+#if (Test-Path -Path $temp_coverage) {
+#    Remove-Item -Path $temp_coverage
+#}

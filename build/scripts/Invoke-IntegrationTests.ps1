@@ -39,6 +39,12 @@ $test_report_file = [IO.Path]::Combine("outputs", "tests", "integration_test_rep
 $test_binary = [IO.Path]::Combine("/", "app", "outputs", "bin", $("stacks-cli-linux-inttest-amd64-{0}" -f $build_number))
 $cli_binary = [IO.Path]::Combine("/", "app", "outputs", "bin", $("stacks-cli-linux-amd64-{0}" -f $build_number))
 
+# If running on Linux ensure that the binaries have the correct permissions set
+if ($IsLinux) {
+    $cmd = "chmod +x {0}/*" -f (Split-Path -Parent $cli_binary)
+    Invoke-Expression -Command $cmd
+}
+
 # Run the tests if they have been specified
 if ($runtests) {
     $cmd = "{0} --test.v --projectdir /app/local/inttest --binarycmd `"{1}`" | Tee-Object -FilePath {2}" -f

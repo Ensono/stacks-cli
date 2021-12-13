@@ -13,6 +13,8 @@ param (
     $default = "100.98.99"
 )
 
+dir env:
+
 if ([String]::IsNullOrEmpty($env:BUILDNUMBER)) {
     $result = $default
 } else {

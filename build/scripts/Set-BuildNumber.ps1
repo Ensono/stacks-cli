@@ -10,15 +10,22 @@ param (
 
     [string]
     # Set the default build number
-    $default = "100.98.99"
+    $default = "100.98.99",
+
+    [string]
+    # Allow the build number to be passed in
+    $number
 )
 
-dir env:
-
-if ([String]::IsNullOrEmpty($env:BUILDNUMBER)) {
-    $result = $default
+if (![String]::IsNullOrEmpty($number)) {
+    $result = $number
 } else {
-    $result = $env:BUILDNUMBER
+
+    if ([String]::IsNullOrEmpty($env:BUILDNUMBER)) {
+        $result = $default
+    } else {
+        $result = $env:BUILDNUMBER
+    }
 }
 
 # output the build number

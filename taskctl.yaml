@@ -41,7 +41,7 @@ tasks:
   buildnumber:
     context: buildenv
     command:
-      - pwsh -Command /app/build/scripts/Set-BuildNumber.ps1
+      - pwsh -Command /app/build/scripts/Set-BuildNumber.ps1 -number $BUILDNUMBER
     exportAs: BUILDNUMBER
 
   clean:

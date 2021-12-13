@@ -92,7 +92,7 @@ stages:
       - task: DownloadPipelineArtifact@2
         inputs: 
           artifact: StacksCLI
-          path: $(Build.ArtifactStagingDirectory)/bin
+          path: $(Build.SourcesDirectory)/outputs/bin
 
       # Install Taskfile so that the tests can be run
       - task: Bash@3

@@ -72,7 +72,6 @@ if ($runtests) {
                 $cli_binary,
                 $temp_report_file
 
-    (gci outputs/bin).Name
     Write-Output $cmd
 
     Invoke-Expression -Command $cmd

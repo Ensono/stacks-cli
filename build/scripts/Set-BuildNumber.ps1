@@ -14,7 +14,7 @@ param (
 
     [string]
     # Allow the build number to be passed in
-    $number
+    $number = ""
 )
 
 if (![String]::IsNullOrEmpty($number)) {

@@ -27,7 +27,7 @@ $temp_coverage = [IO.Path]::Combine($output_dir, "coverage.txt")
 # If the output directory does not exist, create it
 if (!(Test-Path -Path $output_dir)) {
     Write-Output ("Creating output dir: {0}" -f $output_dir)
-    New-Item -ItemType Directory -Path $output_dir
+    New-Item -ItemType Directory -Path $output_dir | Out-Null
 }
 
 # Run the unit tests

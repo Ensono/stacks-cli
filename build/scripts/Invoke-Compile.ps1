@@ -28,7 +28,7 @@ param (
 # If the base directory does not exist, create it
 if (!(Test-Path -Path $BasePath)) {
     Write-Output ("Creating output dir: {0}" -f $BasePath)
-    New-Item -ItemType Directory -Path $BasePath
+    New-Item -ItemType Directory -Path $BasePath | Out-Null
 }
 
 # Run command to get the packages required for the build

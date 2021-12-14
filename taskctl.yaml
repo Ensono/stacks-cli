@@ -26,6 +26,9 @@ contexts:
         - -w
         - /app
         - russellseymour/dotnet-git:6
+        - pwsh
+        - -NoProfile
+        - -Command        
 
   docsenv:
     executable:
@@ -38,6 +41,9 @@ contexts:
         - -w
         - /app
         - russellseymour/pandoc-asciidoctor
+        - pwsh
+        - -NoProfile
+        - -Command        
 
 tasks:
 

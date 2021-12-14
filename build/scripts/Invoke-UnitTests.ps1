@@ -34,7 +34,7 @@ if (!(Test-Path -Path $output_dir)) {
 $report_path = [IO.Path]::Combine($output_dir, $report_file)
 
 Write-Output "Running Unit Tests"
-$cmd = ("go test ./... | go-junit-report > {0}" -f $report_path)
+$cmd = ("go test -v ./... | go-junit-report > {0}" -f $report_path)
 Invoke-Expression -Command $cmd
 
 # Create coverage
@@ -50,5 +50,5 @@ Invoke-Expression -Command $cmd
 
 # Remove the temporary coverage file
 if (Test-Path -Path $temp_coverage) {
-   Remove-Item -Path $temp_coverage
+    Remove-Item -Path $temp_coverage
 }

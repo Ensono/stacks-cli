@@ -42,20 +42,13 @@ $coverage_path = [IO.Path]::Combine($output_dir, $coverage_file)
 
 Write-Output "Generating Coverage report"
 
-$cmd = ("go test ./... -v -coverprofile={0}" -f $temp_coverage)
-Write-Output $cmd
+$cmd = ("go test ./... -v --coverprofile={0}" -f $temp_coverage)
 Invoke-Expression -Command $cmd
 
-$cmd = ("gocover < {0} > {1}" -f $temp_coverage, $coverage_path)
-Write-Output $cmd
-
-(get-childitem outputs).Name
-Write-Output "------"
-get-childitem outputs/tests
-get-childitem outputs/tests/coverage
-get-content outputs/tests/coverage
+$cmd = ("cat {0} | gocover-cobertura > {1}" -f $temp_coverage, $coverage_path)
+Invoke-Expression -Command $cmd
 
 # Remove the temporary coverage file
-#if (Test-Path -Path $temp_coverage) {
-#    Remove-Item -Path $temp_coverage
+if (Test-Path -Path $temp_coverage) {
+   Remove-Item -Path $temp_coverage
 #}

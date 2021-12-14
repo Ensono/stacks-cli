@@ -96,13 +96,7 @@ tasks:
   _release:
     context: buildenv
     command:
-      - pwsh -NoProfile -NoProfile -Command build/scripts/Publish-GitHubRelease.ps1
-    env:
-      VERSION_NUMBER: $BUILDNUMBER
-      API_KEY: $GITHUB_TOKEN
-      NOTES:
-      COMMIT_ID: $COMMIT_ID
-      ARTIFACTS_DIR: $ARTIFACTS_DIR      
+      - pwsh -NoProfile -NoProfile -Command build/scripts/Publish-GitHubRelease.ps1  
 
 pipelines:
 
@@ -142,3 +136,9 @@ pipelines:
     - task: _release
       depends_on:
         - buildnumber
+      env:
+        VERSION_NUMBER: $BUILDNUMBER
+        API_KEY: $GITHUB_TOKEN
+        NOTES:
+        COMMIT_ID: $COMMIT_ID
+        ARTIFACTS_DIR: $ARTIFACTS_DIR    

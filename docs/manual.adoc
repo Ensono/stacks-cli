@@ -16,6 +16,8 @@ include::project_settings.adoc[]
 
 include::examples.adoc[]
 
+include::troubleshooting.adoc[]
+
 include::build.adoc[]
 
 include::templating.adoc[]

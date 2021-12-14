@@ -20,21 +20,14 @@ stages:
     - job: Build
       steps:
 
-      # Ensure using correct version of Golang
-      # Required to perform the build of Stacks CLI
-      - task: GoTool@0
-        displayName: Setting GO Version
-        inputs:
-          version: ${{ variables.GoVersion }}
-
       # Install Taskfile for the build to run
       - task: Bash@3
-        displayName: Install Taskfile
+        displayName: Install Taskctl
         inputs:
           targetType: inline
           script: |
-            wget https://github.com/go-task/task/releases/download/v${{ variables.TaskfileVersion }}/task_linux_amd64.tar.gz -O /tmp/task.tar.gz
-            tar zxf /tmp/task.tar.gz -C /usr/local/bin task 
+            wget https://github.com/taskctl/taskctl/releases/download/${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
+            tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl 
 
       # Run the tasks to build the application
       - task: Bash@3
@@ -42,12 +35,16 @@ stages:
         inputs:
           targetType: inline
           script: |
-            export GOBIN=$HOME/go/bin
-            export PATH=$PATH:$GOBIN
-            task
-            task docs
+            taskctl build
         env:
           BUILDNUMBER: $(Build.BuildNumber)
+
+      - task: Bash@3
+        displayName: Outputs
+        inputs:
+          targetType: inline
+          script: |
+            tree outputs
 
       # Upload the tests and the coverage
       - task: PublishTestResults@2
@@ -83,28 +80,22 @@ stages:
     
     - job: IntegrationTests
 
-      steps:
-
-      # Ensure using correct version of Golang
-      - task: GoTool@0
-        displayName: Setting GO Version
-        inputs:
-          version: ${{ variables.GoVersion }}      
+      steps:  
 
       # Download the StacksCLI and the integration_tests
       - task: DownloadPipelineArtifact@2
         inputs: 
           artifact: StacksCLI
-          path: $(Build.ArtifactStagingDirectory)/bin
+          path: $(Build.SourcesDirectory)/outputs/bin
 
       # Install Taskfile so that the tests can be run
       - task: Bash@3
-        displayName: Install Taskfile
+        displayName: Install Taskctl
         inputs:
           targetType: inline
           script: |
-            wget https://github.com/go-task/task/releases/download/v${{ variables.TaskfileVersion }}/task_linux_amd64.tar.gz -O /tmp/task.tar.gz
-            tar zxf /tmp/task.tar.gz -C /usr/local/bin task           
+            wget https://github.com/taskctl/taskctl/releases/download/${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
+            tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl   
 
       # Run the integration tests
       - task: Bash@3
@@ -114,8 +105,7 @@ stages:
           script: |
             export GOBIN=$HOME/go/bin
             export PATH=$PATH:$GOBIN
-            mkdir projects
-            task test:integration
+            taskctl inttest
         env:
           BIN_DIR: $(Build.ArtifactStagingDirectory)/bin
           BUILDNUMBER: $(Build.BuildNumber)
@@ -156,12 +146,12 @@ stages:
 
         # Install Taskfile for the build to run
         - task: Bash@3
-          displayName: Install Taskfile
+          displayName: Install Taskctl
           inputs:
             targetType: inline
             script: |
-              wget https://github.com/go-task/task/releases/download/v${{ variables.TaskfileVersion }}/task_linux_amd64.tar.gz -O /tmp/task.tar.gz
-              tar zxf /tmp/task.tar.gz -C /usr/local/bin task 
+              wget https://github.com/taskctl/taskctl/releases/download/${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
+              tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl 
 
         # Run the tasks to build the application
         - task: Bash@3
@@ -169,10 +159,10 @@ stages:
           inputs:
             targetType: inline
             script: |
-              task release
+              taskctl release
           env:
             VERSION_NUMBER: $(Build.BuildNumber)
             API_KEY: $(GITHUB_TOKEN)
             NOTES:
-            COMMIT_ID: $(Build.SourceVersion)  
+            COMMIT_ID: $(Build.SourceVersion)
             ARTIFACTS_DIR: $(Build.ArtifactStagingDirectory)/assets

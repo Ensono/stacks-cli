@@ -1,9 +1,7 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -64,6 +62,8 @@ func init() {
 	var noBanner bool
 	var noCLIVersionCheck bool
 
+	var githubToken string
+
 	cobra.OnInitialize(initConfig)
 
 	// get the default directories
@@ -81,6 +81,8 @@ func init() {
 
 	rootCmd.PersistentFlags().BoolVar(&noBanner, "nobanner", false, "Do not display the Stacks banner when running the command")
 	rootCmd.PersistentFlags().BoolVar(&noCLIVersionCheck, "nocliversion", false, "Do not check for latest version of the CLI")
+
+	rootCmd.PersistentFlags().StringVar(&githubToken, "token", "", "GitHub token to perform authenticated requests against the GitHub API")
 
 	// Bind command line arguments
 	viper.BindPFlags(rootCmd.Flags())
@@ -156,6 +158,16 @@ func preRun(ccmd *cobra.Command, args []string) {
 		fmt.Println(static.Banner)
 	}
 
+	// Check that the CLI is online
+	// use a DNS lookup to check that github can be accessed
+	// this is so that the check is not performed if the the environment is not
+	// connected to the internet
+	err = checkConnectivity()
+	if err != nil {
+		App.Logger.Fatal(err.Error())
+		return
+	}
+
 	// Call method to determine if this version of the CLI is the latest one
 	checkCLIVersion()
 
@@ -176,38 +188,18 @@ func preRun(ccmd *cobra.Command, args []string) {
 func checkCLIVersion() {
 
 	// do not perform version check if it has been turned off
-	if Config.Input.Options.NoCLIVersion {
+	// or no token has been supplied
+	if Config.Input.Options.NoCLIVersion || Config.Input.Options.Token == "" {
 		return
 	}
 
-	// use a DNS lookup to check that github can be accessed
-	// this is so that the check is not performed if the the environment is not
-	// connected to the internet
-	_, err := net.LookupIP("github.com")
+	App.Logger.Info("Checking for latest version of CLI")
+
+	url := fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", constants.GitHubRef)
+	releaseMap, err := util.CallGitHubAPI(url, Config.Input.Options.Token)
+
 	if err != nil {
-		return
-	}
-
-	// set the url to get the latest release version of stacks CLI
-	url := "https://api.github.com/repos/amido/stacks-cli/releases?per_page=1"
-
-	resp, err := http.Get(url)
-	if err != nil {
-		App.Logger.Errorf("Unable to access Stacks CLI release page: %s", err.Error())
-		return
-	}
-
-	defer resp.Body.Close()
-
-	// read all the data returned
-	data, _ := ioutil.ReadAll(resp.Body)
-
-	var releaseMap []map[string]interface{}
-
-	// unmarshal the JSON into the map
-	err = json.Unmarshal(data, &releaseMap)
-	if err != nil {
-		App.Logger.Errorf("Unable to read latest version data: %s", err.Error())
+		App.Logger.Errorf("Unable to get latest CLI version: %s", err.Error())
 		return
 	}
 
@@ -216,8 +208,8 @@ func checkCLIVersion() {
 	settings := config.Settings{}
 
 	// get values from the map
-	latestVersion := releaseMap[0]["tag_name"].(string)
-	releaseUrl := releaseMap[0]["url"].(string)
+	latestVersion := releaseMap["tag_name"].(string)
+	releaseUrl := releaseMap["url"].(string)
 
 	// create a version constraint
 	constraint := fmt.Sprintf("= %s", strings.Replace(latestVersion, "v", "", -1))
@@ -226,4 +218,32 @@ func checkCLIVersion() {
 	if !uptodate {
 		fmt.Printf("A newer release version of the Stacks CLI is available, %s, you are running version %s.\n\nMore information at %s\n\n", latestVersion, Config.GetVersion(), releaseUrl)
 	}
+}
+
+func checkConnectivity() error {
+
+	var err error
+
+	// define the error that will be displayed if either of the checks fail
+	target := "github.com"
+	msg := fmt.Sprintf("Cannot connect to '%s', is the machine offline?", target)
+
+	App.Logger.Info("Performing connectivity check")
+
+	// check that the address can be resolved
+	_, err = net.LookupIP(target)
+	if err != nil {
+		return fmt.Errorf(msg)
+	}
+
+	// check that the address can be contacted
+	resp, err := http.Get(fmt.Sprintf("https://%s", target))
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode > 299 {
+		return fmt.Errorf(msg)
+	}
+
+	return err
 }

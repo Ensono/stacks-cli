@@ -5,5 +5,5 @@ variables:
     value: 1.16.6
   - name: OutputDir
     value: bin
-  - name: TaskfileVersion
-    value: 3.7.3
+  - name: TaskctlVersion
+    value: 1.4.2

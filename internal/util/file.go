@@ -193,13 +193,30 @@ func Unzip(src, dest string) (string, error) {
 	return tmpRepoDir, nil
 }
 
-// GetDefaultTempDir determines and creates a temporary directory for packages and source
-// code to be downloaded to.
+// GetDefaultTempDir determines the path to be used for the temporary directory
+// It does not create it, but it will be set in the config for the CLI to create
+// as and when it is required
 func GetDefaultTempDir() string {
-	tmpPath, err := os.MkdirTemp("", "stackscli")
-	if err != nil {
-		log.Fatalf("Unable to create temporary directory")
+
+	var tmpPath string
+
+	// determine the directory within the temp dir to use
+	dir := fmt.Sprintf("stackscli%s", RandomString(10))
+
+	// set the tempDir path based
+	// On Windows this has to be defined slightly differently because the os.TempDir() returns
+	// the env var $TMP, or $TEMP which uses the 8.3 naming convention. In normal circumstances
+	// this is OK, however dotnet does not like using the short name
+	// For example this dir `C:\Users\RussellSeymour\AppData\Local\Temp` will come out as
+	// `C:\Users\RUSSEL~1\AppData\Local\Temp`. So detect Windows and set the tempdir using the $UserProfile
+	// environment var and then append AppData\Local\Temp to it
+	// Other OSes will use thje os.TempDir
+	if runtime.GOOS == "windows" {
+		tmpPath = filepath.Join(os.Getenv("USERPROFILE"), "AppData", "Local", "Temp", dir)
+	} else {
+		tmpPath = filepath.Join(os.TempDir(), dir)
 	}
+
 	return tmpPath
 }
 
@@ -213,4 +230,19 @@ func GetDefaultWorkingDir() string {
 	}
 
 	return workingDir
+}
+
+// IsEmpty states if the specified directory is empty or not
+func IsEmpty(name string) (bool, error) {
+	f, err := os.Open(name)
+	if err != nil {
+		return false, err
+	}
+	defer f.Close()
+
+	_, err = f.Readdirnames(1) // Or f.Readdir(1)
+	if err == io.EOF {
+		return true, nil
+	}
+	return false, err // Either not empty or error, suits both cases
 }

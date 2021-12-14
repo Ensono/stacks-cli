@@ -100,8 +100,8 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 		case "dotnet":
 
 			versionCmd = "dotnet"
-			versionArgs = "--version"
-			re = *regexp.MustCompile(`(?P<version>.*)`)
+			versionArgs = "--info"
+			re = *regexp.MustCompile(`\.NET.*SDK.*:\r?\n\sVersion:\s+(?P<version>.*?)\r?\n`)
 
 		case "java":
 
@@ -131,13 +131,15 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 		idx := re.SubexpIndex(("version"))
 		versionFound := matches[idx]
 
+		logger.Debugf("Dotnet version found: %s", versionFound)
+
 		met := s.CompareVersion(cmd.Version, versionFound, logger)
 
 		// if not matched then create a command object and set in the array
 		if !met {
 			incorrect = append(incorrect, models.Command{
 				Binary:          cmd.Name,
-				VersionFound:    result,
+				VersionFound:    versionFound,
 				VersionRequired: cmd.Version,
 			})
 		}

@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"strings"
 	"testing"
@@ -17,230 +16,77 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-// CLIAlertSuite creates a suite of tests that check the output from the CLI
+// CLIAlertSuite creates a suite of tests that check the output of the CLI
 // when things are not configured properly
 type CLIAlertSuite struct {
 	BaseIntegration
 
-	ConfigFile string
+	ConfigFile                     string
+	BadConfigFile                  string
+	WrongFrameworkOptionConfigFile string
+
+	ProjectPath1 string
+	ProjectPath2 string
+	ProjectPath3 string
+	Project3File string
+
+	FrameworkOption string
 }
 
-// SetupSuite creates the environment for the tests to run
-// In this case a configuration file is used so that the scaffold command can be run multiple times
+// SetupSuite creates the necessary environment for the tests to run
+// In this case a configuration file is used so that scaffold command can be run
+// several times
 func (suite *CLIAlertSuite) SetupSuite() {
-	suite.ConfigFile = suite.BaseIntegration.WriteConfigFile()
-}
 
-// TestProjectAlreadyExists checks to see if the CLI has detected that the project
-// already exists. This is done my checking that the output of the command has
-// the alert
-func (suite *CLIAlertSuite) TestProjectAlreadyExists() {
+	suite.ConfigFile = suite.BaseIntegration.WriteConfigFile("")
 
-	// create the project directory before running the cli
-	testProjectPath := filepath.Join(suite.ProjectDir, fmt.Sprintf("%s-1", suite.Project))
-	err := util.CreateIfNotExists(testProjectPath, 066)
+	// create two directories that are to be encountered when running the scaffold
+	suite.CreateDirs([]string{
+		suite.ProjectPath1,
+		suite.ProjectPath3,
+	})
+
+	// create a file in one of the dirs so that it is not empty
+	file, err := os.Create(suite.Project3File)
 	if err != nil {
-		suite.T().Errorf("Unable to create project dir: %s", err.Error())
+		suite.T().Fatalf("unable to create project file '%s': %s", suite.Project3File, err.Error())
 	}
+	file.Close()
 
-	// run the command and then check the output
-	arguments := fmt.Sprintf("scaffold -c %s --nobanner", suite.ConfigFile)
-	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, false)
-
-	suite.T().Run("CLI does not overwrite an existing project", func(t *testing.T) {
-
-		// create the pattern to match the output with
-		escapedTestProjectPath := strings.Replace(testProjectPath, "\\", "\\\\", -1)
-		pattern := fmt.Sprintf("project directory already exists, skipping: %s", escapedTestProjectPath)
-		t.Logf("Looking for pattern: '%s'", pattern)
-
-		re := regexp.MustCompile(pattern)
-		matched := re.MatchString(suite.CmdOutput)
-
-		assert.Equal(t, true, matched)
-	})
-
-	suite.T().Run("Second project is created", func(t *testing.T) {
-		dir := filepath.Join(suite.ProjectDir, fmt.Sprintf("%s-2", suite.Project))
-		exists := util.Exists(dir)
-		assert.Equal(t, true, exists)
-	})
-}
-
-// TestAppsNotFoundInPathEnvVar changes the PATH environment variable so that dotnet and git cannot
-// be found by the CLI. This test checks that this is reported properly in the output
-func (suite *CLIAlertSuite) TestAppsNotFoundInPathEnvVar() {
-
-	var path string
-
-	// get the PATH env var so that it can be restored
-	envPath := os.Getenv("PATH")
-
-	// set the path according to the os
-	if runtime.GOOS == "windows" {
-		path = ".;bin;C:/Windows/System32"
-	} else {
-		path = ".:bin:/usr/sbin"
-	}
-
-	err := os.Setenv("PATH", path)
+	// create the badConfigFile to check that the CLI throws the correct error
+	malformed := fmt.Sprintf(`directory:\n\tworking:%s`, suite.ProjectDir)
+	suite.BadConfigFile = filepath.Join(suite.ProjectDir, "malformed-stacks.yml")
+	err = ioutil.WriteFile(suite.BadConfigFile, []byte(malformed), os.ModePerm)
 	if err != nil {
-		suite.T().Errorf("Unable to change PATH environment variable: %s", err.Error())
+		suite.T().Fatalf("unable to create malformed configuration file: %s", err.Error())
 	}
 
-	// run the command and then check the output
-	arguments := fmt.Sprintf("scaffold -c %s --nobanner", suite.ConfigFile)
-	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, true)
+	// update the configuration so that it contains an invalid framework option
+	// then write this file out so that the CLI can read it in
+	suite.FrameworkOption = "bus"
+	old := framework_option
+	framework_option = suite.FrameworkOption
+	reset := func() { framework_option = old }
+	defer reset()
 
-	suite.T().Run("`dotnet` binary cannot be located", func(t *testing.T) {
+	// write out configuration file
+	suite.WrongFrameworkOptionConfigFile = suite.BaseIntegration.WriteConfigFile("wrong-stacks.yml")
 
-		// create the pattern to match the output
-		pattern := "Command 'dotnet' for the 'dotnet' framework cannot be located."
-		t.Logf("Looking for pattern: %s", pattern)
-		t.Logf(suite.CmdOutput)
+}
 
-		re := regexp.MustCompile(pattern)
-		matched := re.MatchString(suite.CmdOutput)
-
-		assert.Equal(t, true, matched)
-	})
-
-	suite.T().Run("`git` binary cannot be located", func(t *testing.T) {
-
-		// create the pattern to match the output
-		pattern := "Command 'git' for the 'dotnet' framework cannot be located."
-		t.Logf("Looking for pattern: %s", pattern)
-
-		re := regexp.MustCompile(pattern)
-		matched := re.MatchString(suite.CmdOutput)
-
-		assert.Equal(t, true, matched)
-	})
-
-	// Reset the path variable
-	err = os.Setenv("PATH", envPath)
+// TearDownSuite removes all of the files that have been generated
+// in this suite
+func (suite *CLIAlertSuite) TearDownSuite() {
+	err := suite.ClearDir(suite.ProjectDir)
 	if err != nil {
-		suite.T().Errorf("Unable to revert PATH environment variable: %s", err.Error())
+		fmt.Printf("error tearing down the CLIAlert suite: %s", err.Error())
 	}
 }
 
-// TestBadConfigFile writes out a malformed YAML file and checks that the application
-// errors out properly
-func (suite *CLIAlertSuite) TestBadConfigFile() {
-
-	// write out bad configuration file
-	badConfig := fmt.Sprintf(`directory:\n\tworking:%s`, suite.ProjectDir)
-	badConfigFile := filepath.Join(suite.ProjectDir, "bad-stacks.yml")
-	err := ioutil.WriteFile(badConfigFile, []byte(badConfig), 0666)
-
-	if err != nil {
-		suite.T().Fatalf("Error writing out malformed configuration file: %s", err.Error())
-	}
-
-	arguments := fmt.Sprintf("scaffold -c %s --nobanner", badConfigFile)
-	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, true)
-
-	suite.T().Run("CLI states config file is malformed", func(t *testing.T) {
-
-		// create the pattern to match the output
-		pattern := "Unable to read in configuration file"
-		t.Logf("Looking for pattern: %s", pattern)
-
-		re := regexp.MustCompile(pattern)
-		matched := re.MatchString(suite.CmdOutput)
-
-		assert.Equal(t, true, matched)
-	})
-
-}
-
-// TestIncorrectFrameworkOption tests that the CLI copes properly if someone
-// specifies the wrong framework option
-func (suite *CLIAlertSuite) TestIncorrectFrameworkOption() {
-
-	// Set the framework option to use, this will be incorrect
-	oldFrameworkOption := framework_option
-	framework_option = "bus"
-
-	// write out a configuration file
-	configFile := suite.BaseIntegration.WriteConfigFile()
-
-	// build up the command to run and use the configuration file to do so
-	arguments := fmt.Sprintf("scaffold -c %s --nobanner", configFile)
-	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, false)
-
-	suite.T().Run("Ensure CLI errors gracefully", func(t *testing.T) {
-
-		pattern := fmt.Sprintf("The URL for the specified framework option, %s, is empty", framework_option)
-		t.Logf("Looking for pattern: %s", pattern)
-
-		re := regexp.MustCompile(pattern)
-		matched := re.MatchString(suite.CmdOutput)
-
-		assert.Equal(t, true, matched)
-	})
-
-	// reset the framework option
-	framework_option = oldFrameworkOption
-}
-
-// TestCLIVersionCheck tests that the cli is correctly stating that there is a newer version
-// of the CLI available
-// This works because although the built version will be the latest one, it has not been published
-// on GitHub yet so that will be the latest version
-func (suite *CLIAlertSuite) TestCLIVersionCheck() {
-
-	// write out a configuration file
-	// write out a configuration file
-	configFile := suite.BaseIntegration.WriteConfigFile()
-
-	// create test table to use
-	tables := []struct {
-		title     string
-		arguments string
-		pattern   string
-		test      bool
-		msg       string
-	}{
-		{
-			title:     "Ensure CLI advises of newer version of software",
-			arguments: fmt.Sprintf("scaffold -c %s --nobanner", configFile),
-			pattern:   "A newer release version of the Stacks CLI is available",
-			test:      true,
-			msg:       "CLI should perform a version check against the latest version",
-		},
-		{
-			title:     "CLI version check is not performed",
-			arguments: fmt.Sprintf("scaffold -c %s --nobanner --nocliversion", configFile),
-			pattern:   "A newer release version of the Stacks CLI is available",
-			test:      false,
-			msg:       "No version check should be attempted as the --nocliversion argument has been specified",
-		},
-	}
-
-	// iterate around the test tables
-	for _, table := range tables {
-
-		// run the command with the table arguments
-		suite.BaseIntegration.RunCommand(suite.BinaryCmd, table.arguments, false)
-
-		suite.T().Run(table.title, func(t *testing.T) {
-
-			// see if the specified pattern exists in the output
-			t.Logf("Looking for pattern: %s", table.pattern)
-
-			re := regexp.MustCompile(table.pattern)
-			matched := re.MatchString(suite.CmdOutput)
-
-			if table.test != matched {
-				t.Error(table.msg)
-			}
-		})
-	}
-}
-
-// TestCLIAlertSuite runs the suite of tests to check that the CLI responds in the
-// correct way when things are not quite right
+// TestCLIAlertSuite runs the the suite of tests to check that CLI alerts that can
+// be raised during operation
+// This uses the same configuration file as the configfile tests, but is only
+// interested in the alerts that are genereted by the CLI
 func TestCLIAlertSuite(t *testing.T) {
 
 	s := new(CLIAlertSuite)
@@ -249,7 +95,171 @@ func TestCLIAlertSuite(t *testing.T) {
 	s.Project = *project
 	s.ProjectDir = *projectDir
 
+	// define the paths for the suite
+	s.ProjectPath1 = filepath.Join(s.ProjectDir, fmt.Sprintf("%s-1", s.Project))
+	s.ProjectPath2 = filepath.Join(s.ProjectDir, fmt.Sprintf("%s-2", s.Project))
+	s.ProjectPath3 = filepath.Join(s.ProjectDir, fmt.Sprintf("%s-3", s.Project))
+	s.Project3File = filepath.Join(s.ProjectPath3, "project.json")
+
+	s.BaseIntegration.Assert = assert.New(t)
+
 	s.SetProjectDir()
 
 	suite.Run(t, s)
+}
+
+// TestConfigFileExists checks that the configuration file has been written out
+// properly. If not then none of the tests in this suite will work properly
+func (suite *CLIAlertSuite) TestConfigFileExists() {
+
+	exists := util.Exists(suite.ConfigFile)
+
+	suite.Assert.Equal(true, exists, "Configuration file does not exist")
+}
+
+// TestProjectDir already exists checks that the CLI has detected a project directory
+// already exists. It will overwrite the project directory if it is empty, but it will
+// not do so if files or directories exist below it
+func (suite *CLIAlertSuite) TestProjectDirAlreadyExists() {
+
+	// run the scaffold command
+	arguments := fmt.Sprintf("scaffold -c %s --nobanner", suite.ConfigFile)
+	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, false)
+
+	suite.T().Run("CLI overwrites existing empty directory", func(t *testing.T) {
+
+		escapedProjectPath := strings.Replace(suite.ProjectPath1, "\\", "\\\\\\\\", -1)
+		pattern := fmt.Sprintf(`(?i)overwriting empty directory: %s`, escapedProjectPath)
+
+		matched := suite.CheckCmdOutput(pattern)
+
+		suite.Assert.Equal(true, matched, "CLI should overwrite empty directory")
+	})
+
+	suite.T().Run("Second project is created", func(t *testing.T) {
+
+		exists := util.Exists(suite.ProjectPath2)
+
+		suite.Assert.Equal(true, exists, "CLI should create the directory for the second project")
+	})
+
+	suite.T().Run("CLI does not overwrite and existing project directory", func(t *testing.T) {
+
+		escapedProjectPath := strings.Replace(suite.ProjectPath3, "\\", "\\\\\\\\", -1)
+		pattern := fmt.Sprintf(`(?i)project directory already exists, skipping: %s`, escapedProjectPath)
+
+		matched := suite.CheckCmdOutput(pattern)
+
+		suite.Assert.Equal(true, matched, "CLI should not overwrite an existing directory, with data in it")
+	})
+}
+
+// TestFrameworkAppsNotFound changes the PATH environment variable for the machine so that
+// framework commands cannot be found.
+// The test then checks that the expected messages are in the output
+// The PATH is restored on the machine after being run
+// The stacks-cli is passed as an absolute to the integration test so that does not need to be
+// found in the path
+func (suite *CLIAlertSuite) TestFrameworkAppsNotFound() {
+
+	var err error
+
+	// declare path variable that will be declared
+	var path string
+
+	// get the current envPath from the machine
+	var envPath string = os.Getenv("PATH")
+
+	// set the path according to the OS
+	switch runtime.GOOS {
+	case "windows":
+		path = "C:/Windows/System32"
+	default:
+		path = "/usr/sbin"
+	}
+
+	// set the OS path to the path that has been defined
+	err = os.Setenv("PATH", path)
+	if err != nil {
+		suite.Assert.Fail("Unable to set temporary PATH environment variable: %s", err.Error())
+	}
+
+	// Reset thePATH env var at the end of the test
+	reset := func() {
+		err = os.Setenv("PATH", envPath)
+		if err != nil {
+			suite.Assert.Fail("Unable to reset PATH environment variable: %s", err.Error())
+		}
+	}
+	defer reset()
+
+	// run the scaffold command
+	// the exit code is ignored here so that the output of the command can be seen
+	// otherwise the tests just stop
+	arguments := fmt.Sprintf("scaffold -c %s --nobanner", suite.ConfigFile)
+	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, true)
+
+	// create the test tables to use to perform the necessary tests
+	tables := []struct {
+		binary  string
+		pattern string
+		msg     string
+	}{
+		{
+			"dotnet",
+			"(?i)command 'dotnet' for the 'dotnet' framework cannot be located",
+			"CLI should state that the dotnet command cannot be found",
+		},
+		{
+			"git",
+			"(?i)command 'git' for the 'dotnet' framework cannot be located",
+			"CLI should state that the git command cannot be found",
+		},
+	}
+
+	// iterate around the test tables
+	for _, table := range tables {
+
+		suite.T().Run(fmt.Sprintf("`%s` command cannot be located", table.binary), func(t *testing.T) {
+			matched := suite.CheckCmdOutput(table.pattern)
+
+			suite.Assert.Equal(true, matched, table.msg)
+		})
+	}
+}
+
+// TestMalformedConfigFile checks that the malformed-stacks.yml is correctly identified as unreadable
+// by the application
+func (suite *CLIAlertSuite) TestMalformedConfigFile() {
+
+	// run the scaffold command
+	// the exit code is ignored here so that the output of the command can be seen
+	// otherwise the tests just stop
+	arguments := fmt.Sprintf("scaffold -c %s --nobanner", suite.BadConfigFile)
+	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, true)
+
+	suite.T().Run("CLI states that the configuration file is unreadable", func(t *testing.T) {
+
+		pattern := "(?i)unable to read in configuration file"
+		matched := suite.CheckCmdOutput(pattern)
+
+		suite.Assert.Equal(true, matched, "CLI should error attempting to read in configuration file")
+	})
+}
+
+// TestIncorrectFrameworkOption tests that the CLI copes property if someone specifies
+// an invalid framework option, e.g. one that the CLI does not know about
+func (suite *CLIAlertSuite) TestIncorrectFrameworkOption() {
+
+	// run the scaffold command against the incorrect framrowkr version configuration file
+	arguments := fmt.Sprintf("scaffold -c %s --nobanner", suite.WrongFrameworkOptionConfigFile)
+	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, false)
+
+	suite.T().Run("Ensure CLI errors gracefully", func(t *testing.T) {
+
+		pattern := fmt.Sprintf("(?i)the url for the specified framework option, %s, is empty", suite.FrameworkOption)
+		matched := suite.CheckCmdOutput(pattern)
+
+		suite.Assert.Equal(true, matched, "CLI should error because the framework option is invalid")
+	})
 }

@@ -166,4 +166,4 @@ stages:
             NOTES:
             COMMIT_ID: $(Build.SourceVersion)
             ARTIFACTS_DIR: $(Build.ArtifactStagingDirectory)/assets
-            OWNER: ${{ vars.RepoOwner }}
+            OWNER: ${{ variables.RepoOwner }}

@@ -4,7 +4,6 @@ package integration
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 	"testing"
 
@@ -16,6 +15,23 @@ import (
 // of the binary being tested is correct
 type VersionSuite struct {
 	BaseIntegration
+}
+
+// TestVersionSuite runs the suite of tests to check that the CLI is the correct
+// version for the tests
+func TestVersionSuite(t *testing.T) {
+
+	s := new(VersionSuite)
+	s.BinaryCmd = *binaryCmd
+	s.Company = *company
+	s.Project = *project
+	s.ProjectDir = *projectDir
+
+	s.Assert = assert.New(t)
+
+	s.SetProjectDir()
+
+	suite.Run(t, s)
 }
 
 // TestVersionNumber checks the output of the version command of the
@@ -30,30 +46,10 @@ func (suite *VersionSuite) TestVersionNumber() {
 
 		// escape the . in the version number
 		escaped := strings.Replace(version, ".", `\.`, -1)
-
-		// create the pattern to match the output with
 		pattern := fmt.Sprintf(`Version:\s+%s`, escaped)
 
-		t.Logf("Looking for pattern: '%s'", pattern)
+		matched := suite.CheckCmdOutput(pattern)
 
-		re := regexp.MustCompile(pattern)
-		matched := re.MatchString(suite.CmdOutput)
-
-		assert.Equal(t, true, matched)
+		suite.Assert.Equal(true, matched, "Version number should be the same as the CLI being tested")
 	})
-}
-
-// TestVersionSuite runs the suite of tests to check that the CLI is the correct
-// version for the tests
-func TestVersionSuite(t *testing.T) {
-
-	s := new(VersionSuite)
-	s.BinaryCmd = *binaryCmd
-	s.Company = *company
-	s.Project = *project
-	s.ProjectDir = *projectDir
-
-	s.SetProjectDir()
-
-	suite.Run(t, s)
 }

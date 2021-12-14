@@ -57,6 +57,17 @@ func (s *Scaffold) Run() error {
 		s.Logger.Fatal(errText)
 	}
 
+	// create the temporary directory if it does not exist
+	if !util.Exists(s.Config.Input.Directory.TempDir) {
+		err := os.MkdirAll(s.Config.Input.Directory.TempDir, os.ModePerm)
+		if err != nil {
+			return fmt.Errorf("Unable to create temporary directory: %s", s.Config.Input.Directory.TempDir)
+		}
+	}
+
+	// Cleanup the temporary dir after all the projects have been processed
+	defer s.cleanup()
+
 	// iterate around the projects that have been specified and
 	// process each one in turn
 	for _, project := range s.Config.Input.Project {
@@ -109,6 +120,9 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 			s.Logger.Errorf("Error resolving template: %s", err.Error())
 			return err
 		}
+
+		// expand any OS based variables on the template
+		arguments = os.ExpandEnv(arguments)
 
 		// Execute the command and check that it worked
 		_, err = s.Config.ExecuteCommand(path, s.Logger, command, arguments, false)
@@ -189,20 +203,25 @@ func (s *Scaffold) processProject(project config.Project) {
 		srcUrl,
 		project.Framework.Version,
 		s.Config.Input.Directory.TempDir,
+		s.Config.Input.Options.Token,
 	)
+
+	// set the clonedir as the project temporary directory
+	project.Directory.TempDir = dir
 
 	// if there was an error getting hold of the framework project display an error
 	// and move onto the next project
 	if err != nil {
-		s.Logger.Errorf("Error downloading the specified framework option: %s", err.Error())
+		s.Logger.Errorf("Issue downloading the specified framework option\n\tURL: %s\n\tError: %s", dir, err.Error())
 		return
 	}
 
 	// attempt to read in the settings for the framework option
-	err = project.ReadSettings(dir, s.Config)
 	s.Logger.Infof("Attempting to read project settings: %s", project.SettingsFile)
+	err = project.ReadSettings(dir, s.Config)
 	if err != nil {
 		s.Logger.Errorf("Error reading settings from project settings: %s", err.Error())
+		s.Logger.Info("Please ensure you are running the latest version of the CLI")
 		return
 	}
 
@@ -254,9 +273,6 @@ func (s *Scaffold) processProject(project config.Project) {
 	// configure the git repository
 	s.configureGitRepository(&project)
 
-	// cleanup
-	s.cleanup()
-
 }
 
 // setProjectDirs sets the temporary and working directories, based on the name of the
@@ -267,7 +283,6 @@ func (s *Scaffold) setProjectDirs(project *config.Project) error {
 	var err error
 
 	project.Directory.WorkingDir = filepath.Join(s.Config.Input.Directory.WorkingDir, project.Name)
-	project.Directory.TempDir = filepath.Join(s.Config.Input.Directory.TempDir, project.Name)
 
 	// check to see if the workingdir already exists, if it does return an error
 	// otherwise create them
@@ -280,7 +295,14 @@ func (s *Scaffold) setProjectDirs(project *config.Project) error {
 			err = os.RemoveAll(project.Directory.WorkingDir)
 			return err
 		} else {
-			return fmt.Errorf("project directory already exists, skipping: %s", project.Directory.WorkingDir)
+
+			// determine if the dir is empty, if it is then allow overwriting
+			empty, _ := util.IsEmpty(project.Directory.WorkingDir)
+			if empty {
+				s.Logger.Warnf("Overwriting empty directory: %s", project.Directory.WorkingDir)
+			} else {
+				return fmt.Errorf("project directory already exists, skipping: %s", project.Directory.WorkingDir)
+			}
 		}
 	}
 

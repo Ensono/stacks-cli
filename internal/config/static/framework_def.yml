@@ -11,6 +11,7 @@
   commands:
     - java
     - git
+    - mvn
   version:
     command: java
     arguments: -version

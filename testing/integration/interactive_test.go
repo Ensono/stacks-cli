@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/ActiveState/termtest"
+
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -22,9 +23,30 @@ type InteractiveSuite struct {
 
 // TearDownSuite removes all of the files that have been generated in this suite
 func (suite *InteractiveSuite) TearDownSuite() {
-	err := ClearDir(suite.ProjectDir)
+	err := suite.ClearDir(suite.ProjectDir)
 	if err != nil {
-		suite.T().Errorf("Error tearing down the Argument Suite: %v", err)
+		fmt.Printf("Error tearing down the Argument Suite: %v", err)
+	}
+}
+
+// expect the prompts from the command line and then send the appropriate response
+func TestInteractiveSuite(t *testing.T) {
+
+	s := new(InteractiveSuite)
+	s.BinaryCmd = *binaryCmd
+	s.Company = *company
+	s.Project = *project
+	s.ProjectDir = *projectDir
+
+	s.BaseIntegration.Assert = assert.New(t)
+
+	s.SetProjectDir()
+
+	// only run the interactive test when not on windows
+	// this is because the questions are repeated in the Windows console which causes
+	// an issue with the expect
+	if runtime.GOOS != "windows" {
+		suite.Run(t, s)
 	}
 }
 
@@ -105,7 +127,7 @@ func (suite *InteractiveSuite) TestInteractiveMode() {
 
 		exists := util.Exists(configFile)
 
-		assert.Equal(t, true, exists)
+		suite.Assert.Equal(true, exists, "Configuration file should exist")
 	})
 
 }
@@ -185,25 +207,6 @@ func (suite *InteractiveSuite) TestInteractiveModeInfra() {
 
 		exists := util.Exists(configFile)
 
-		assert.Equal(t, true, exists)
+		suite.Assert.Equal(true, exists, "Configuration file should exist")
 	})
-}
-
-// expect the prompts from the command line and then send the appropriate response
-func TestInteractiveSuite(t *testing.T) {
-
-	s := new(InteractiveSuite)
-	s.BinaryCmd = *binaryCmd
-	s.Company = *company
-	s.Project = *project
-	s.ProjectDir = *projectDir
-
-	s.SetProjectDir()
-
-	// only run the interactive test when not on windows
-	// this is because the questions are repeated in the Windows console which causes
-	// an issue with the expect
-	if runtime.GOOS != "windows" {
-		suite.Run(t, s)
-	}
 }

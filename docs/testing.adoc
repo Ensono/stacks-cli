@@ -52,7 +52,7 @@ image::images/build_tests.png[]
 
 === Running the tests locally
 
-All of the integration tests are run using Taskfile, which means that they can be run on a local workstation. 
+All of the integration tests are run using Taskctl, which means that they can be run on a local workstation. 
 
 [source,bash,subs="attributes"]
 ----

@@ -39,7 +39,7 @@ if (!$exists) {
 # to write to those directories. By doing it here the problem is circumvented.
 $exists = Test-Path -Path $output_dir
 if (!$exists) {
-    New-Item -ItemType Directory -Path $output_dir
+    New-Item -ItemType Directory -Path $output_dir | Out-Null
 }
 
 # Get a list of the files in the docs dir

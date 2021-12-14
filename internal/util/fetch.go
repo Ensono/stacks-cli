@@ -6,16 +6,16 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 // GitClone uses standard network library to fetch a defined commit and avoids bloating the binary
-func GitClone(repoUrl, commitHash, tmpPath string) (string, error) {
-
-	commitHash = getDefaultCommitHash(commitHash)
+func GitClone(repoUrl, ref, tmpPath string, token string) (string, error) {
 
 	// get the URL to be used to clone the repo from
-	archiveUrl := ArchiveUrl(repoUrl, commitHash)
+	archiveUrl, err := ArchiveUrl(repoUrl, ref, token)
+	if err != nil {
+		return "", err
+	}
 
 	resp, err := http.Get(archiveUrl)
 	if err != nil {
@@ -23,7 +23,7 @@ func GitClone(repoUrl, commitHash, tmpPath string) (string, error) {
 	}
 
 	if resp.StatusCode > 299 {
-		return "", fmt.Errorf("StatusCode: %d", resp.StatusCode)
+		return archiveUrl, fmt.Errorf("StatusCode: %d", resp.StatusCode)
 	}
 
 	zip, err := ioutil.ReadAll(resp.Body)
@@ -50,16 +50,26 @@ func GitClone(repoUrl, commitHash, tmpPath string) (string, error) {
 }
 
 // ArchiveUrl returns the archive url for the repo at a given commit hash or branch or v release
-func ArchiveUrl(repoUrl, commitHash string) string {
+func ArchiveUrl(repoUrl, ref string, token string) (string, error) {
 
-	commitHash = getDefaultCommitHash(commitHash)
+	var zipUrl string
+	var err error
 
-	return strings.Join([]string{strings.TrimSuffix(repoUrl, ".git"), fmt.Sprintf("archive/%s.zip", commitHash)}, "/")
-}
+	// get the apiUrl from the method
+	apiUrl := BuildGitHubAPIUrl(repoUrl, ref, false, token)
 
-func getDefaultCommitHash(hash string) string {
-	if hash == "" {
-		hash = "latest"
+	if token == "" {
+		zipUrl = apiUrl
+	} else {
+		// call the github api to get the url to the zip file to download
+		zipUrl, err = GetGitHubArchiveUrl(apiUrl, token)
 	}
-	return hash
+
+	// if the zipUrl has not been found then drop back to the archive URL
+	if zipUrl == "" && err == nil {
+		apiUrl = BuildGitHubAPIUrl(repoUrl, ref, true, token)
+		zipUrl, err = GetGitHubArchiveUrl(apiUrl, token)
+	}
+
+	return zipUrl, err
 }

@@ -28,6 +28,11 @@ The following options can be applied to any command within the Stacks CLI.
 | `--tempdir` | AMIDOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Stacks for its temp files | System temp directory | 
 | `--nobanner` | AMIDOSTACKS_OPTIONS_NOBANNER | Do not display the Stacks banner when running the command | `false` |
 | `--nocliversion` | AMIDOSTACKS_OPTIONS_NOCLIVERSION | Do not perform a version check for the latest version of the Amido Stacks CLI | `false` |
+| `--token` | AMIDOSTACKS_OPTIONS_TOKEN | The Stacks CLI can use the GitHub API to retrieve latest version infomration for the CLI as well as use it to ascertain Zip archive URLs without having to build up the URL to the asset manually.
+
+By default the GitHub API rate limits unauthenticated API requests to 60 requests per hour, however authenticated requests can get 5,000 per hour.
+
+The GitHub API will not be used if this value is not set.
 |===
 
 ==== Scaffold Options
@@ -76,7 +81,7 @@ The `cmdlog.txt` file is created in the directory that the CLI has been run in. 
 | `--dryrun` | AMIDOSTACKS_DRYRUN | Perform a dryrun of all the CLI. Particularly useful when used with `--cmdlog` | `false` |
 | `--save` | AMIDOSTACKS_SAVE | If using the interactive or command line mode for configuring the CLI, the given configuration can be saved to a file. This allows the configuration to be replayed again at a later date.
 
-The configuration is saved to `stacks.yml` in the root of the specified working directory | `false` |
+The configuration is saved to `stacks.yml` in the specified working directory | `false` |
 | `--nocleanup` | AMIDOSTACKS_NOCLEANUP | Do not perform cleanup operations after the scaffoling has been completed | `false` |
 |`--force` | AMIDOSTACKS_FORCE | *This is a destructive operation*
 

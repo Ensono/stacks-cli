@@ -93,10 +93,16 @@ tasks:
     command:
       - pwsh -NoProfile -Command /app/build/scripts/Invoke-IntegrationTests.ps1 -build_number $BUILDNUMBER -Report
 
-  release:
+  _release:
     context: buildenv
     command:
       - pwsh -NoProfile -NoProfile -Command build/scripts/Publish-GitHubRelease.ps1
+    env:
+      VERSION_NUMBER: $BUILDNUMBER
+      API_KEY: $GITHUB_TOKEN
+      NOTES:
+      COMMIT_ID: $COMMIT_ID
+      ARTIFACTS_DIR: $ARTIFACTS_DIR      
 
 pipelines:
 
@@ -130,3 +136,9 @@ pipelines:
     - task: buildnumber
     - task: _compile
       depends_on: buildnumber
+
+  release:
+    - task: buildnumber
+    - task: _release
+      depends_on:
+        - buildnumber

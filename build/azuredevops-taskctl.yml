@@ -161,7 +161,7 @@ stages:
             script: |
               taskctl release
           env:
-            VERSION_NUMBER: $(Build.BuildNumber)
+            BUILDNUMBER: $(Build.BuildNumber)
             API_KEY: $(GITHUB_TOKEN)
             NOTES:
             COMMIT_ID: $(Build.SourceVersion)

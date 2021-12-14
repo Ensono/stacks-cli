@@ -11,6 +11,9 @@ contexts:
         - -w
         - /app
         - russellseymour/stacks-pwsh-golang:1.16.11
+        - pwsh
+        - -NoProfile
+        - -Command
 
   inttestenv:
     executable:
@@ -41,7 +44,7 @@ tasks:
   buildnumber:
     context: buildenv
     command:
-      - pwsh -NoProfile -Command /app/build/scripts/Set-BuildNumber.ps1 -number $BUILDNUMBER
+      - /app/build/scripts/Set-BuildNumber.ps1 -number $BUILDNUMBER
     exportAs: BUILDNUMBER
 
   clean:
@@ -53,13 +56,13 @@ tasks:
     description: Compile CLI and Integration Tests
     context: buildenv
     command:
-      - pwsh -NoProfile -Command /app/build/scripts/Invoke-Compile.ps1 -BuildNumber $BUILDNUMBER
+      - /app/build/scripts/Invoke-Compile.ps1 -BuildNumber $BUILDNUMBER
 
   _docs:
     description: Build Docs for Stacks CLI
     context: docsenv
     command:
-      - pwsh -NoProfile -Command /app/build/scripts/Build-Docs.ps1 -BuildNumber $BUILDNUMBER -BasePath /app
+      - /app/build/scripts/Build-Docs.ps1 -BuildNumber $BUILDNUMBER -BasePath /app
 
   docs:pdf:
     context: docsenv
@@ -73,30 +76,30 @@ tasks:
     description: Create Markdown docs
     command:
       - mkdir -p outputs/docs/md
-      - pwsh -NoProfile -Command /app/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /app/docs -output_dir /app/outputs/docs/md
+      - /app/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /app/docs -output_dir /app/outputs/docs/md
 
   test:unit:
     context: buildenv
     description: Run Unit Tests
     command:
-      - pwsh -NoProfile -Command /app/build/scripts/Invoke-UnitTests.ps1
+      - /app/build/scripts/Invoke-UnitTests.ps1
 
   test:int:
     context: inttestenv
     description: Run Integration Tests
     
     command:
-      - pwsh -NoProfile -Command /app/build/scripts/Invoke-IntegrationTests.ps1 -build_number $BUILDNUMBER -RunTests
+      - /app/build/scripts/Invoke-IntegrationTests.ps1 -build_number $BUILDNUMBER -RunTests
 
   test:int:generate_report:
     context: buildenv
     command:
-      - pwsh -NoProfile -Command /app/build/scripts/Invoke-IntegrationTests.ps1 -build_number $BUILDNUMBER -Report
+      - /app/build/scripts/Invoke-IntegrationTests.ps1 -build_number $BUILDNUMBER -Report
 
   _release:
     context: buildenv
     command:
-      - pwsh -NoProfile -NoProfile -Command build/scripts/Publish-GitHubRelease.ps1  
+      - /app/build/scripts/Publish-GitHubRelease.ps1 -version $VERSION_NUMBER -commitId $API)KEY -notes $NOTES -artifactsDir $ARTIFACTS_DIR -Owner $OWNER
 
 pipelines:
 

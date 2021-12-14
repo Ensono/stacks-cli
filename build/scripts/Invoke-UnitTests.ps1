@@ -51,4 +51,4 @@ Invoke-Expression -Command $cmd
 # Remove the temporary coverage file
 if (Test-Path -Path $temp_coverage) {
    Remove-Item -Path $temp_coverage
-#}
+}

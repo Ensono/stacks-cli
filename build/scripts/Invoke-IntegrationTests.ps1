@@ -35,7 +35,7 @@ param (
 # If the output directory does not exist, create it
 if (!(Test-Path -Path $output_dir)) {
     Write-Output ("Creating output dir: {0}" -f $output_dir)
-    New-Item -ItemType Directory -Path $output_dir
+    New-Item -ItemType Directory -Path $output_dir | Out-Null
 }
 
 # Define paths for outputs
@@ -63,7 +63,7 @@ if ($runtests) {
     # ensure that the project dir exists
     if (!(Test-Path -Path $projectDir)) {
         Write-Output ("Creating project dir: {0}" -f $projectDir)
-        New-Item -ItemType Directory -Path $projectDir
+        New-Item -ItemType Directory -Path $projectDir | Out-Null
     }
 
     $cmd = "{0} --test.v --projectdir {1} --binarycmd {2} | Tee-Object -FilePath {3}" -f

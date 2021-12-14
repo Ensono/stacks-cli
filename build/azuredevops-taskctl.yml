@@ -20,13 +20,6 @@ stages:
     - job: Build
       steps:
 
-      # Ensure using correct version of Golang
-      # Required to perform the build of Stacks CLI
-      - task: GoTool@0
-        displayName: Setting GO Version
-        inputs:
-          version: ${{ variables.GoVersion }}
-
       # Install Taskfile for the build to run
       - task: Bash@3
         displayName: Install Taskctl
@@ -87,13 +80,7 @@ stages:
     
     - job: IntegrationTests
 
-      steps:
-
-      # Ensure using correct version of Golang
-      - task: GoTool@0
-        displayName: Setting GO Version
-        inputs:
-          version: ${{ variables.GoVersion }}      
+      steps:  
 
       # Download the StacksCLI and the integration_tests
       - task: DownloadPipelineArtifact@2
@@ -172,10 +159,10 @@ stages:
           inputs:
             targetType: inline
             script: |
-              task release
+              taskctl release
           env:
             VERSION_NUMBER: $(Build.BuildNumber)
             API_KEY: $(GITHUB_TOKEN)
             NOTES:
-            COMMIT_ID: $(Build.SourceVersion)  
+            COMMIT_ID: $(Build.SourceVersion)
             ARTIFACTS_DIR: $(Build.ArtifactStagingDirectory)/assets

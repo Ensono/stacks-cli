@@ -43,7 +43,7 @@ $targets | ForEach-Object -Parallel {
 
     if (!(Test-Path -Path $OutputDir)) {
         Write-Output ("Creating output dir: {0}" -f $OutputDir)
-        New-Item -ItemType Directory -Path $OutputDir
+        New-Item -ItemType Directory -Path $OutputDir | Out-Null
     }
 
     if ($format -eq "pdf") {

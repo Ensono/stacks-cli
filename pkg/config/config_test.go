@@ -648,7 +648,7 @@ func TestGetFrameworkCommands(t *testing.T) {
 		},
 		{
 			"java",
-			2,
+			3,
 			"Commands should contain 2 elements",
 		},
 		{

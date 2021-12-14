@@ -154,6 +154,6 @@ func TestMultipleFrameworks(t *testing.T) {
 	// get a list of the commands from the CheckFramework
 	missing := config.Input.CheckFrameworks(&config)
 
-	assert.Equal(t, 1, len(missing))
+	assert.Equal(t, 2, len(missing))
 	assert.Equal(t, "java", missing[0].Framework)
 }

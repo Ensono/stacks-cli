@@ -13,6 +13,9 @@ param (
     $default = "100.98.99",
 
     [string]
+    [Parameter(Position=0)]
+    [AllowNull()]
+    [AllowEmptyString()]
     # Allow the build number to be passed in
     $number = ""
 )

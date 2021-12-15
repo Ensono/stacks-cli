@@ -50,7 +50,7 @@ tasks:
   buildnumber:
     context: buildenv
     command:
-      - /app/build/scripts/Set-BuildNumber.ps1 -number $BUILDNUMBER
+      - /app/build/scripts/Set-BuildNumber.ps1 $BUILDNUMBER
     exportAs: BUILDNUMBER
 
   clean:

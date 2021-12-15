@@ -153,7 +153,9 @@ options:
 
 stacks:
   dotnet:
-    webapi: https://github.com/amido/stacks-dotnet
+    webapi: 
+      url: https://github.com/amido/stacks-dotnet
+      trunk: master
 ----
 
 Note that when using the configuration file it is possible to specify multiple projects to be configured. This allows several projects to be setup at the same time, without having to run the command multiple times. Each project will be created within the specified working directory.

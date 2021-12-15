@@ -69,7 +69,7 @@ func GetGitHubArchiveUrl(path string, token string) (string, error) {
 	return result, err
 }
 
-func BuildGitHubAPIUrl(repoUrl string, ref string, archive bool, token string) string {
+func BuildGitHubAPIUrl(repoUrl string, ref string, trunk string, archive bool, token string) string {
 
 	var url string
 
@@ -85,7 +85,7 @@ func BuildGitHubAPIUrl(repoUrl string, ref string, archive bool, token string) s
 	// release of the repository
 	if archive {
 		if ref == "latest" || ref == "" {
-			ref = "master"
+			ref = trunk
 		}
 
 		url = strings.Join([]string{strings.TrimSuffix(repoUrl, ".git"), fmt.Sprintf("archive/%s.zip", ref)}, "/")

@@ -29,7 +29,9 @@ project:
 
 stacks:
   dotnet:
-    webapi: https://github.com/amido/stacks-dotnet-newfeature
+    webapi:
+      url: https://github.com/amido/stacks-dotnet-newfeature
+      trunk: main
 `)
 
 func setupTestCase(t *testing.T, configuration []byte) (func(t *testing.T), string) {
@@ -85,14 +87,14 @@ func TestDefaultSrcUrlMap(t *testing.T) {
 	// get the src URL map
 	srcURLs := config.Input.Stacks.GetSrcURLMap()
 
-	assert.Equal(t, "https://github.com/amido/stacks-dotnet", srcURLs["dotnet_webapi"])
-	assert.Equal(t, "https://github.com/amido/stacks-dotnet-cqrs", srcURLs["dotnet_cqrs"])
-	assert.Equal(t, "https://github.com/amido/stacks-dotnet-cqrs-events", srcURLs["dotnet_events"])
-	assert.Equal(t, "https://github.com/amido/stacks-java", srcURLs["java_webapi"])
-	assert.Equal(t, "https://github.com/amido/stacks-java-cqrs", srcURLs["java_cqrs"])
-	assert.Equal(t, "https://github.com/amido/stacks-java-cqrs-events", srcURLs["java_events"])
-	assert.Equal(t, "https://github.com/amido/stacks-typescript-csr", srcURLs["nodejs_csr"])
-	assert.Equal(t, "https://github.com/amido/stacks-typescript-ssr", srcURLs["nodejs_ssr"])
+	assert.Equal(t, "https://github.com/amido/stacks-dotnet", srcURLs["dotnet_webapi"].URL)
+	assert.Equal(t, "https://github.com/amido/stacks-dotnet-cqrs", srcURLs["dotnet_cqrs"].URL)
+	assert.Equal(t, "https://github.com/amido/stacks-dotnet-cqrs-events", srcURLs["dotnet_events"].URL)
+	assert.Equal(t, "https://github.com/amido/stacks-java", srcURLs["java_webapi"].URL)
+	assert.Equal(t, "https://github.com/amido/stacks-java-cqrs", srcURLs["java_cqrs"].URL)
+	assert.Equal(t, "https://github.com/amido/stacks-java-cqrs-events", srcURLs["java_events"].URL)
+	assert.Equal(t, "https://github.com/amido/stacks-typescript-csr", srcURLs["nodejs_csr"].URL)
+	assert.Equal(t, "https://github.com/amido/stacks-typescript-ssr", srcURLs["nodejs_ssr"].URL)
 }
 
 func TestSrcUrlMap(t *testing.T) {
@@ -125,5 +127,5 @@ func TestSrcUrlMap(t *testing.T) {
 	// get the src URL map
 	srcURLs := config.Input.Stacks.GetSrcURLMap()
 
-	assert.Equal(t, "https://github.com/amido/stacks-dotnet-newfeature", srcURLs["dotnet_webapi"])
+	assert.Equal(t, "https://github.com/amido/stacks-dotnet-newfeature", srcURLs["dotnet_webapi"].URL)
 }

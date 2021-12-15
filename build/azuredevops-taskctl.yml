@@ -136,12 +136,12 @@ stages:
           inputs:
             artifact: 'docs'
             patterns: '**/*.pdf'
-            path: $(Build.ArtifactStagingDirectory)/assets
+            path: $(Build.SourcesDirectory)/outputs/assets
 
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: 'StacksCLI'
-            path: $(Build.ArtifactStagingDirectory)/assets
+            path: $(Build.SourcesDirectory)/outputs/assets
             patterns: '!**/*inttest*'
 
         # Install Taskfile for the build to run
@@ -165,6 +165,6 @@ stages:
             API_KEY: $(GITHUB_TOKEN)
             NOTES:
             COMMIT_ID: $(Build.SourceVersion)
-            ARTIFACTS_DIR: $(Build.ArtifactStagingDirectory)/assets
+            ARTIFACTS_DIR: outputs/assets
             OWNER: ${{ variables.RepoOwner }}
             REPONAME: ${{ variables.RepoName }}

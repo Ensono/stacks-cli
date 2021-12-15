@@ -105,7 +105,7 @@ tasks:
   _release:
     context: buildenv
     command:
-      - /app/build/scripts/Publish-GitHubRelease.ps1 -version $BUILDNUMBER -commitId $API_KEY -artifactsDir $ARTIFACTS_DIR -Owner $OWNER -repository $REPONAME
+      - /app/build/scripts/Publish-GitHubRelease.ps1 -version $BUILDNUMBER -commitId $COMMIT_ID -apikey $API_KEY -artifactsDir $ARTIFACTS_DIR -Owner $OWNER -repository $REPONAME
     env:
       VERSION_NUMBER: $BUILDNUMBER
       API_KEY: $API_KEY

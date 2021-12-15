@@ -183,16 +183,16 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	// Get the URL for the repository to download
 	key := project.Framework.GetMapKey()
-	srcUrl := s.Config.Input.Stacks.GetSrcURL(key)
+	repoInfo := s.Config.Input.Stacks.GetSrcURL(key)
 
 	// if the URL is empty, emit error message and state why this might be the case
-	if srcUrl == "" {
+	if repoInfo == (config.RepoInfo{}) {
 		s.Logger.Errorf(`The URL for the specified framework option, %s, is empty. Have you specified the correct framework option?`, project.Framework.Option)
 		return
 	}
 
 	// check that the URL is valid, if not skip this project and move onto the next one
-	_, err = url.ParseRequestURI(srcUrl)
+	_, err = url.ParseRequestURI(repoInfo.URL)
 	if err != nil {
 		s.Logger.Errorf("Unable to download framework option as URL is invalid: %s", err.Error())
 		return
@@ -200,8 +200,9 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	s.Logger.Infof("Retrieving framework option: %s", key)
 	dir, err := util.GitClone(
-		srcUrl,
+		repoInfo.URL,
 		project.Framework.Version,
+		repoInfo.Trunk,
 		s.Config.Input.Directory.TempDir,
 		s.Config.Input.Options.Token,
 	)

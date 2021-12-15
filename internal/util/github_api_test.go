@@ -14,6 +14,7 @@ func TestBuildGitHubAPIUrl(t *testing.T) {
 	// build test table
 	tables := []struct {
 		ref     string
+		trunk   string
 		test    string
 		msg     string
 		archive bool
@@ -21,6 +22,7 @@ func TestBuildGitHubAPIUrl(t *testing.T) {
 	}{
 		{
 			"",
+			"master",
 			"https://api.github.com/repos/amido/stacks-dotnet/releases/latest",
 			"An empty ref should return the latest release URL",
 			false,
@@ -28,6 +30,7 @@ func TestBuildGitHubAPIUrl(t *testing.T) {
 		},
 		{
 			"",
+			"master",
 			fmt.Sprintf("%s/archive/master.zip", repoUrl),
 			"An empty ref with no token should return the latest release URL using the archive URL",
 			false,
@@ -35,6 +38,7 @@ func TestBuildGitHubAPIUrl(t *testing.T) {
 		},
 		{
 			"latest",
+			"",
 			"https://api.github.com/repos/amido/stacks-dotnet/releases/latest",
 			"Specifying latest ref should return the latest release URL",
 			false,
@@ -42,6 +46,7 @@ func TestBuildGitHubAPIUrl(t *testing.T) {
 		},
 		{
 			"v3.0.232",
+			"",
 			fmt.Sprintf("%s/archive/v3.0.232.zip", repoUrl),
 			"A specified tag with no token should return the release for that tag using the archive URL",
 			false,
@@ -49,6 +54,7 @@ func TestBuildGitHubAPIUrl(t *testing.T) {
 		},
 		{
 			"v3.0.232",
+			"",
 			"https://api.github.com/repos/amido/stacks-dotnet/releases/tags/v3.0.232",
 			"A specified tag should return the release for that tag",
 			false,
@@ -56,6 +62,7 @@ func TestBuildGitHubAPIUrl(t *testing.T) {
 		},
 		{
 			"feature/dotnet-6",
+			"",
 			fmt.Sprintf("%s/archive/feature/dotnet-6.zip", repoUrl),
 			"A branch can be specified if the archive flag is used",
 			true,
@@ -67,7 +74,7 @@ func TestBuildGitHubAPIUrl(t *testing.T) {
 	for _, table := range tables {
 
 		// get the ghUrl from the method
-		ghUrl := BuildGitHubAPIUrl(repoUrl, table.ref, table.archive, table.token)
+		ghUrl := BuildGitHubAPIUrl(repoUrl, table.ref, table.trunk, table.archive, table.token)
 
 		if ghUrl != table.test {
 			t.Error(table.msg)

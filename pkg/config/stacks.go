@@ -8,30 +8,35 @@ type Stacks struct {
 }
 
 type Dotnet struct {
-	Webapi string `mapstructure:"webapi"`
-	CQRS   string `mapstructure:"cqrs"`
-	Events string `mapstructure:"events"`
+	Webapi RepoInfo `mapstructure:"webapi"`
+	CQRS   RepoInfo `mapstructure:"cqrs"`
+	Events RepoInfo `mapstructure:"events"`
 }
 
 type Java struct {
-	Webapi string `mapstructure:"webapi"`
-	CQRS   string `mapstructure:"cqrs"`
-	Events string `mapstructure:"events"`
+	Webapi RepoInfo `mapstructure:"webapi"`
+	CQRS   RepoInfo `mapstructure:"cqrs"`
+	Events RepoInfo `mapstructure:"events"`
 }
 
 type NodeJS struct {
-	CSR string `mapstructure:"csr"`
-	SSR string `mapstructure:"ssr"`
+	CSR RepoInfo `mapstructure:"csr"`
+	SSR RepoInfo `mapstructure:"ssr"`
 }
 
 type Infra struct {
-	AKS string `mapstructure:"aks"`
+	AKS RepoInfo `mapstructure:"aks"`
+}
+
+type RepoInfo struct {
+	URL   string `mapstructure:"url"`
+	Trunk string `mapstructure:"trunk"`
 }
 
 // GetSrcURLMap returns a map of the source control repositores
-func (stacks *Stacks) GetSrcURLMap() map[string]string {
+func (stacks *Stacks) GetSrcURLMap() map[string]RepoInfo {
 
-	srcUrls := map[string]string{
+	srcUrls := map[string]RepoInfo{
 		"dotnet_webapi": stacks.Dotnet.Webapi,
 		"dotnet_cqrs":   stacks.Dotnet.CQRS,
 		"dotnet_events": stacks.Dotnet.Events,
@@ -46,7 +51,7 @@ func (stacks *Stacks) GetSrcURLMap() map[string]string {
 	return srcUrls
 }
 
-func (stacks *Stacks) GetSrcURL(key string) string {
+func (stacks *Stacks) GetSrcURL(key string) RepoInfo {
 	srcUrls := stacks.GetSrcURLMap()
 	return srcUrls[key]
 }

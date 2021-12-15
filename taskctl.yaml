@@ -105,7 +105,13 @@ tasks:
   _release:
     context: buildenv
     command:
-      - /app/build/scripts/Publish-GitHubRelease.ps1 -version $VERSION_NUMBER -commitId $API_KEY -artifactsDir $ARTIFACTS_DIR -Owner $OWNER
+      - /app/build/scripts/Publish-GitHubRelease.ps1 -version $BUILDNUMBER -commitId $API_KEY -artifactsDir $ARTIFACTS_DIR -Owner $OWNER -repository $REPONAME
+    env:
+      VERSION_NUMBER: $BUILDNUMBER
+      API_KEY: $API_KEY
+      COMMIT_ID: $COMMIT_ID
+      ARTIFACTS_DIR: $ARTIFACTS_DIR
+      REPONAME: $REPONAME
 
 pipelines:
 
@@ -147,7 +153,8 @@ pipelines:
         - buildnumber
       env:
         VERSION_NUMBER: $BUILDNUMBER
-        API_KEY: $GITHUB_TOKEN
+        API_KEY: $API_KEY
         NOTES:
         COMMIT_ID: $COMMIT_ID
-        ARTIFACTS_DIR: $ARTIFACTS_DIR    
+        ARTIFACTS_DIR: $ARTIFACTS_DIR  
+        REPONAME: $REPONAME

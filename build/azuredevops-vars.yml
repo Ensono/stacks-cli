@@ -5,3 +5,5 @@ variables:
     value: 1.4.2
   - name: RepoOwner
     value: amido
+  - name: RepoName
+    value: stacks-cli

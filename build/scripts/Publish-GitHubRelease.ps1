@@ -24,6 +24,7 @@ param (
     $commitId = $env:COMMIT_ID,
 
     [string]
+    [AllowEmptyString()]
     # Release notes. This can include helpful notes about installation for example
     # that will be specific to the release
     $notes = $env:NOTES,

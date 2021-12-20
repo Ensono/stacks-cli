@@ -1,6 +1,8 @@
 package models
 
 import (
+	"os"
+
 	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/mattn/go-colorable"
 	log "github.com/sirupsen/logrus"
@@ -18,6 +20,9 @@ func (app *App) ConfigureLogging(logging Log) {
 
 	// Initialise the Logger as a new Logger
 	app.Logger = log.New()
+
+	// Set the default to std out
+	app.Logger.Out = os.Stdout
 
 	// Attempt to set the logging level
 	ll, err := log.ParseLevel(logging.Level)
@@ -48,6 +53,16 @@ func (app *App) ConfigureLogging(logging Log) {
 		})
 
 		app.Logger.SetOutput(colorable.NewColorableStdout())
+	}
+
+	// if a log file has been set redirect all logs to the file
+	if logging.File != "" {
+		file, err := os.OpenFile(logging.File, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		if err != nil {
+			app.Logger.Out = file
+		} else {
+			app.Logger.Warnf("Failed to log to file, defaulting to screen: %s", err.Error())
+		}
 	}
 }
 

@@ -24,6 +24,7 @@ The following options can be applied to any command within the Stacks CLI.
 | `-l`, `--loglevel` | AMIDOSTACKS_LOG_LEVEL | Level of logging to be used | `info` | `debug`, `info`, `warning`, `error`, `fatal` 
 | `-f`, `--logformat` | AMIDOSTACKS_LOG_FORMAT | Output type of the logging | `text` | `text`, `json` 
 | `--logcolur` | AMIDOSTACKS_LOG_COLOUR | State if logging should include colour | | 
+| `--logfile` | AMIDOSTACKS_LOG_FILE | Write all logs to the specified file | | 
 | `-w`, `--workingdirectory` | AMIDOSTACKS_DIRECTORY_WORKINGDIR | Directory that the projects should be created in | `${PWD}` | 
 | `--tempdir` | AMIDOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Stacks for its temp files | System temp directory | 
 | `--nobanner` | AMIDOSTACKS_OPTIONS_NOBANNER | Do not display the Stacks banner when running the command | `false` |

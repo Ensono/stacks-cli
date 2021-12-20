@@ -55,6 +55,7 @@ func init() {
 	var logLevel string
 	var logFormat string
 	var logColour bool
+	var logFile string
 
 	var workingDir string
 	var tmpDir string
@@ -75,6 +76,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&logLevel, "loglevel", "l", "info", "Logging Level")
 	rootCmd.PersistentFlags().StringVarP(&logFormat, "logformat", "f", "text", "Logging format, text or json")
 	rootCmd.PersistentFlags().BoolVarP(&logColour, "logcolour", "", true, "State if colours should be used in the text output")
+	rootCmd.PersistentFlags().StringVar(&logFile, "logfile", "", "File to write logs to")
 
 	rootCmd.PersistentFlags().StringVarP(&workingDir, "workingdir", "w", defaultWorkingDir, "Directory to be used to create the new projects in")
 	rootCmd.PersistentFlags().StringVar(&tmpDir, "tempdir", defaultTempDir, "Temporary directory to be used by the CLI")
@@ -91,6 +93,7 @@ func init() {
 	viper.BindPFlag("log.format", rootCmd.PersistentFlags().Lookup("logformat"))
 	viper.BindPFlag("log.colour", rootCmd.PersistentFlags().Lookup("logcolour"))
 	viper.BindPFlag("log.level", rootCmd.PersistentFlags().Lookup("loglevel"))
+	viper.BindPFlag("log.file", rootCmd.PersistentFlags().Lookup("logfile"))
 
 	viper.BindPFlag("directory.working", rootCmd.PersistentFlags().Lookup("workingdir"))
 	viper.BindPFlag("directory.temp", rootCmd.PersistentFlags().Lookup("tempdir"))
@@ -124,11 +127,6 @@ func initConfig() {
 	stacks_config := strings.NewReader(stacks_frameworks)
 	viper.SetConfigType("yaml")
 	viper.MergeConfig(stacks_config)
-
-	// if a configuration file is found, read it in
-	// if err := viper.MergeInConfig(); err == nil {
-	// 	fmt.Println("Using configuration file:", viper.ConfigFileUsed())
-	// }
 
 	err := viper.MergeInConfig()
 	if err != nil && viper.ConfigFileUsed() != "" {

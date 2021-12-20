@@ -71,7 +71,7 @@ taskctl build
 The output of the command will be similar to the following.
 
 .Test and compile Stacks CLI
-image::images/taskctl-build.png[]
+image::images/taskctl-compile.png[]
 
 ==== Release
 

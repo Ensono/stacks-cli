@@ -9,9 +9,13 @@
 :example_tf_storage: kjh56sdfnjnkjn
 :example_tf_container: tfstate
 :example_project_name: my-webapi
-:example_framework: dotnet
+:example_dotnet_framework: dotnet
+:example_dotnet_framework_version: v6.0.274
+:example_java_framework: java
+:example_java_framework_version: v1.0.0
 :example_framework_option: webapi
-:example_framework_version: v3.0.232
+:example_project_src_url: https://github.com/my-org/my-webapi
+
 
 == Examples
 
@@ -38,257 +42,44 @@ In previous versions of the CLI, this has been referred to as the domain, but it
 | tfstorage | `{example_tf_storage}` | Name of the storage that will hold the Terraform state
 | tfcontainer | `{example_tf_container}` | Container in the storage for the state files
 | name | `{example_project_name}` | Name of the project to create in the working directory
-| framework | `{example_framework}` | Framework being used, e.g. `dotnet`, `java` or `infra`
 | framework_option | `{example_framework_option}` | The option within the framework being created.
 
 For `dotnet` or `java` the options are `webapi`, `cqrs` or `events`.
 For `infra` the options are `aks`.
-| framework_version | `{example_framework_version}` | Version of the framework option to grab.
 |===
 
-=== .NET WebApi project from command line
+=== .NET
 
-Run the following command to create the new project in the working directory, which will be the directory that the command is being run in.
+The following table shows the additional options that are required when scaffolding the .NET examples.
 
+..NET Specific settings
 [options="header"]
-[cols="a,a"]
 |===
-| Bash | PowerShell
-|[source,bash,subs="attributes"]
-----
-stacks-cli scaffold -A {example_area} \
-                --company {example_company} \
-                --component {example_component} \
-                --domain {example_domain} \
-                -F dotnet \
-                -n {example_project_name} \
-                -p azdo \
-                -P aks \
-                --tfcontainer {example_project_name} \
-                --tfgroup {example_tf_group} \
-                --tfstorage {example_tf_storage} \
-                -O {example_framework_option} \
-                -V {example_framework_version} \
-                --cmdlog
-----
-|[source,powershell,subs="attributes"]
-----
-stacks-cli scaffold -A {example_area} `
-                --company {example_company} `
-                --component {example_component} `
-                --domain {example_domain} `
-                -F dotnet `
-                -n {example_project_name} `
-                -p azdo `
-                -P aks `
-                --tfcontainer {example_project_name} `
-                --tfgroup {example_tf_group} `
-                --tfstorage {example_tf_storage} `
-                -O {example_framework_option} `
-                -V {example_framework_version} `
-                --cmdlog
-----
+| Name | Value | Description
+| framework | `{example_dotnet_framework}` | Framework being used, e.g. `dotnet`, `java` or `infra`
+| framework_version | `{example_dotnet_framework_version}` | Version of the framework option to grab.
 |===
 
-This will get the specified version of the framework project, create a new project based on the options specified and then update the build files to work with those settings. Finally it will initalise a new git repository in the new project directory. All of the commands that have been run by the CLI will be saved in the `cmdlog.txt` file in the directory that the command was run in.
+include::examples/dotnet_command_line.adoc[]
 
-.CLI with command line options
-[[example_cli_cmdline,{figure-caption} {counter:refnum}]]
-image::images/example_dotnet_webapi_cmdline.png[]
+include::examples/dotnet_interactive.adoc[]
 
-<<example_cli_cmdline>> shows the output of the command running in PowerShell. It also shows the commands that have been run in the `cmdlog.txt`.
+include::examples/dotnet_config_file.adoc[]
 
-The resultant project, as stated by the `Project path:` statement in the screenshot, contains all the necessary files to run a simple .NET WebApi. The following listing shows that the solutions have been renamed with the `company` name as the namespace, as shown on lines 19, 26, 29 and 36.
+=== Java
 
-[source,text,linenums]
-----
-└───my-webapi
-    ├───.github
-    ├───build
-    │   └───azDevOps
-    │       └───azure
-    │           └───templates
-    │               └───steps
-    │                   └───build
-    ├───contracts
-    ├───deploy
-    │   ├───azure
-    │   │   └───app
-    │   │       └───kube
-    │   ├───k8s
-    │   │   └───app
-    │   └───scripts
-    └───src
-        ├───api
-        │   ├───MyCompany.core.API
-        │   │   ├───Authentication
-        │   │   ├───Authorization
-        │   │   └───Controllers
-        │   │       ├───Category
-        │   │       ├───DOMAIN
-        │   │       └───Item
-        │   ├───MyCompany.core.API.Models
-        │   │   ├───Requests
-        │   │   └───Responses
-        │   └───MyCompany.core.API.UnitTests
-        │       └───Controllers
-        │           ├───Category
-        │           ├───DOMAIN
-        │           └───Item
-        └───tests
-            └───Functional
-                └───MyCompany.core.API.FunctionalTests
-                    ├───Builders
-                    │   └───Http
-                    ├───Configuration
-                    ├───Models
-                    └───Tests
-                        ├───Fixtures
-                        ├───Steps
-                        └───Stories
-----
+The following table shows the additional options that are required when scaffolding the Java examples.
 
-=== .NET WebApi project using the interactive command
+.Java Specific settings
+[options="header"]
+|===
+| Name | Value | Description
+| framework | `{example_java_framework}` | Framework being used, e.g. `dotnet`, `java` or `infra`
+| framework_version | `{example_java_framework_version}` | Version of the framework option to grab.
+|===
 
-The interactive command is designed to ask questions on the command line about the configuration required for setting up Amido Stacks. It will then save this configuration out to a file that can be read in using the `scaffold` command.
+include::examples/java_command_line.adoc[]
 
-[source,bash]
-----
-stacks-cli interactive
-----
-
-The values as specified in the previous configuration table have been used in the following screenshot of the interactive session.
-
-image::images/stackscli-interactive.png[]
-
-The resulting configuration file contains all of the configuration that was used to generate the projects, which means it can be used to produce the same project stack again.
-
-[source,yaml]
-----
-log:
-  level: info
-  format: text
-  colour: true
-directory:
-  working: "C:\\Users\\RussellSeymour\\scratch\\projects"
-business:
-  company: My Company
-  domain: core
-  component: backend
-cloud:
-  platform: azure
-network:
-  base:
-    domain:
-      external: example-stacks.com
-pipeline: azdo
-project:
-- name: my-webapi
-  framework:
-    type: dotnet
-    option: webapi
-    version: v3.0.232
-  platform:
-    type: aks
-  sourcecontrol:
-    type: github
-    url: https://github.com/russellseymour/my-webapi
-  cloud:
-    region: ukwest
-    group: mywebapi-resources
-stacks:
-  dotnet:
-    webapi: https://github.com/amido/stacks-dotnet
-    cqrs: https://github.com/amido/stacks-dotnet-cqrs
-    events: https://github.com/amido/stacks-dotnet-cqrs-events
-  java:
-    webapi: https://github.com/amido/stacks-java
-    cqrs: https://github.com/amido/stacks-java-cqrs
-    events: https://github.com/amido/stacks-java-cqrs-events
-  nodejs:
-    csr: https://github.com/amido/stacks-typescript-csr
-    ssr: https://github.com/amido/stacks-typescript-ssr
-  infra:
-    aks: https://github.com/amido/stacks-infrastructure-aks
-terraform:
-  backend:
-    storage: kjh56sdfnjnkjn
-    group: supporting-group
-    container: tfstate
-options:
-  cmdlog: false
-  dryrun: false
-  nobanner: false
-  nocliversion: false
-----
-
-The command that needs to be run next is displayed at the end of the output.
-
-=== .NET WebApi project using a configuration file
-
-The CLI can be used with a configuration file to generate the Amido Stacks based projects.
-
-NOTE: The configuration file that is used in the following example is from the previous example. However, any valid configuration file can be used.
-
-[source,bash]
-----
-stacks-cli scaffold -c ./stacks.yml
-----
-
-The CLI will use the configuration file to scaffold the requested projects.
-
-.Scaffolding projects with a configuration file
-image::images/stackscli-dotnet-webapi-config-file.png[]
-
-As has been seen with using the scaffolding command with command line options, the resultant project has been created with the namespace set to the specified company name.
-
-[source,text,linenums]
-----
-└───my-webapi
-    ├───.github
-    ├───build
-    │   └───azDevOps
-    │       └───azure
-    │           └───templates
-    │               └───steps
-    │                   └───build
-    ├───contracts
-    ├───deploy
-    │   ├───azure
-    │   │   └───app
-    │   │       └───kube
-    │   ├───k8s
-    │   │   └───app
-    │   └───scripts
-    └───src
-        ├───api
-        │   ├───MyCompany.core.API
-        │   │   ├───Authentication
-        │   │   ├───Authorization
-        │   │   └───Controllers
-        │   │       ├───Category
-        │   │       ├───DOMAIN
-        │   │       └───Item
-        │   ├───MyCompany.core.API.Models
-        │   │   ├───Requests
-        │   │   └───Responses
-        │   └───MyCompany.core.API.UnitTests
-        │       └───Controllers
-        │           ├───Category
-        │           ├───DOMAIN
-        │           └───Item
-        └───tests
-            └───Functional
-                └───MyCompany.core.API.FunctionalTests
-                    ├───Builders
-                    │   └───Http
-                    ├───Configuration
-                    ├───Models
-                    └───Tests
-                        ├───Fixtures
-                        ├───Steps
-                        └───Stories
-----
 
 === Running scaffold command again
 

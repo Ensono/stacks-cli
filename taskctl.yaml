@@ -70,20 +70,6 @@ tasks:
     command:
       - /app/build/scripts/Build-Docs.ps1 -BuildNumber $BUILDNUMBER -BasePath /app
 
-  docs:pdf:
-    context: docsenv
-    description: Generate PDF documentation
-    command:
-      - mkdir -p outputs/docs/pdf
-      - asciidoctor-pdf -a pdf-theme=/app/docs/styles/theme.yml -a pdf-fontsdir="/app/docs/styles/fonts;GEM_FONTS_DIR" -a doctype="book" -a stackscli_version="${BUILDNUMBER}" -o "Stacks CLI Manual - ${BUILDNUMBER}.pdf" -a toc -D /app/outputs/docs/pdf /app/docs/manual.adoc
-
-  docs:markdown:
-    context: docsenv
-    description: Create Markdown docs
-    command:
-      - mkdir -p outputs/docs/md
-      - /app/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /app/docs -output_dir /app/outputs/docs/md
-
   test:unit:
     context: buildenv
     description: Run Unit Tests

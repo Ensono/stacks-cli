@@ -1,0 +1,160 @@
+==== Java WebApi project from command line
+
+Run the following command to scaffold a new Java project based on the Amido WebApi Java project. The project will be created in the working directory, which in this case will be the directory that the command has is being run under.
+
+[options="header"]
+[cols="a,a"]
+|===
+| Bash | PowerShell
+|[source,bash,subs="attributes"]
+----
+stacks-cli scaffold -A {example_area} \
+                --company {example_company} \
+                --component {example_component} \
+                --domain {example_domain} \
+                -F {example_java_framework} \
+                -n {example_project_name} \
+                -p azdo \
+                -P aks \
+                --tfcontainer {example_project_name} \
+                --tfgroup {example_tf_group} \
+                --tfstorage {example_tf_storage} \
+                -O {example_framework_option} \
+                -V {example_java_framework_version} \
+                -u {example_project_src_url} \
+                --cmdlog
+----
+|[source,powershell,subs="attributes"]
+----
+stacks-cli scaffold -A {example_area} `
+                --company {example_company} `
+                --component {example_component} `
+                --domain {example_domain} `
+                -F {example_java_framework} `
+                -n {example_project_name} `
+                -p azdo `
+                -P aks `
+                --tfcontainer {example_project_name} `
+                --tfgroup {example_tf_group} `
+                --tfstorage {example_tf_storage} `
+                -O {example_framework_option} `
+                -V {example_java_framework_version} `
+                -u {example_project_src_url} `
+                --cmdlog
+----
+|===
+
+This command will download version {example_java_framework_version}, from the GitHub releases for the project, into a temporary directory. It will then run the specified Maven commands from the project settings file and scaffold a new project with the specified name, in the current directory. Once the project has been setup it will be initialised as Git repository and, where applicable, set the remote origin for the repo. All of the commands that are executed by the CLI will be saved in a file called `cmdlog.txt`.
+
+.CLI scaffolding Java project from command line
+[[example_cli_java_cmdline,{figure-caption} {counter:refnum}]]
+image::images/example-java-webapi-cmdline.png[]
+
+As the option to save all the commands that are executed by the CLI has been specified, the `cmdlog.txt` file for the above command is as follows.
+
+.Command log for the Java webapi scaffold
+image::images/example-java-webapi-cmdlog.png[]
+
+
+The resultant project, as stated by the `Project path:` statement in the screenshot, contains all the necessary files to run a simple Java WebApi. The following listing shows that the solutions have been renamed with the `company` name as the namespace.
+
+[source,text,linenums]
+----
+└───my-webapi
+    ├───api-tests
+    │   ├───.mvn
+    │   │   └───wrapper
+    │   └───src
+    │       └───test
+    │           ├───java
+    │           │   └───com
+    │           │       └───MyCompany
+    │           │           └───core
+    │           │               └───backend
+    │           │                   └───tests
+    │           │                       ├───menu
+    │           │                       ├───models
+    │           │                       ├───pact
+    │           │                       │   └───pacts
+    │           │                       ├───status
+    │           │                       ├───stepdefinitions
+    │           │                       └───templates
+    │           └───resources
+    │               ├───cucumber
+    │               │   └───features
+    │               │       └───status
+    │               └───templates
+    ├───api-tests-karate
+    │   ├───.mvn
+    │   │   └───wrapper
+    │   └───src
+    │       └───test
+    │           ├───java
+    │           │   └───org
+    │           │       └───MyCompany
+    │           │           └───core
+    │           │               └───backend
+    │           │                   └───tests
+    │           └───resources
+    ├───build
+    │   ├───azDevOps
+    │   │   └───azure
+    │   │       ├───coverage
+    │   │       └───templates
+    │   │           └───steps
+    │   │               ├───build
+    │   │               └───deploy
+    │   └───jenkins
+    │       └───azure
+    ├───deploy
+    │   ├───azure
+    │   │   └───app
+    │   │       └───kube
+    │   └───k8s
+    │       └───app
+    └───java
+        ├───.mvn
+        │   └───wrapper
+        ├───src
+        │   ├───main
+        │   │   ├───java
+        │   │   │   └───com
+        │   │   │       └───MyCompany
+        │   │   │           └───core
+        │   │   │               └───backend
+        │   │   │                   └───menu
+        │   │   │                       ├───api
+        │   │   │                       │   ├───v1
+        │   │   │                       │   │   ├───dto
+        │   │   │                       │   │   │   ├───request
+        │   │   │                       │   │   │   └───response
+        │   │   │                       │   │   └───impl
+        │   │   │                       │   └───v2
+        │   │   │                       │       └───impl
+        │   │   │                       ├───domain
+        │   │   │                       └───mappers
+        │   │   └───resources
+        │   │       └───local
+        │   └───test
+        │       └───java
+        │           └───com
+        │               └───MyCompany
+        │                   └───core
+        │                       └───backend
+        │                           ├───actuator
+        │                           ├───menu
+        │                           │   ├───api
+        │                           │   │   ├───v1
+        │                           │   │   │   ├───dto
+        │                           │   │   │   │   └───response
+        │                           │   │   │   └───impl
+        │                           │   │   └───v2
+        │                           │   │       └───impl
+        │                           │   ├───domain
+        │                           │   └───mappers
+        │                           └───util
+        └───target
+            └───classes
+                └───local
+----
+

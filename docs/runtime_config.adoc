@@ -6,7 +6,7 @@ Configuration for the CLI can be performed in several ways:
   - Using environment variables
   - Using a configuration file (YAML or JSON)
 
-Whe using a configuration file it is possible to setup more than one project.
+When using a configuration file it is possible to setup more than one project.
 
 === Settings
 

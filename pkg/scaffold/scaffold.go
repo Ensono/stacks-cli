@@ -218,7 +218,9 @@ func (s *Scaffold) processProject(project config.Project) {
 	}
 
 	// attempt to read in the settings for the framework option
-	s.Logger.Infof("Attempting to read project settings: %s", project.SettingsFile)
+	if project.SettingsFile != "" {
+		s.Logger.Infof("Attempting to read project settings: %s", project.SettingsFile)
+	}
 	err = project.ReadSettings(dir, s.Config)
 	if err != nil {
 		s.Logger.Errorf("Error reading settings from project settings: %s", err.Error())

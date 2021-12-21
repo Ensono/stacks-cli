@@ -286,7 +286,12 @@ func (config *Config) ExecuteCommand(path string, logger *logrus.Logger, command
 	// add stderr to the mwriter, if running in loglevel greater than info
 	levels := []string{"debug", "trace"}
 	if util.SliceContains(levels, strings.ToLower(logger.GetLevel().String())) {
-		writers = append(writers, os.Stderr)
+
+		// set the logger as a writer, this is so that errors from any commands that are
+		// run are added to the file as well (if one has been set)
+		w := logger.WriterLevel(logrus.DebugLevel)
+		defer w.Close()
+		writers = append(writers, w)
 	}
 
 	mwriter = io.MultiWriter(writers...)

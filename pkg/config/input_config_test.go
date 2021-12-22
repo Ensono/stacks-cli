@@ -157,3 +157,78 @@ func TestMultipleFrameworks(t *testing.T) {
 	assert.Equal(t, 2, len(missing))
 	assert.Equal(t, "java", missing[0].Framework)
 }
+
+func TestValidateInput(t *testing.T) {
+
+	// create test tables
+	tables := []struct {
+		config Config
+		test   string
+		msg    string
+		count  int
+	}{
+		{
+			Config{
+				Input: InputConfig{
+					Business: Business{
+						Company: "MyCompany",
+					},
+				},
+			},
+			"MyCompany",
+			"String should not be modified as no spaces are present",
+			0,
+		},
+		{
+			Config{
+				Input: InputConfig{
+					Business: Business{
+						Company: "My Company",
+					},
+				},
+			},
+			"My_Company",
+			"Spaces in string should be replaced with an underscore",
+			1,
+		},
+		{
+			Config{
+				Input: InputConfig{
+					Business: Business{
+						Company: "My Fantastic Company",
+					},
+				},
+			},
+			"My_Fantastic_Company",
+			"All spaces in string should be replaced with an underscore",
+			1,
+		},
+		{
+			Config{
+				Input: InputConfig{
+					Business: Business{
+						Company: "My  Company",
+					},
+				},
+			},
+			"My_Company",
+			"Consecutive spaces in string should be replaced with an underscore",
+			1,
+		},
+	}
+
+	// iterate around the test tables
+	for _, table := range tables {
+
+		// call ValidateInput to check the results of the test
+		validations := table.config.Input.ValidateInput()
+
+		if table.config.Input.Business.Company != table.test {
+			t.Error(table.msg)
+		}
+
+		if len(validations) != table.count {
+			t.Errorf("There should be %d validation errors, %d found", table.count, len(validations))
+		}
+	}
+}

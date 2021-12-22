@@ -9,4 +9,7 @@ type Log struct {
 
 	// If the logging is in TEXT then should colour be used
 	Colour bool `mapstructure:"colour"`
+
+	// File that all logs should be saved to
+	File string `mapstructure:"file" json:",omitempty"`
 }

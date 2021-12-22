@@ -57,11 +57,17 @@ func (s *Scaffold) Run() error {
 		s.Logger.Fatal(errText)
 	}
 
+	// validate the inputs
+	validations := s.Config.Input.ValidateInput()
+	if len(validations) > 0 {
+		s.Logger.Infof("Some inputs have been modified:\n\t%s", strings.Join(validations, "\n\t"))
+	}
+
 	// create the temporary directory if it does not exist
 	if !util.Exists(s.Config.Input.Directory.TempDir) {
 		err := os.MkdirAll(s.Config.Input.Directory.TempDir, os.ModePerm)
 		if err != nil {
-			return fmt.Errorf("Unable to create temporary directory: %s", s.Config.Input.Directory.TempDir)
+			return fmt.Errorf("unable to create temporary directory: %s", s.Config.Input.Directory.TempDir)
 		}
 	}
 
@@ -218,7 +224,9 @@ func (s *Scaffold) processProject(project config.Project) {
 	}
 
 	// attempt to read in the settings for the framework option
-	s.Logger.Infof("Attempting to read project settings: %s", project.SettingsFile)
+	if project.SettingsFile != "" {
+		s.Logger.Infof("Attempting to read project settings: %s", project.SettingsFile)
+	}
 	err = project.ReadSettings(dir, s.Config)
 	if err != nil {
 		s.Logger.Errorf("Error reading settings from project settings: %s", err.Error())

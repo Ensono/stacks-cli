@@ -1,0 +1,110 @@
+==== Java WebApi project using a configuration file
+
+The Amido Stacks CLI can be used with a configuration file to setup multiple projects in one go.
+
+NOTE: The configuration file used in this example is the one that was generated from the `interactive` command in the previous example.
+
+NOTE: The examples shown here have been run in WSL on Windows 11.
+
+[source,bash]
+----
+stacks-cli scaffold -c ./stacks.yml
+----
+
+The CLI will use the configuration file to get all the settings required to scaffold the projects that have been requested.
+
+.Scaffold Java project
+image::images/stackscli-java-webapi-config-file.png[]
+
+As the configuration file was configured with a company name with a space in it, the CLI has modified the value so it will be compatible with the commands that need to be run. This can be seen in the output of the CLi in the above image.
+
+[source,txt,linenums]
+----
+└── my-webapi
+    ├── api-tests
+    │   └── src
+    │       └── test
+    │           ├── java
+    │           │   └── com
+    │           │       └── My_Company
+    │           │           └── core
+    │           │               └── backend
+    │           │                   └── tests
+    │           │                       ├── menu
+    │           │                       ├── models
+    │           │                       ├── pact
+    │           │                       │   └── pacts
+    │           │                       ├── status
+    │           │                       ├── stepdefinitions
+    │           │                       └── templates
+    │           └── resources
+    │               ├── cucumber
+    │               │   └── features
+    │               │       └── status
+    │               └── templates
+    ├── api-tests-karate
+    │   └── src
+    │       └── test
+    │           ├── java
+    │           │   └── components
+    │           │       └── menu
+    │           └── resources
+    ├── build
+    │   ├── azDevOps
+    │   │   └── azure
+    │   │       ├── coverage
+    │   │       └── templates
+    │   │           └── steps
+    │   │               ├── build
+    │   │               └── deploy
+    │   └── jenkins
+    │       └── azure
+    ├── deploy
+    │   ├── azure
+    │   │   └── app
+    │   │       └── kube
+    │   └── k8s
+    │       └── app
+    └── java
+        ├── src
+        │   ├── main
+        │   │   ├── java
+        │   │   │   └── com
+        │   │   │       └── My_Company
+        │   │   │           └── core
+        │   │   │               └── backend
+        │   │   │                   └── menu
+        │   │   │                       ├── api
+        │   │   │                       │   ├── v1
+        │   │   │                       │   │   ├── dto
+        │   │   │                       │   │   │   ├── request
+        │   │   │                       │   │   │   └── response
+        │   │   │                       │   │   └── impl
+        │   │   │                       │   └── v2
+        │   │   │                       │       └── impl
+        │   │   │                       ├── domain
+        │   │   │                       └── mappers
+        │   │   └── resources
+        │   │       └── local
+        │   └── test
+        │       └── java
+        │           └── com
+        │               └── My_Company
+        │                   └── core
+        │                       └── backend
+        │                           ├── actuator
+        │                           ├── menu
+        │                           │   ├── api
+        │                           │   │   ├── v1
+        │                           │   │   │   ├── dto
+        │                           │   │   │   │   └── response
+        │                           │   │   │   └── impl
+        │                           │   │   └── v2
+        │                           │   │       └── impl
+        │                           │   ├── domain
+        │                           │   └── mappers
+        │                           └── util
+        └── target
+            └── classes
+                └── local
+----

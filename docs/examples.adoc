@@ -14,7 +14,7 @@
 :example_java_framework: java
 :example_java_framework_version: v1.0.0
 :example_framework_option: webapi
-:example_project_src_url: https://github.com/my-org/my-webapi
+:example_project_src_url: https://github.com/my-company/my-webapi
 
 
 == Examples
@@ -78,8 +78,12 @@ The following table shows the additional options that are required when scaffold
 | framework_version | `{example_java_framework_version}` | Version of the framework option to grab.
 |===
 
+
 include::examples/java_command_line.adoc[]
 
+include::examples/java_interactive.adoc[]
+
+include::examples/java_config_file.adoc[]
 
 === Running scaffold command again
 

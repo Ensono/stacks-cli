@@ -1,0 +1,94 @@
+==== Java WebApi project using the interactive command
+
+As with the .NET example, it is possible to create a configuration file interactively to scaffold out a new project Java project. This is achieved using the `interactive` sub-command.
+
+NOTE: The examples shown here have been run in WSL on Windows 11.
+
+[source,bash]
+---
+stacks-cli interactive
+---
+
+The values specified in the example are the ones as show in the configuration table and are the same as the settings used in the Java example fo scaffolding from the command line.
+
+image::images/stackscli-interactive-java.png[]
+
+The resulting configuration file contains all of the configuration that was used to generate the projects, which means it can be used to produce the same project stack again.
+
+[source,yaml]
+----
+log:
+  level: info
+  format: text
+  colour: true
+  file: ""
+directory:
+  working: /home/russells/projects
+business:
+  company: My Company
+  domain: core
+  component: backend
+cloud:
+  platform: azure
+network:
+  base:
+    domain:
+      external: example-stacks.com
+pipeline: azdo
+project:
+- name: my-webapi
+  framework:
+    type: java
+    option: webapi
+    version: v1.0.0
+  sourcecontrol:
+    type: github
+    url: https://github.com/my-company/my-webapi
+  cloud:
+    region: ukwest
+    group: mywebapi-resources
+stacks:
+  dotnet:
+    webapi:
+      url: https://github.com/amido/stacks-dotnet
+      trunk: master
+    cqrs:
+      url: https://github.com/amido/stacks-dotnet-cqrs
+      trunk: master
+    events:
+      url: https://github.com/amido/stacks-dotnet-cqrs-events
+      trunk: master
+  java:
+    webapi:
+      url: https://github.com/amido/stacks-java
+      trunk: master
+    cqrs:
+      url: https://github.com/amido/stacks-java-cqrs
+      trunk: main
+    events:
+      url: https://github.com/amido/stacks-java-cqrs-events
+      trunk: main
+  nodejs:
+    csr:
+      url: https://github.com/amido/stacks-typescript-csr
+      trunk: master
+    ssr:
+      url: https://github.com/amido/stacks-typescript-ssr
+      trunk: master
+  infra:
+    aks:
+      url: https://github.com/amido/stacks-infrastructure-aks/
+      trunk: master
+terraform:
+  backend:
+    storage: kjh56sdfnjnkjn
+    group: supporting-group
+    container: tfstate
+options:
+  cmdlog: true
+  dryrun: false
+  nobanner: false
+  nocliversion: false
+----
+
+The command that needs to be run next is displayed at the end of the output.

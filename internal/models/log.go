@@ -11,5 +11,5 @@ type Log struct {
 	Colour bool `mapstructure:"colour"`
 
 	// File that all logs should be saved to
-	File string `mapstructure:"file"`
+	File string `mapstructure:"file" json:",omitempty"`
 }

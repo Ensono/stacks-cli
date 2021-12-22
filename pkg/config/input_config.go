@@ -1,7 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"os/exec"
+	"regexp"
 
 	"github.com/amido/stacks-cli/internal/models"
 	"github.com/amido/stacks-cli/internal/util"
@@ -79,4 +81,27 @@ func (ic *InputConfig) CheckFrameworks(config *Config) []models.Command {
 	}
 
 	return missing
+}
+
+// ValidateInput checks the input object and ensures that values are correctly formatted
+// For example the company name should not contain spaces, so this will replace any
+// spaces with an underscore
+func (ic *InputConfig) ValidateInput() []string {
+
+	// create the return slice which shows what has been modified
+	validations := []string{}
+
+	re := regexp.MustCompile(`\s+`)
+
+	// check all inputs that must not have a space
+	if re.MatchString(ic.Business.Company) {
+
+		old := ic.Business.Company
+
+		ic.Business.Company = re.ReplaceAllString(ic.Business.Company, "_")
+
+		validations = append(validations, fmt.Sprintf("'%s' modified to '%s'", old, ic.Business.Company))
+	}
+
+	return validations
 }

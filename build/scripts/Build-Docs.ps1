@@ -111,6 +111,7 @@ $targets | ForEach-Object -Parallel {
 
         # Copy the images into the md output dir
         Copy-Item -Path $using:DocsDir/images -Destination $OutputDir/ -Recurse
+        Copy-Item -Path $using:DocsDir/images -Destination "$(Split-Path -Path $mdx_file -Parent)/" -Recurse
     }
 
 

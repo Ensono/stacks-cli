@@ -41,7 +41,7 @@ func Config(key string) []byte {
 func FrameworkCommands(framework string) []string {
 	commands := map[string][]string{
 		"dotnet": {"dotnet", "git"},
-		"java":   {"java", "mvn", "git"},
+		"java":   {"java", "git"},
 	}
 
 	return commands[framework]

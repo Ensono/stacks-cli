@@ -616,7 +616,7 @@ func TestExecuteCommand(t *testing.T) {
 	arguments := "HelloWorld!"
 
 	// call the ExecuteCommand to run the command and get the result
-	result, err := config.ExecuteCommand(dir, logger, command, arguments, false)
+	result, err := config.ExecuteCommand(dir, logger, command, arguments, false, false)
 
 	// perform the necessary tests
 	assert.Equal(t, nil, err)

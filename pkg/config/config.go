@@ -256,7 +256,7 @@ func (config *Config) WriteCmdLog(path string, cmd string) error {
 }
 
 // ExecuteCommand executes the command and arguments that have been supplied to the function
-func (config *Config) ExecuteCommand(path string, logger *logrus.Logger, command string, arguments string, show bool) (string, error) {
+func (config *Config) ExecuteCommand(path string, logger *logrus.Logger, command string, arguments string, show bool, force bool) (string, error) {
 
 	var result bytes.Buffer
 	var err error
@@ -307,7 +307,9 @@ func (config *Config) ExecuteCommand(path string, logger *logrus.Logger, command
 	}
 
 	// only run the command if not in dryrun mode
-	if !config.IsDryRun() {
+	// or if the force option has been set, this is for non-destructive commands such as checking the version of
+	// a command
+	if !config.IsDryRun() || force {
 		if err = cmdLine.Run(); err != nil {
 			logger.Errorf("Error running command: %s", err.Error())
 			return strings.TrimSpace(result.String()), err

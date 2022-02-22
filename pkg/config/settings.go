@@ -118,7 +118,7 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 			continue
 		}
 
-		result, err := config.ExecuteCommand(path, logger, versionCmd, versionArgs, false)
+		result, err := config.ExecuteCommand(path, logger, versionCmd, versionArgs, false, true)
 
 		// check for errors
 		if err != nil {

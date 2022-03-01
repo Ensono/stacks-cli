@@ -10,7 +10,7 @@ contexts:
         - ${PWD}:/app
         - -w
         - /app
-        - docker/amidostacks/runner-pwsh-golang:0.3.47-main
+        - amidostacks/runner-pwsh-golang:0.3.47-main
         - pwsh
         - -NoProfile
         - -Command

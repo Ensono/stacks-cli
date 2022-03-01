@@ -1,0 +1,46 @@
+
+contexts:
+  buildenv:
+    executable:
+      bin: docker
+      args:
+        - run
+        - --rm
+        - -v
+        - ${PWD}:/app
+        - -w
+        - /app
+        - docker/amidostacks/runner-pwsh-golang:0.3.47-main
+        - pwsh
+        - -NoProfile
+        - -Command
+
+  inttestenv:
+    executable:
+      bin: docker
+      args:
+        - run
+        - --rm
+        - -v
+        - ${PWD}:/app
+        - -w
+        - /app
+        - russellseymour/dotnet-git:6
+        - pwsh
+        - -NoProfile
+        - -Command        
+
+  docsenv:
+    executable:
+      bin: docker
+      args:
+        - run
+        - --rm
+        - -v
+        - ${PWD}:/app
+        - -w
+        - /app
+        - russellseymour/pandoc-asciidoctor
+        - pwsh
+        - -NoProfile
+        - -Command        

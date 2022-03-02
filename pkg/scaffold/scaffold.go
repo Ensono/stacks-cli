@@ -131,7 +131,7 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 		arguments = os.ExpandEnv(arguments)
 
 		// Execute the command and check that it worked
-		_, err = s.Config.ExecuteCommand(path, s.Logger, command, arguments, false)
+		_, err = s.Config.ExecuteCommand(path, s.Logger, command, arguments, false, false)
 		if err != nil {
 			s.Logger.Errorf("Issue running command: %s", err.Error())
 		}

@@ -7,6 +7,7 @@ tasks:
     exportAs: BUILDNUMBER
 
   clean:
+    context: buildenv
     description: Clean old builds
     command:
       - rm -rf outputs

@@ -66,7 +66,7 @@ func TestNonTemplateString(t *testing.T) {
 	replacements.Input = cfg.Input
 
 	// attempt to render the template
-	rendered, err := cfg.RenderTemplate(tmpl, replacements)
+	rendered, err := cfg.RenderTemplate("string", tmpl, replacements)
 
 	assert.Equal(t, nil, err)
 	assert.Equal(t, tmpl, rendered)
@@ -90,7 +90,7 @@ func TestTemplateString(t *testing.T) {
 	tmpl := "Company: {{ .Input.Business.Company }}; Domain: {{ .Input.Business.Domain }}"
 
 	// attempt to render the template
-	rendered, err := cfg.RenderTemplate(tmpl, replacements)
+	rendered, err := cfg.RenderTemplate("string", tmpl, replacements)
 
 	// define the expected value
 	expected := "Company: my-company; Domain: website"

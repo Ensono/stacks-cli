@@ -121,7 +121,7 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 		command = operation.Command
 
 		// run the arguments that have been specified through the template engine
-		arguments, err := s.Config.RenderTemplate(operation.Arguments, replacements)
+		arguments, err := s.Config.RenderTemplate("arguments", operation.Arguments, replacements)
 		if err != nil {
 			s.Logger.Errorf("Error resolving template: %s", err.Error())
 			return err

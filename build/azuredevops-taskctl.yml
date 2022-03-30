@@ -93,7 +93,7 @@ stages:
           artifact: 'StacksCLI'
           path: $(Build.SourcesDirectory)/outputs/assets
           patterns: |
-            - "!**/*inttest*"          
+            !**/stacks-cli-@(darwin|linux|windows)-inttest*
 
       # Install Taskfile so that the tests can be run
       - task: Bash@3

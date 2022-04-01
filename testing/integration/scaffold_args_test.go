@@ -107,7 +107,7 @@ func (suite *ArgsSuite) TestProject() {
 
 	// ensure that the devops variable template exists
 	suite.T().Run("Azure DevOps variable template file exist", func(t *testing.T) {
-		path := filepath.Join(suite.ProjectPath, "build", "azDevOps", "azure", "azuredevops-vars.yml")
+		path := filepath.Join(suite.ProjectPath, "build", "azDevOps", "azure", "air-api-vars.yml")
 		exists := util.Exists(path)
 
 		suite.Assert.Equal(true, exists, "Project should exist: %s", "Azure DevOps variable template file should exist: %s", path)

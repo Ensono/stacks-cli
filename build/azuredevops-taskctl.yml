@@ -88,12 +88,12 @@ stages:
           artifact: StacksCLI
           path: $(Build.SourcesDirectory)/outputs/bin
 
-      - task: DownloadPipelineArtifact@2
+      - task: DownloadPipelineArtifact@1
         inputs:
           artifact: 'StacksCLI'
           path: $(Build.SourcesDirectory)/outputs/assets
           patterns: |
-            !**/stacks-cli-@(darwin|linux|windows)-inttest*
+            !**/*inttest*
 
       # Install Taskfile so that the tests can be run
       - task: Bash@3
@@ -145,12 +145,12 @@ stages:
             patterns: '**/*.pdf'
             path: $(Build.SourcesDirectory)/outputs/assets
 
-        - task: DownloadPipelineArtifact@2
+        - task: DownloadPipelineArtifact@1
           inputs:
             artifact: 'StacksCLI'
             path: $(Build.SourcesDirectory)/outputs/assets
             patterns: |
-              - "!**/stacks-cli-@(darwin|linux|windows)-inttest*"
+              !**/*inttest*
 
         # Install Taskfile for the build to run
         - task: Bash@3

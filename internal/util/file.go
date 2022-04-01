@@ -2,6 +2,7 @@ package util
 
 import (
 	"archive/zip"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -100,7 +101,9 @@ func Copy(srcFile, dstFile string) error {
 }
 
 func Exists(filePath string) bool {
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+	_, err := os.Stat(filePath)
+
+	if errors.Is(err, os.ErrNotExist) || err != nil {
 		return false
 	}
 

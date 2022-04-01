@@ -236,7 +236,7 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	// check to see if any framework commands have been set and check the
 	// version if they have
-	incorrect := project.Settings.CheckCommandVersions(s.Config, s.Logger, project.Directory.WorkingDir)
+	incorrect := project.Settings.CheckCommandVersions(s.Config, s.Logger, project.Directory.WorkingDir, project.Directory.TempDir)
 	if len(incorrect) > 0 {
 
 		var parts []string

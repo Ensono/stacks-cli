@@ -40,7 +40,7 @@ contexts:
         - ${PWD}:/app
         - -w
         - /app
-        - amidostacks/runner-pwsh-asciidoctor:0.39.7-main
+        - amidostacks/runner-pwsh-asciidoctor:0.3.97-main
         - pwsh
         - -NoProfile
         - -Command        

@@ -88,22 +88,6 @@ stages:
           artifact: StacksCLI
           path: $(Build.SourcesDirectory)/outputs/bin
 
-      - task: DownloadPipelineArtifact@2
-        inputs:
-          artifact: 'StacksCLI'
-          path: $(Build.SourcesDirectory)/outputs/assets
-          patterns: |
-            **/*inttest*
-
-      - task: DownloadPipelineArtifact@2
-        inputs:
-          artifact: 'StacksCLI'
-          path: $(Build.SourcesDirectory)/outputs/assets
-          patterns: |
-            **
-            !**/*inttest*
-
-
       # Install Taskfile so that the tests can be run
       - task: Bash@3
         displayName: Install Taskctl
@@ -159,6 +143,7 @@ stages:
             artifact: 'StacksCLI'
             path: $(Build.SourcesDirectory)/outputs/assets
             patterns: |
+              **
               !**/*inttest*
 
         # Install Taskfile for the build to run

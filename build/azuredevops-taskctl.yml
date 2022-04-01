@@ -100,7 +100,7 @@ stages:
           artifact: 'StacksCLI'
           path: $(Build.SourcesDirectory)/outputs/assets
           patterns: |
-            !*inttest*
+            !(**/*inttest*)
 
 
       # Install Taskfile so that the tests can be run

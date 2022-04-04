@@ -230,6 +230,15 @@ func (suite *BaseIntegration) RunCommand(command string, arguments string, ignor
 	// use the util function to split the arguments
 	cmd, args := util.BuildCommand(command, arguments)
 
+	// write out the command thst ius being run
+	cmdlogFile := filepath.Join(suite.ProjectDir, "cmdlog.txt")
+
+	err := ioutil.WriteFile(cmdlogFile, []byte(fmt.Sprintf("%s %s", command, arguments)), 0666)
+
+	if err != nil {
+		suite.T().Fatalf("Error writing command to log file: %s", err.Error())
+	}
+
 	// configure the exec command to execute the command
 	out, err := exec.Command(cmd, args...).Output()
 	if err != nil && !ignore {

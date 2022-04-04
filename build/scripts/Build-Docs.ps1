@@ -94,11 +94,19 @@ $targets | ForEach-Object -Parallel {
             $mdx_file = [IO.Path]::Combine($using:BasePath, $using:OutputDir, "docs", "mdx", ("{0}.mdx" -f[System.IO.Path]::GetFileNameWithoutExtension($file.FullName)))
 
             # Create the cmd to run
+            Write-Information -MessageData "Converting:"
             # -- convert to xml
+            Write-Information -MessageData "`tDockbook XML"
             Invoke-Expression -Command ("asciidoctor -b docbook -o {0} {1}" -f $xml_file, $file.FullName)
 
             # -- convert to markdown
-            Invoke-Expression -Command ("pandoc -f docbook -t gfm --wrap none {0} -o {1}" -f $xml_file, $md_file)
+            Write-Information -MessageData "`tMarkdown"
+            $resp = Invoke-Expression -Command ("pandoc -f docbook -t gfm --wrap none {0} -o {1}" -f $xml_file, $md_file) -ErrorVariable errors
+
+            if (!(Test-Path -Path $md_file) -or $LASTEXITCODE -gt 0) {
+                Write-Error -Message ("Error creating Markdown file: {0}`n{1}" -f $md_file, $errors[0])
+                continue
+            }
 
             # -- convert to MDX format to handle Docusaurus
             ConvertTo-MDX -Path $md_file -Destination $mdx_file
@@ -110,8 +118,8 @@ $targets | ForEach-Object -Parallel {
         }
 
         # Copy the images into the md output dir
-        Copy-Item -Path $using:DocsDir/images -Destination $OutputDir/ -Recurse
-        Copy-Item -Path $using:DocsDir/images -Destination "$(Split-Path -Path $mdx_file -Parent)/" -Recurse
+        Copy-Item -Path $using:DocsDir/images -Destination $OutputDir/ -Recurse -ErrorAction SilentlyContinue
+        Copy-Item -Path $using:DocsDir/images -Destination "$(Split-Path -Path $mdx_file -Parent)/" -Recurse -ErrorAction SilentlyContinue
     }
 
 

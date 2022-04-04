@@ -39,6 +39,7 @@ func (suite *ConfigFileSuite) SetupSuite() {
 
 // TearDownSuite removes all of the files that have been generated in this suite
 func (suite *ConfigFileSuite) TearDownSuite() {
+	return
 	err := suite.ClearDir(suite.ProjectDir)
 	if err != nil {
 		fmt.Printf("Error tearing down the ConfigFileSuite: %v", err)
@@ -81,7 +82,7 @@ func (suite *ConfigFileSuite) TestProject1() {
 
 	// ensure that the devops variable template exists
 	suite.T().Run("Azure DevOps variable template file exist", func(t *testing.T) {
-		path := filepath.Join(suite.ProjectPath1, "build", "azDevOps", "azure", "azuredevops-vars.yml")
+		path := filepath.Join(suite.ProjectPath1, "build", "azDevOps", "azure", "air-api-vars.yml")
 		exists := util.Exists(path)
 
 		suite.Assert.Equal(true, exists, "Azure DevOps variable template file should exist: %s", path)
@@ -132,6 +133,8 @@ func (suite *ConfigFileSuite) TestProject1() {
 				suite.T().Fatalf("Problem analysing file: %v", err)
 			}
 
+			suite.T().Log(fmt.Sprintf("%s", file.Name()))
+
 			if info.IsDir() {
 				firstDir = file.Name()
 				break
@@ -160,7 +163,7 @@ func (suite *ConfigFileSuite) TestProject2() {
 
 	// ensure that the devops variable template exists
 	suite.T().Run("Azure DevOps variable template file exist", func(t *testing.T) {
-		path := filepath.Join(suite.ProjectPath2, "build", "azDevOps", "azure", "azuredevops-vars.yml")
+		path := filepath.Join(suite.ProjectPath2, "build", "azDevOps", "azure", "air-api-vars.yml")
 		exists := util.Exists(path)
 
 		suite.Assert.Equal(true, exists, "Azure DevOps variable template file should exist: %s", path)

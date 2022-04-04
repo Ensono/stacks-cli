@@ -18,10 +18,10 @@ param (
 
     [string[]]
     # operating system that binary should be build for
-    $targets = @("windows", "linux", "darwin"),
+    $targets = @("windows", "linux", "darwin:arm64"),
 
     [string[]]
-    # arhictectire that should be targeted
+    # architecture that should be targeted
     $arch = @("amd64")
 )
 
@@ -35,11 +35,30 @@ if (!(Test-Path -Path $BasePath)) {
 $cmd = "go get"
 Invoke-Expression -Command $cmd
 
-# iterate around each of the architectures
-foreach ($_arch in $arch) {
+# iterate around each of the target os
+foreach ($os in $targets) {
+    
+    # get a list of the architectures to build for this OS
+    $archs = $arch
 
-    # iterate around each of the target os
-    foreach ($os in $targets) {
+    # split the OS using the : character and see if there are any additional architectures
+    # that should be built for that OS
+    $manifest = $os -split ":"
+    if ($manifest.count -eq 2) {
+
+        $os = $manifest[0]
+
+        # now split the second element of the manifest using a comma, to determine what extra
+        # arhces should be built
+        $additional = , $manifest[1] -split ","
+
+        if ($additional) {
+            $archs = $archs + $additional
+        }
+    }
+
+    # iterate around each of the architectures
+    foreach ($_arch in $archs) {
 
         # set the filename of the CLI and intest
         $cli_filename = "{0}/stacks-cli-{1}-{2}-{3}" -f $BasePath, $os, $_arch, $BuildNumber
@@ -54,7 +73,7 @@ foreach ($_arch in $arch) {
         $env:GOARCH = $_arch
         $env:GOOS = $os
 
-        Write-Output ("Building for '{0}'" -f $os)
+        Write-Output ("Building for '{0}' ({1})" -f $os, $_arch)
 
         # Build up the command to create the CLI binary
         $cmd = 'go build -ldflags "-X github.com/amido/stacks-cli/cmd.version={0}" -o {1}' -f

@@ -138,7 +138,7 @@ stages:
             patterns: '**/*.pdf'
             path: $(Build.SourcesDirectory)/outputs/assets
 
-        - task: DownloadPipelineArtifact@1
+        - task: DownloadPipelineArtifact@2
           inputs:
             artifact: 'StacksCLI'
             path: $(Build.SourcesDirectory)/outputs/assets

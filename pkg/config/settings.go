@@ -1,11 +1,14 @@
 package config
 
 import (
+	"fmt"
+	"path/filepath"
 	"regexp"
 	"strings"
 
 	"github.com/Masterminds/semver"
 	"github.com/amido/stacks-cli/internal/models"
+	"github.com/amido/stacks-cli/internal/util"
 	"github.com/sirupsen/logrus"
 )
 
@@ -85,11 +88,13 @@ func (s *Settings) GetRequiredVersion(name string) string {
 // and ensures that they are the correct version
 //
 // path - pa
-func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, path string) []models.Command {
+func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, path string, tmpPath string) []models.Command {
 
+	var err error
 	var incorrect []models.Command
 	var versionCmd string
 	var versionArgs string
+	var specificVersion string
 	var re regexp.Regexp
 
 	// iterate around the framework commands
@@ -102,6 +107,15 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 			versionCmd = "dotnet"
 			versionArgs = "--info"
 			re = *regexp.MustCompile(`\.NET.*SDK.*:\r?\n\sVersion:\s+(?P<version>.*?)\r?\n`)
+
+			// check to see if a global.json file exists in the project dir, if it is read it in
+			// so that the version of dotnet can be matched against it as a more specific check
+			globalJsonPath := filepath.Join(tmpPath, "global.json")
+			specificVersion, err = util.DotnetSDKVersion(globalJsonPath)
+
+			if err != nil {
+				logger.Errorf("Issue retrieving global .NET version: %s", err.Error())
+			}
 
 		case "java":
 
@@ -131,16 +145,23 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 		idx := re.SubexpIndex(("version"))
 		versionFound := matches[idx]
 
-		logger.Debugf("Dotnet version found: %s", versionFound)
+		logger.Debugf("Tool version found: %s", versionFound)
 
-		met := s.CompareVersion(cmd.Version, versionFound, logger)
+		// get the constraint that should be used to check for
+		// if a specific version has been specified modify this constraint
+		constraint := cmd.Version
+		if specificVersion != "" {
+			constraint = fmt.Sprintf(">= %s", specificVersion)
+		}
+
+		met := s.CompareVersion(constraint, versionFound, logger)
 
 		// if not matched then create a command object and set in the array
 		if !met {
 			incorrect = append(incorrect, models.Command{
 				Binary:          cmd.Name,
 				VersionFound:    versionFound,
-				VersionRequired: cmd.Version,
+				VersionRequired: constraint,
 			})
 		}
 

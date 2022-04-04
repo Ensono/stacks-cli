@@ -25,7 +25,7 @@ contexts:
         - ${PWD}:/app
         - -w
         - /app
-        - russellseymour/dotnet-git:6
+        - amidostacks/runner-pwsh-dotnet:0.3.62-kubectl
         - pwsh
         - -NoProfile
         - -Command        
@@ -40,7 +40,7 @@ contexts:
         - ${PWD}:/app
         - -w
         - /app
-        - russellseymour/pandoc-asciidoctor
+        - amidostacks/runner-pwsh-asciidoctor:0.3.97-main
         - pwsh
         - -NoProfile
         - -Command        

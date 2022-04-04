@@ -142,7 +142,9 @@ stages:
           inputs:
             artifact: 'StacksCLI'
             path: $(Build.SourcesDirectory)/outputs/assets
-            patterns: '!**/*inttest*'
+            patterns: |
+              **
+              !**/*inttest*
 
         # Install Taskfile for the build to run
         - task: Bash@3

@@ -159,7 +159,7 @@ func (config *Config) WriteVariablesFile(project *Project, pipelineSettings Pipe
 	}
 
 	// render the variable file
-	rendered, err := config.RenderTemplate(variableTemplate, replacements)
+	rendered, err := config.RenderTemplate(filepath.Base(variableFile), variableTemplate, replacements)
 
 	if err != nil {
 		return fmt.Sprintf("Problem rendering variable template file: %s", err.Error()), err
@@ -184,18 +184,21 @@ func (config *Config) WriteVariablesFile(project *Project, pipelineSettings Pipe
 
 // renderTemplate takes any string and attempts to replace items in it based
 // on the values in the supplied Input object
-func (config *Config) RenderTemplate(tmpl string, input Replacements) (string, error) {
+func (config *Config) RenderTemplate(name string, tmpl string, input Replacements) (string, error) {
 
 	// declare var to hold the rendered string
 	var rendered bytes.Buffer
 
 	// create an object of the template
-	t := template.Must(
-		template.New("").Parse(tmpl),
-	)
+	// if it fails then return with an error
+	t, err := template.New(name).Parse(tmpl)
+
+	if err != nil {
+		return "", err
+	}
 
 	// render the template into the variable
-	err := t.Execute(&rendered, input)
+	err = t.Execute(&rendered, input)
 	if err != nil {
 		return "", err
 	}

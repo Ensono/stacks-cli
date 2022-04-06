@@ -96,6 +96,24 @@ image::images/stackscli-scaffold-help.png[]
 
 The <<Examples>> section has a lot of examples showing how to run the Stacks CLI, the following show some simple uses of the command.
 
+==== Online Help
+
+Some of the commands in the CLI have a lot of options that can specified, particularly the `scaffold` command. Whilst this can been seen using the `-h` option on the command line, it is not the easiest to read or refer to.
+
+To address this, it is possible to get the CLI to open up the help page for the command that help is required for. This is done by passing either `-H` or `--onlinehelp` to any command. For example:
+
+.Running online help for a command
+image::images/stackscli-online-help.png[]
+
+As can be seen the URL that is to be opened is displayed on the command line. If the URL is empty, as maybe the case with new commands, then the existing command line help will be displayed.
+
+NOTE: The online help will not be displayed if the CLI does not pass the connectivity check that is performed at the beginning of the execution.
+
+The webpage will be opened in the default browser.
+
+.Scaffold command help web
+image::images/stackscli-help-webpage.png[]
+
 === Validation
 
 The CLI will validate certain inputs to make sure that they are valid for use with the scaffolding commands as defined by the project settings.

@@ -3,8 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"net"
-	"net/http"
+	"os"
 	"strings"
 
 	"github.com/amido/stacks-cli/internal/config/static"
@@ -56,6 +55,7 @@ func init() {
 	var logFormat string
 	var logColour bool
 	var logFile string
+	var onlineHelp bool
 
 	var workingDir string
 	var tmpDir string
@@ -83,6 +83,7 @@ func init() {
 
 	rootCmd.PersistentFlags().BoolVar(&noBanner, "nobanner", false, "Do not display the Stacks banner when running the command")
 	rootCmd.PersistentFlags().BoolVar(&noCLIVersionCheck, "nocliversion", false, "Do not check for latest version of the CLI")
+	rootCmd.PersistentFlags().BoolVarP(&onlineHelp, "onlinehelp", "H", false, "Open web browser with help for the command")
 
 	rootCmd.PersistentFlags().StringVar(&githubToken, "token", "", "GitHub token to perform authenticated requests against the GitHub API")
 
@@ -100,10 +101,11 @@ func init() {
 
 	viper.BindPFlag("options.nobanner", rootCmd.PersistentFlags().Lookup("nobanner"))
 	viper.BindPFlag("options.nocliversion", rootCmd.PersistentFlags().Lookup("nocliversion"))
+	viper.BindPFlag("options.onlinehelp", rootCmd.PersistentFlags().Lookup("onlinehelp"))
 
 }
 
-// initConfig reads in a confiig file and ENV vars if set
+// initConfig reads in a config file and ENV vars if set
 // Sets up logging with the specified log level
 func initConfig() {
 
@@ -152,7 +154,7 @@ func preRun(ccmd *cobra.Command, args []string) {
 	Config.Input.Version = version
 
 	// output the banner, unless it has been disabled or the parent command is completion
-	if !Config.NoBanner() && ccmd.Parent().Use != "completion" {
+	if !Config.NoBanner() && ccmd.Parent().Use != "completion" && !Config.OnlineHelp() {
 		fmt.Println(static.Banner)
 	}
 
@@ -160,10 +162,34 @@ func preRun(ccmd *cobra.Command, args []string) {
 	// use a DNS lookup to check that github can be accessed
 	// this is so that the check is not performed if the the environment is not
 	// connected to the internet
-	err = checkConnectivity()
+	App.Logger.Info("Performing connectivity check")
+	err = util.CheckConnectivity("github.com")
 	if err != nil {
 		App.Logger.Fatal(err.Error())
 		return
+	}
+
+	// set the urls to use to open the web based help for a command
+	help_urls := static.Config("help_urls")
+	err = yaml.Unmarshal(help_urls, &Config.Help)
+	if err != nil {
+		App.Logger.Fatalf("Unable to parse help URL data: %s", err.Error())
+	}
+
+	// Determine if the online help option has been specified, it is has
+	// open up the webpage for the specified command and then exit
+	if Config.OnlineHelp() {
+
+		// call the command to open the webpage
+		status := Config.OpenOnlineHelp(ccmd.Use, App.Logger)
+
+		// if the onlinehelp has not worked display the normal command line based help
+		if !status {
+			ccmd.Help()
+		}
+
+		// exit the program
+		os.Exit(0)
 	}
 
 	// Call method to determine if this version of the CLI is the latest one
@@ -216,32 +242,4 @@ func checkCLIVersion() {
 	if !uptodate {
 		fmt.Printf("A newer release version of the Stacks CLI is available, %s, you are running version %s.\n\nMore information at %s\n\n", latestVersion, Config.GetVersion(), releaseUrl)
 	}
-}
-
-func checkConnectivity() error {
-
-	var err error
-
-	// define the error that will be displayed if either of the checks fail
-	target := "github.com"
-	msg := fmt.Sprintf("Cannot connect to '%s', is the machine offline?", target)
-
-	App.Logger.Info("Performing connectivity check")
-
-	// check that the address can be resolved
-	_, err = net.LookupIP(target)
-	if err != nil {
-		return fmt.Errorf(msg)
-	}
-
-	// check that the address can be contacted
-	resp, err := http.Get(fmt.Sprintf("https://%s", target))
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode > 299 {
-		return fmt.Errorf(msg)
-	}
-
-	return err
 }

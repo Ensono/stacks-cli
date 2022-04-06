@@ -10,4 +10,5 @@ type Options struct {
 	NoBanner     bool   `mapstructure:"nobanner"`
 	NoCLIVersion bool   `mapstructure:"nocliversion"`
 	Token        string `mapstructure:"token" json:"-"`
+	OnlineHelp   bool   `mapstructure:"onlinehelp" json:"-"`
 }

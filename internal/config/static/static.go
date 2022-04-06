@@ -21,6 +21,10 @@ var Banner string
 //go:embed framework_def.yml
 var framework_defs string
 
+// Set the urls to be used when online help is requested
+//go:embed help_urls.yml
+var help_urls string
+
 // Config byte parses static
 func Config(key string) []byte {
 
@@ -31,6 +35,8 @@ func Config(key string) []byte {
 		result = []byte(stacks_frameworks)
 	case "framework_defs":
 		result = []byte(framework_defs)
+	case "help_urls":
+		result = []byte(help_urls)
 	}
 
 	return result

@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"text/template"
 
@@ -34,6 +35,7 @@ type Config struct {
 	Self          SelfConfig
 	Replace       []ReplaceConfig
 	FrameworkDefs []FrameworkDef
+	Help          Help
 }
 
 // Check checks the configuration and ensures that there are some projects
@@ -82,6 +84,11 @@ func (c *Config) NoBanner() bool {
 // Force states if projects should be overwritten
 func (c *Config) Force() bool {
 	return c.Input.Options.Force
+}
+
+// Return the state of OnlineHelp
+func (c *Config) OnlineHelp() bool {
+	return c.Input.Options.OnlineHelp
 }
 
 // Save saves the user's configuration to a file
@@ -273,9 +280,11 @@ func (config *Config) ExecuteCommand(path string, logger *logrus.Logger, command
 	logger.Debugf("Command: %s %s", command, arguments)
 
 	// Write out the command log
-	err = config.WriteCmdLog(path, fmt.Sprintf("%s %s", command, arguments))
-	if err != nil {
-		logger.Warnf("Unable to write command to log: %s", err.Error())
+	if path != "" {
+		err = config.WriteCmdLog(path, fmt.Sprintf("%s %s", command, arguments))
+		if err != nil {
+			logger.Warnf("Unable to write command to log: %s", err.Error())
+		}
 	}
 
 	// add the result to the writers
@@ -335,6 +344,44 @@ func (config *Config) GetFrameworkCommands(framework string) []string {
 			result = f.Commands
 			break
 		}
+	}
+
+	return result
+}
+
+// OpenOnlineHelp opens the relevant help for the specified CLI command
+func (config *Config) OpenOnlineHelp(cliCmd string, logger *logrus.Logger) bool {
+
+	// define the command and args to run to bring up the webpage
+	var cmd string
+	var args string
+	var result bool
+
+	// get the url to open from the config object
+	url := config.Help.GetUrl(cliCmd)
+
+	// use the name of the operating system to determine how to open the webpage
+	switch runtime.GOOS {
+	case "linux":
+		cmd = "xdg-open"
+		args = url
+	case "windows":
+		cmd = "rundll32"
+		args = fmt.Sprintf("url.dll,FileProtocolHandler %s", url)
+	case "darwin":
+		cmd = "open"
+		args = url
+	}
+
+	// if the cmd and args have been set run the command
+	if cmd != "" && args != "" && url != "" {
+		logger.Infof("Opening online help for command: %s", url)
+		config.ExecuteCommand("", logger, cmd, args, false, false)
+		result = true
+	}
+
+	if url == "" {
+		logger.Warnf("Help URL for the command has not been specified: %s", cliCmd)
 	}
 
 	return result

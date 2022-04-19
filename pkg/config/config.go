@@ -12,6 +12,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/bobesa/go-domain-util/domainutil"
@@ -385,4 +386,18 @@ func (config *Config) OpenOnlineHelp(cliCmd string, logger *logrus.Logger) bool 
 	}
 
 	return result
+}
+
+// GetFrameworks gets the static configuration of the stacks frameworks and
+// unmarshals it into a returning InputConfig object
+// This is so that the configuration can be read by other apps based on the CLI
+func (config *Config) GetFrameworks() (Stacks, error) {
+
+	var err error
+
+	// get the static configuration
+	stacks_frameworks := static.Config("stacks_frameworks")
+	err = yaml.Unmarshal(stacks_frameworks, &config.Input)
+
+	return config.Input.Stacks, err
 }

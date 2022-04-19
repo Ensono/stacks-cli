@@ -12,7 +12,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
 	yaml "github.com/goccy/go-yaml"
@@ -101,10 +100,18 @@ func (suite *BaseIntegration) WriteConfigFile(filename string) string {
 	// read in the static frameworks so that they can be added to the configuration file
 	// this is so that they have a value and are not null which will prevent the CLI
 	// from working properly
-	stacks_frameworks := string(static.Config("stacks_frameworks"))
+	/*
+		stacks_frameworks := string(static.Config("stacks_frameworks"))
 
-	stacks := config.InputConfig{}
-	err := yaml.Unmarshal([]byte(stacks_frameworks), &stacks)
+		stacks := config.InputConfig{}
+		err := yaml.Unmarshal([]byte(stacks_frameworks), &stacks)
+		if err != nil {
+			suite.T().Fatalf("Error setting stacks frameworks: %s", err.Error())
+		}
+	*/
+
+	cfg := config.Config{}
+	stacks, err := cfg.GetFrameworks()
 	if err != nil {
 		suite.T().Fatalf("Error setting stacks frameworks: %s", err.Error())
 	}
@@ -189,7 +196,7 @@ func (suite *BaseIntegration) WriteConfigFile(filename string) string {
 				},
 			},
 		},
-		Stacks: stacks.Stacks,
+		Stacks: stacks,
 		Terraform: config.Terraform{
 			Backend: config.TerraformBackend{
 				Storage:   tf_storage,

@@ -667,3 +667,15 @@ func TestGetFrameworkCommands(t *testing.T) {
 		}
 	}
 }
+
+func TestGetFrameworks(t *testing.T) {
+
+	config := Config{}
+
+	// attempt to get the stacks as a model
+	stacks, err := config.GetFrameworks()
+
+	assert.Equal(t, nil, err)
+	assert.Equal(t, "https://github.com/amido/stacks-dotnet", stacks.Dotnet.Webapi.URL)
+
+}

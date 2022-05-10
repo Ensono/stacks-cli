@@ -676,6 +676,6 @@ func TestGetFrameworks(t *testing.T) {
 	stacks, err := config.GetFrameworks()
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, "https://github.com/amido/stacks-dotnet", stacks.Dotnet.Webapi.URL)
+	assert.Equal(t, "https://github.com/amido/stacks-dotnet", stacks.Dotnet.Webapi.Name)
 
 }

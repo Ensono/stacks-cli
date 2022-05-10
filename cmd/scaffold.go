@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/scaffold"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -24,6 +25,9 @@ func init() {
 	var saveConfig bool
 	var nocleanup bool
 	var force bool
+
+	// - scaffold directories
+	var cacheDir string
 
 	// - project settings
 	var project_name string
@@ -66,10 +70,15 @@ func init() {
 	var network_base_domain_external string
 	var network_base_domain_internal string
 
+	// get the default directories
+	defaultCacheDir := util.GetDefaultCacheDir()
+
 	// Add the run command to the root
 	rootCmd.AddCommand(scaffoldCmd)
 
 	// Configure the flags
+	scaffoldCmd.Flags().StringVar(&cacheDir, "cachedir", defaultCacheDir, "Cache directory to be used for all downloads")
+
 	scaffoldCmd.Flags().StringVarP(&project_name, "name", "n", "", "Name of the project to create")
 	scaffoldCmd.Flags().StringVar(&project_vcs_type, "sourcecontrol", "github", "Type of source control being used")
 	scaffoldCmd.Flags().StringVarP(&project_vcs_url, "sourcecontrolurl", "u", "", "Url of the remote for source control")
@@ -153,6 +162,8 @@ func init() {
 
 	viper.BindPFlag("network.base.domain.external", scaffoldCmd.Flags().Lookup("domain"))
 	viper.BindPFlag("network.base.domain.internal", scaffoldCmd.Flags().Lookup("internaldomain"))
+
+	viper.BindPFlag("directory.cache", scaffoldCmd.Flags().Lookup("cachedir"))
 
 	viper.BindPFlag("options.cmdlog", scaffoldCmd.Flags().Lookup("cmdlog"))
 	viper.BindPFlag("options.dryrun", scaffoldCmd.Flags().Lookup("dryrun"))

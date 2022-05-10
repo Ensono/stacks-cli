@@ -11,6 +11,8 @@ import (
 	"github.com/amido/stacks-cli/internal/models"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
+	"github.com/amido/stacks-cli/pkg/downloaders"
+	"github.com/amido/stacks-cli/pkg/interfaces"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -64,11 +66,15 @@ func (s *Scaffold) Run() error {
 	}
 
 	// create the temporary directory if it does not exist
-	if !util.Exists(s.Config.Input.Directory.TempDir) {
-		err := os.MkdirAll(s.Config.Input.Directory.TempDir, os.ModePerm)
-		if err != nil {
-			return fmt.Errorf("unable to create temporary directory: %s", s.Config.Input.Directory.TempDir)
-		}
+	err = util.CreateIfNotExists(s.Config.Input.Directory.TempDir, os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("unable to create temporary directory: %s", s.Config.Input.Directory.TempDir)
+	}
+
+	// Create the cache directory if it does not exist
+	err = util.CreateIfNotExists(s.Config.Input.Directory.CacheDir, os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("unable to create cache directory: %s", s.Config.Input.Directory.CacheDir)
 	}
 
 	// Cleanup the temporary dir after all the projects have been processed
@@ -197,21 +203,44 @@ func (s *Scaffold) processProject(project config.Project) {
 		return
 	}
 
-	// check that the URL is valid, if not skip this project and move onto the next one
-	_, err = url.ParseRequestURI(repoInfo.URL)
-	if err != nil {
-		s.Logger.Errorf("Unable to download framework option as URL is invalid: %s", err.Error())
-		return
+	// ensure that the RepoInfo object is correctly configured
+	msg := repoInfo.Normalize()
+	if msg != "" {
+		s.Logger.Warn(msg)
+	}
+
+	// download the template using the appropriate action
+	var downloader interfaces.Downloader
+	switch repoInfo.Type {
+	case "github":
+
+		// check that the URL is valid, if not skip this project and move onto the next one
+		_, err = url.ParseRequestURI(repoInfo.Name)
+		if err != nil {
+			s.Logger.Errorf("Unable to download framework option as URL is invalid: %s", err.Error())
+			return
+		}
+
+		downloader = downloaders.NewGitDownloader(
+			repoInfo.Name,
+			repoInfo.Version,
+			project.Framework.Version,
+			s.Config.Input.Directory.TempDir,
+			s.Config.Input.Options.Token,
+		)
+	case "nuget":
+		downloader = downloaders.NewNugetDownloader(
+			repoInfo.Name,
+			repoInfo.ID,
+			repoInfo.Version,
+			project.Framework.Version,
+			s.Config.Input.Directory.CacheDir,
+			s.Config.Input.Directory.TempDir,
+		)
 	}
 
 	s.Logger.Infof("Retrieving framework option: %s", key)
-	dir, err := util.GitClone(
-		repoInfo.URL,
-		project.Framework.Version,
-		repoInfo.Trunk,
-		s.Config.Input.Directory.TempDir,
-		s.Config.Input.Options.Token,
-	)
+	dir, err := downloader.Get()
 
 	// set the clonedir as the project temporary directory
 	project.Directory.TempDir = dir
@@ -219,7 +248,7 @@ func (s *Scaffold) processProject(project config.Project) {
 	// if there was an error getting hold of the framework project display an error
 	// and move onto the next project
 	if err != nil {
-		s.Logger.Errorf("Issue downloading the specified framework option\n\tURL: %s\n\tError: %s", dir, err.Error())
+		s.Logger.Errorf("Issue downloading the specified framework option\n\tURL: %s\n\tError: %s", downloader.PackageURL(), err.Error())
 		return
 	}
 

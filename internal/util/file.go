@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/user"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -233,6 +234,24 @@ func GetDefaultWorkingDir() string {
 	}
 
 	return workingDir
+}
+
+// GetDefaultCacheDir returns the directory that should be used for caching all downloads
+// that the CLI makes
+func GetDefaultCacheDir() string {
+
+	var path string
+
+	// get details about the user
+	usr, err := user.Current()
+	if err != nil {
+		log.Fatalf("Unable to determine current user")
+	}
+
+	// get the cacheDir path
+	path = filepath.Join(usr.HomeDir, ".stackscli", "cache")
+
+	return path
 }
 
 // IsEmpty states if the specified directory is empty or not

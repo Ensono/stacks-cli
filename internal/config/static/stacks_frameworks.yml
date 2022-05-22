@@ -1,14 +1,13 @@
 stacks:
   dotnet:
-    webapi: 
-      name: https://github.com/amido/stacks-dotnet
-      version: master
-    cqrs: 
-      name: https://github.com/amido/stacks-dotnet-cqrs
-      version: master
-    events: 
-      name: https://github.com/amido/stacks-dotnet-cqrs-events
-      version: master
+    webapi:
+      name: Amido.Stacks.Templates
+      type: nuget
+      id: stacks-dotnet
+    cqrs:
+      name: Amido.Stacks.CQRS.Templates
+      type: nuget
+      id: stacks-dotnet-cqrs
   java:
     webapi:
       name: https://github.com/amido/stacks-java

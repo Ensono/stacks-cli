@@ -40,3 +40,6 @@ cmdlog.txt
 .env
 
 projects/
+
+# Ignore the swagger docs, these will need to be generated on each build
+pkg/api/docs

@@ -1,6 +1,9 @@
 package downloaders
 
-import "github.com/amido/stacks-cli/internal/util"
+import (
+	"github.com/amido/stacks-cli/internal/util"
+	"github.com/sirupsen/logrus"
+)
 
 var git = &Git{}
 
@@ -10,6 +13,8 @@ type Git struct {
 	FrameworkVersion string
 	TempDir          string
 	Token            string
+
+	logger *logrus.Logger
 }
 
 func NewGitDownloader(url string, version string, frameworkVersion string, tempDir string, token string) *Git {
@@ -43,4 +48,8 @@ func (g *Git) Get() (string, error) {
 
 func (g *Git) PackageURL() string {
 	return g.URL
+}
+
+func (g *Git) SetLogger(logger *logrus.Logger) {
+	g.logger = logger
 }

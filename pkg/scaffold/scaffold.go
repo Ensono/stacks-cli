@@ -111,6 +111,9 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 		replacements.Input = s.Config.Input
 		replacements.Project = *project
 
+		// create a string builder
+		arguments := strings.Builder{}
+
 		// get a list of the commands that are expected to be run by something that
 		// uses the framework
 		cmdList := s.Config.GetFrameworkCommands(project.Framework.Type)
@@ -127,17 +130,24 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 		command = operation.Command
 
 		// run the arguments that have been specified through the template engine
-		arguments, err := s.Config.RenderTemplate("arguments", operation.Arguments, replacements)
+		args, err := s.Config.RenderTemplate("arguments", operation.Arguments, replacements)
 		if err != nil {
 			s.Logger.Errorf("Error resolving template: %s", err.Error())
 			return err
 		}
 
 		// expand any OS based variables on the template
-		arguments = os.ExpandEnv(arguments)
+		arguments.WriteString(os.ExpandEnv(args))
+
+		// if properties have nee supplied and the operation has the flag set to apply the properties
+		// to the command, add them in here
+		if operation.ApplyProperties && len(project.Framework.Properties) > 0 {
+			arguments.WriteString(" ")
+			arguments.WriteString(strings.Join(project.Framework.Properties, " "))
+		}
 
 		// Execute the command and check that it worked
-		_, err = s.Config.ExecuteCommand(path, s.Logger, command, arguments, false, false)
+		_, err = s.Config.ExecuteCommand(path, s.Logger, command, arguments.String(), false, false)
 		if err != nil {
 			s.Logger.Errorf("Issue running command: %s", err.Error())
 		}
@@ -238,6 +248,8 @@ func (s *Scaffold) processProject(project config.Project) {
 			s.Config.Input.Directory.TempDir,
 		)
 	}
+
+	downloader.SetLogger(s.Logger)
 
 	s.Logger.Infof("Retrieving framework option: %s", key)
 	dir, err := downloader.Get()

@@ -40,10 +40,6 @@ type RepoInfo struct {
 	Type    string `mapstructure:"type"`
 	Name    string `mapstructure:"name"`
 	ID      string `mapstructure:"id"`
-
-	// Allow support for previous version tags
-	URL   string `mapstructure:"url"`
-	Trunk string `mapstructure:"trunk"`
 }
 
 // GetSrcURLMap returns a map of the source control repositores
@@ -74,21 +70,6 @@ func (stacks *Stacks) GetSrcURL(key string) RepoInfo {
 // It will return an error object to be used as a warning for people to update their structure
 func (r *RepoInfo) Normalize() string {
 	var msg string
-	var usingOldApi bool
-
-	if r.URL != "" && r.Name == "" {
-		r.Name = r.URL
-		usingOldApi = true
-	}
-
-	if r.Trunk != "" && r.Version == "" {
-		r.Version = r.Trunk
-		usingOldApi = true
-	}
-
-	if usingOldApi {
-		msg = "Your configuration is using a deprecated version of the Stacks framework API, please update your configuration"
-	}
 
 	// if the type is empty, default to github
 	if r.Type == "" {

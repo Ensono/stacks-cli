@@ -10,6 +10,7 @@ import (
 
 	"github.com/amido/stacks-cli/internal/models"
 	"github.com/amido/stacks-cli/internal/util"
+	"github.com/sirupsen/logrus"
 )
 
 var nuget = &Nuget{}
@@ -25,6 +26,7 @@ type Nuget struct {
 	// define private properties
 	url    string
 	latest bool
+	logger *logrus.Logger
 }
 
 type NugetResponse struct {
@@ -80,6 +82,9 @@ func (n *Nuget) Get() (string, error) {
 	n.setURL()
 	ac.UpdateURL(n.url)
 
+	// output information about the version being used
+	n.logger.Infof("Using package version: %s", n.Version)
+
 	// get the data from the Nuget API
 	err, statusCode := ac.Do("GET")
 	if err != nil {
@@ -103,7 +108,10 @@ func (n *Nuget) Get() (string, error) {
 	downloadPath := filepath.Join(n.CacheDir, filename)
 
 	// if the file does not exist download it
-	if !util.Exists(downloadPath) {
+	if util.Exists(downloadPath) {
+		n.logger.Infof("Using package from local cache: %s", downloadPath)
+	} else {
+		n.logger.Info("Downloading package from Nuget")
 		err = ac.Download(downloadPath)
 		if err != nil {
 			return dir, err
@@ -129,6 +137,10 @@ func (n *Nuget) Get() (string, error) {
 
 func (n *Nuget) PackageURL() string {
 	return n.url
+}
+
+func (n *Nuget) SetLogger(logger *logrus.Logger) {
+	n.logger = logger
 }
 
 func (n *Nuget) setURL() {

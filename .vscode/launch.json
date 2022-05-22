@@ -31,8 +31,28 @@
                 // "AMIDOSTACKS_CONFIG": "_examples/test.yml"
             },
             "args": [
+                "scaffold", "-c", "${workspaceFolder}/local/stacks.yml",
+                // "scaffold", "--onlinehelp"
+            ]
+        },
+        {
+            "name": "API",
+            "type": "go",
+            "request": "launch",
+            // "logOutput": "debugger",
+            // "showLog": true,
+            "mode": "debug",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/stacks-cli.go",
+            // "program": "${workspaceFolder}/_examples/main.go",
+            "debugAdapter": "dlv-dap",
+            "env": {
+                // "AMIDOSTACKS_LOG": "TRACE"
+                // "AMIDOSTACKS_CONFIG": "_examples/test.yml"
+            },
+            "args": [
                 // "scaffold", "-c", "${workspaceFolder}/local/stacks.yml"
-                "scaffold", "--onlinehelp"
+                "api"
             ]
         }
     ]

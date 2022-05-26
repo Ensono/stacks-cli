@@ -47,7 +47,7 @@ The next table shows the options for the operations.
 NOTE: These are valid for both `init` and `setup` operations
 
 .Operations parameters
-[options="header"]
+[options="header",cols="1,2,1,1"]
 |===
 | Parameter | Description | Example | Allowed Values
 | `action` | The type of action that needs to be performed
@@ -60,6 +60,9 @@ Each framework has a set of commands that it knows it can during the setup of th
 dotnet = `dotnet` | 
 | `args` | The arguments that need to be passed to the command | `new -i .` | 
 | `desc` | Description of what is being performed. This is output during the execution of the CLI | Installing template from folder | 
+| `applyProperties` | State if the properties that were defined in the `stacks.yml` file for the project should be applied to this command
+
+Default is `false` | true | `true`, `false`
 |===
 
 The follow table shows the values that can be assigned to the pipeline list.

@@ -95,7 +95,7 @@ The project settings file will be defined by the project maintainers, but will m
 | `--frameworkprop4` | AMIDOSTACKS_PROJECT_FRAMEWORK_PROPERTIES_PROP5    
 | `--frameworkprop5` | AMIDOSTACKS_PROJECT_FRAMEWORK_PROPERTIES_PROP5    
 | `-P`, `--platformtype` | AMIDOSTACKS_PLATFORM_TYPE | Platform being deployed to | | `aks` 
-| `-p`, `--pipeline` | AMIDOSTACKS_PIPELINE | Pipeline being used to build the project | | `azdo` 
+| `-p`, `--pipeline` | AMIDOSTACKS_PIPELINE | Pipeline being used to build the project | | `azdo`, `gha` 
 | `-C`, `--cloud` | AMIDOSTACKS_CLOUD | Cloud platform being used | | `azure`, `aws`, `gcp` 
 | `-R`, `--cloudregion` | AMIDOSTACKS_CLOUD_REGION | Region that the project will be deployed to | | 
 | `-G`, `--cloudgroup` | AMIDOSTACKS_CLOUD_GROUP | Group in the cloud platform that will hold all the resources | | 

@@ -110,6 +110,7 @@ func (p *Pipeline) GetSupported() []string {
 	// do this by getting all the fields of the pipeline object
 	pipelines := []string{
 		"azdo",
+		"gha",
 	}
 
 	return pipelines

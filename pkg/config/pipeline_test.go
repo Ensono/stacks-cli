@@ -52,13 +52,24 @@ func TestSupportedPipelines(t *testing.T) {
 	assert.Equal(t, 1, len(pipelines))
 }
 
-func TestPipelineIsValid(t *testing.T) {
+func TestAzDoPipelineIsValid(t *testing.T) {
 
 	// create a pipeline object
 	pipeline := Pipeline{}
 
 	// test that AzDo is a valid pipeline
 	actual := pipeline.IsSupported("AzDo")
+
+	assert.Equal(t, true, actual)
+}
+
+func TestGHAPipelineIsValid(t *testing.T) {
+
+	// create a pipeline object
+	pipeline := Pipeline{}
+
+	// test that AzDo is a valid pipeline
+	actual := pipeline.IsSupported("gha")
 
 	assert.Equal(t, true, actual)
 }

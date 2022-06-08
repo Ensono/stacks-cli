@@ -50,14 +50,13 @@ project:
 stacks:
   dotnet:
     webapi:
-      url: https://github.com/amido/stacks-dotnet
-      trunk: master
+      name: Amido.Stacks.Templates
+      type: nuget
+      id: stacks-dotnet
     cqrs:
-      url: https://github.com/amido/stacks-dotnet-cqrs
-      trunk: master
-    events:
-      url: https://github.com/amido/stacks-dotnet-cqrs-events
-      trunk: master
+      name: Amido.Stacks.CQRS.Templates
+      type: nuget
+      id: stacks-dotnet-cqrs
   java:
     webapi:
       url: https://github.com/amido/stacks-java

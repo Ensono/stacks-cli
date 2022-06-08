@@ -87,13 +87,9 @@ There are no additional options to be specified for the interactive command over
 | `-V`, `--frameworkversion` | AMIDOSTACKS_PROJECT_FRAMEWORK_VERSION | The version of the Amido stacks project to use.
 
 This can be a version, a tag, a SHA ref or a branch. | `latest` | 
-| `--frameworkprop1` | AMIDOSTACKS_PROJECT_FRAMEWORK_PROPERTIES_PROP1 3.5+| Properties that need to be set to allow the scaffolding to run the correct command
+| `--frameworkprops` | AMIDOSTACKS_PROJECT_FRAMEWORK_PROPERTIES 3+| Properties that need to be set to allow the scaffolding to run the correct command
 
 The project settings file will be defined by the project maintainers, but will may specify that a property needs to be set.
-| `--frameworkprop2` | AMIDOSTACKS_PROJECT_FRAMEWORK_PROPERTIES_PROP2     
-| `--frameworkprop3` | AMIDOSTACKS_PROJECT_FRAMEWORK_PROPERTIES_PROP3    
-| `--frameworkprop4` | AMIDOSTACKS_PROJECT_FRAMEWORK_PROPERTIES_PROP5    
-| `--frameworkprop5` | AMIDOSTACKS_PROJECT_FRAMEWORK_PROPERTIES_PROP5    
 | `-P`, `--platformtype` | AMIDOSTACKS_PLATFORM_TYPE | Platform being deployed to | | `aks` 
 | `-p`, `--pipeline` | AMIDOSTACKS_PIPELINE | Pipeline being used to build the project | | `azdo`, `gha` 
 | `-C`, `--cloud` | AMIDOSTACKS_CLOUD | Cloud platform being used | | `azure`, `aws`, `gcp` 

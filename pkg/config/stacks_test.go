@@ -87,9 +87,8 @@ func TestDefaultSrcUrlMap(t *testing.T) {
 	// get the src URL map
 	srcURLs := config.Input.Stacks.GetSrcURLMap()
 
-	assert.Equal(t, "https://github.com/amido/stacks-dotnet", srcURLs["dotnet_webapi"].Name)
-	assert.Equal(t, "https://github.com/amido/stacks-dotnet-cqrs", srcURLs["dotnet_cqrs"].Name)
-	assert.Equal(t, "https://github.com/amido/stacks-dotnet-cqrs-events", srcURLs["dotnet_events"].Name)
+	assert.Equal(t, "Amido.Stacks.Templates", srcURLs["dotnet_webapi"].Name)
+	assert.Equal(t, "Amido.Stacks.CQRS.Templates", srcURLs["dotnet_cqrs"].Name)
 	assert.Equal(t, "https://github.com/amido/stacks-java", srcURLs["java_webapi"].Name)
 	assert.Equal(t, "https://github.com/amido/stacks-java-cqrs", srcURLs["java_cqrs"].Name)
 	assert.Equal(t, "https://github.com/amido/stacks-java-cqrs-events", srcURLs["java_events"].Name)

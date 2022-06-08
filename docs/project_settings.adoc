@@ -23,14 +23,14 @@ The following table details the structure of the settings file.
 The following table shows the options that can be specified for a framework
 
 .Framework Options
-[options="header"]
+[options="header",cols="1,2,1,1"]
 |===
 | Parameter | Description | Example | Allowed Values
-| `name` | Name of the framework that this project targets | `dotnet`, `java`
+| `name` | Name of the framework that this project targets | | `dotnet`, `java`
 | `commands` | A list of the commands and the versions that are required for the project
 
 This is a list, so multiple commands and versions can be specified in the yaml file | |
-| `commands.name` | Name of the command to be checked | `dotnet` | |
+| `commands.name` | Name of the command to be checked | `dotnet` | 
 | `commands.version` | This is a semantic version constraint that the command version must conform to
 
 So to ensure that the `dotnet` command is version `3.1` the following version string can be used `>= 3.1, < 3.2` | `>= 3.1, < 3.2` | Any valid semver constraint 
@@ -136,8 +136,9 @@ init: // <9>
     - action: cmd // <11>
       args: new stacks-docs -n {{ .Input.Business.Company }}.{{ .Input.Business.Domain }} // <12>
       desc: Create a project using the "stacks-docs" project // <13>
+      applyProperties: true // <14>
 
-setup: // <14>
+setup: // <15>
    operations:
 ----
 
@@ -154,7 +155,8 @@ setup: // <14>
 <11> States the action that needs to be performed
 <12> The arguments that need to be passed to the framework command, in this case `dotnet`
 <13> Description of the operation, this will be displayed in the log output when the CLI is executed
-<14> Define operations that need to be performed after the project has been created
+<14> If this option is set to true, then any properties that have been specified for the project framework in the scaffold configuration will be added to the command
+<15> Define operations that need to be performed after the project has been created
 
 This example shows one action that needs to be performed on the project before it has been created in the user specified working directory.
 

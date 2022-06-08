@@ -39,11 +39,7 @@ func init() {
 	var framework_type string
 	var framework_option string
 	var framework_version string
-	var framework_property_1 string
-	var framework_property_2 string
-	var framework_property_3 string
-	var framework_property_4 string
-	var framework_property_5 string
+	var framework_properties []string
 
 	// - platform settings
 	var platform_type string
@@ -89,11 +85,7 @@ func init() {
 	scaffoldCmd.Flags().StringVarP(&framework_version, "frameworkversion", "V", "latest", "Version of the framework package to download")
 
 	// get the properties from the command line
-	scaffoldCmd.Flags().StringVar(&framework_property_1, "frameworkprop1", "", "Property to pass to the project settings")
-	scaffoldCmd.Flags().StringVar(&framework_property_2, "frameworkprop2", "", "Property to pass to the project settings")
-	scaffoldCmd.Flags().StringVar(&framework_property_3, "frameworkprop3", "", "Property to pass to the project settings")
-	scaffoldCmd.Flags().StringVar(&framework_property_4, "frameworkprop4", "", "Property to pass to the project settings")
-	scaffoldCmd.Flags().StringVar(&framework_property_5, "frameworkprop5", "", "Property to pass to the project settings")
+	scaffoldCmd.Flags().StringSliceVar(&framework_properties, "frameworkprops", []string{}, "Properties to pass to the project settings")
 
 	scaffoldCmd.Flags().StringVarP(&platform_type, "platformtype", "P", "", "Type of platform being deployed to")
 
@@ -140,11 +132,7 @@ func init() {
 	viper.BindPFlag("project.framework.version", scaffoldCmd.Flags().Lookup("frameworkversion"))
 
 	// -- bind the framework properties to the project framework
-	viper.BindPFlag("project.framework.properties.prop1", scaffoldCmd.Flags().Lookup("frameworkprop1"))
-	viper.BindPFlag("project.framework.properties.prop2", scaffoldCmd.Flags().Lookup("frameworkprop2"))
-	viper.BindPFlag("project.framework.properties.prop3", scaffoldCmd.Flags().Lookup("frameworkprop4"))
-	viper.BindPFlag("project.framework.properties.prop4", scaffoldCmd.Flags().Lookup("frameworkprop4"))
-	viper.BindPFlag("project.framework.properties.prop5", scaffoldCmd.Flags().Lookup("frameworkprop5"))
+	viper.BindPFlag("project.framework.properties", scaffoldCmd.Flags().Lookup("frameworkprops"))
 
 	viper.BindPFlag("settingsfile", scaffoldCmd.Flags().Lookup("settingsfile"))
 

@@ -25,7 +25,7 @@ type InputConfig struct {
 	Network      Network   `mapstructure:"network"`
 	Pipeline     string    `mapstructure:"pipeline"`
 	Project      []Project `mapstructure:"project"`
-	Stacks       Stacks    `mapstructure:"stacks"` // Holds the information about the projects in stacks
+	Stacks       Stacks    `mapstructure:"stacks" yaml:"stacks"` // Holds the information about the projects in stacks
 	Terraform    Terraform `mapstructure:"terraform"`
 	SettingsFile string    `mapstructure:"settingsfile" json:",omitempty"`
 	Options      Options   `mapstructure:"options"`

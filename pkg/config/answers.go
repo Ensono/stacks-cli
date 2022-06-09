@@ -74,7 +74,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "pipeline",
 			Prompt: &survey.Select{
 				Message: "What pipeline is being targeted?",
-				Options: []string{"azdo"},
+				Options: []string{"azdo", "gha"},
 				Default: "azdo",
 			},
 			Validate: survey.Required,
@@ -176,12 +176,19 @@ func (a *Answers) getProjectQuestions(qType string) []*survey.Question {
 			},
 		}
 	case "dotnet", "java":
+
+		// define the list of options for each of the different languages
+		options := []string{"webapi", "cqrs"}
+		if qType == "java" {
+			options = append(options, "events")
+		}
+
 		questions = []*survey.Question{
 			{
 				Name: "framework_option",
 				Prompt: &survey.Select{
 					Message: "Which option of the framework do you require?",
-					Options: []string{"webapi", "cqrs", "events"},
+					Options: options,
 				},
 				Validate: survey.Required,
 			},

@@ -83,7 +83,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "cloud_platform",
 			Prompt: &survey.Select{
 				Message: "Which cloud is Stacks being setup in?",
-				Options: []string{"azure"},
+				Options: []string{"aws", "azure"},
 				Default: "azure",
 			},
 			Validate: survey.Required,
@@ -206,7 +206,7 @@ func (a *Answers) getProjectQuestions(qType string) []*survey.Question {
 				Name: "framework_option",
 				Prompt: &survey.Select{
 					Message: "Which type of infrastructure is required?",
-					Options: []string{"aks"},
+					Options: []string{"eks", "aks"},
 					Default: "aks",
 				},
 				Validate: survey.Required,

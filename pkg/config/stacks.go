@@ -34,11 +34,11 @@ type Infra struct {
 }
 
 type RepoInfo struct {
-	Options string `mapstructure:"options" yaml:"options"`
-	Version string `mapstructure:"version" yaml:"version"`
-	Type    string `mapstructure:"type" yaml:"type"`
-	Name    string `mapstructure:"name" yaml:"name"`
-	ID      string `mapstructure:"id" yaml:"id"`
+	Options string `mapstructure:"options" yaml:"options,omitempty"`
+	Version string `mapstructure:"version" yaml:"version,omitempty"`
+	Type    string `mapstructure:"type" yaml:"type,omitempty"`
+	Name    string `mapstructure:"name" yaml:"name,omitempty"`
+	ID      string `mapstructure:"id" yaml:"id,omitempty"`
 }
 
 // GetSrcURLMap returns a map of the source control repositores

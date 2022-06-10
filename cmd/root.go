@@ -220,7 +220,7 @@ func checkCLIVersion() {
 	App.Logger.Info("Checking for latest version of CLI")
 
 	url := fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", constants.GitHubRef)
-	releaseMap, err := util.CallGitHubAPI(url, Config.Input.Options.Token)
+	releaseMap, err := util.CallHTTPAPI(url, Config.Input.Options.Token)
 
 	if err != nil {
 		App.Logger.Errorf("Unable to get latest CLI version: %s", err.Error())

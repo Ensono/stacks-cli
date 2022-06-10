@@ -3,10 +3,10 @@ package config
 import "fmt"
 
 type Framework struct {
-	Type       string              `mapstructure:"type"`
-	Option     string              `mapstructure:"option"`
-	Version    string              `mapstructure:"version" yaml:",omitempty"`    // Version of the project to download
-	Properties FrameworkProperties `mapstructure:"properties" yaml:",omitempty"` // additional properties to be specified that need to be passed to project commands
+	Type       string   `mapstructure:"type"`
+	Option     string   `mapstructure:"option"`
+	Version    string   `mapstructure:"version" yaml:",omitempty"`    // Version of the project to download
+	Properties []string `mapstructure:"properties" yaml:",omitempty"` // additional properties to be specified that need to be passed to project commands
 }
 
 // GetMapKey returns the key to be used in the srcUrl map to

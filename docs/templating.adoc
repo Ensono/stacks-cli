@@ -30,11 +30,7 @@ The following table shows all of the tokens that can be used in a template strin
 | `.Project.Name` | Name of the project as specified by the user | my-project
 | `.Project.Framework.Option` | Framework option that has been chosen | webapi
 | `.Project.Framework.Version` | Version of the specified option to download | latest
-| `.Project.Framework.Properties.Prop1` .5+| Extra properties that can be set by the user and can be used as configuration items .5+| `servicebus`
-| `.Project.Framework.Properties.Prop2` 
-| `.Project.Framework.Properties.Prop3` 
-| `.Project.Framework.Properties.Prop4` 
-| `.Project.Framework.Properties.Prop5` 
+| `.Project.Framework.Properties` | Extra properties that can be set by the user and can be used as configuration items | `-E servicebus` 
 | `.Project.Platform.Type` | Type of platform being deployed to | aks
 | `.Project.SourceControl.Type` | Type of source control that will be used for the final project | github
 | `.Project.SourceControl.URL` | URL to the remote repository | https://github.com/example/fred

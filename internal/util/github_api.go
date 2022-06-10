@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func CallGitHubAPI(url string, token string) (map[string]interface{}, error) {
+func CallHTTPAPI(url string, token string) (map[string]interface{}, error) {
 
 	// create the data map to hold the information
 	var data map[string]interface{}
@@ -19,7 +19,7 @@ func CallGitHubAPI(url string, token string) (map[string]interface{}, error) {
 	client := http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return data, fmt.Errorf("Unabel to create HTTP request for '%s': %s", url, err.Error())
+		return data, fmt.Errorf("unable to create HTTP request for '%s': %s", url, err.Error())
 	}
 
 	// if the token is not null, add the headers
@@ -31,7 +31,7 @@ func CallGitHubAPI(url string, token string) (map[string]interface{}, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return data, fmt.Errorf("unable to access requested GitHub API:\n\tURL: %s\n\t%s", url, err.Error())
+		return data, fmt.Errorf("unable to access requested API:\n\tURL: %s\n\t%s", url, err.Error())
 	}
 
 	// read all of the data returned in the call
@@ -47,7 +47,7 @@ func CallGitHubAPI(url string, token string) (map[string]interface{}, error) {
 	if resp.StatusCode == 403 {
 
 		// forbidden likely suggests that API access has been rate limited for the hour
-		err = fmt.Errorf("error from GitHub: %s", data["message"])
+		err = fmt.Errorf("error from HTTP endpoint: %s", data["message"])
 	}
 
 	return data, err
@@ -58,7 +58,7 @@ func GetGitHubArchiveUrl(path string, token string) (string, error) {
 	var result string
 
 	// call the function to get information from the API
-	res, err := CallGitHubAPI(path, token)
+	res, err := CallHTTPAPI(path, token)
 
 	// ensure that a zipball_url exists in the map
 	value, containsKey := res["zipball_url"]

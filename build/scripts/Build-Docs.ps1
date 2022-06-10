@@ -22,7 +22,11 @@ param (
 
     [string[]]
     # operating system that binary should be build for
-    $targets = @("pdf", "md")
+    $targets = @("pdf", "md"),
+
+    [string[]]
+    # list of files that should be exluded from markdown conversion
+    $excludes = @("manual.adoc")
 )
 
 # Get the script dir so that functions can be imported
@@ -83,7 +87,7 @@ $targets | ForEach-Object -Parallel {
     if ($format -eq "md") {
 
         # get a list of the docs
-        $list = Get-ChildItem -Path $using:DocsDir/* -Attributes !Directory -Include *.adoc
+        $list = Get-ChildItem -Path $using:DocsDir/* -Attributes !Directory -Include *.adoc -Exclude $using:excludes
 
         # iterate around the files
         foreach ($file in $list) {
@@ -98,6 +102,25 @@ $targets | ForEach-Object -Parallel {
             # -- convert to xml
             Write-Information -MessageData "`tDockbook XML"
             Invoke-Expression -Command ("asciidoctor -b docbook -o {0} {1}" -f $xml_file, $file.FullName)
+
+            # -- escape any characters that are going to cause issues, e.g. <# and #> in powershell
+            Write-Information -MessageData "`tEscaping known problem characters"
+
+            # create hash of strings to look for and their replacements
+            $patterns = @{
+                "<#" = "&lt;#"
+                "#>" = "#&gt;"
+                "<version>" = "&lt;version&gt;"
+            }
+
+            $xml_content = Get-Content -Path $xml_file -Raw
+
+            # iterate around the patterns and perform the replacements as required
+            foreach ($item in $patterns.GetEnumerator()) {
+                $xml_content = $xml_content.Replace($item.Name, $item.Value)
+            }
+            
+            Set-Content -Path $xml_file -Value $xml_content
 
             # -- convert to markdown
             Write-Information -MessageData "`tMarkdown"

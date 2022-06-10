@@ -49,7 +49,7 @@ func TestSupportedPipelines(t *testing.T) {
 	pipelines := pipeline.GetSupported()
 
 	// check the length of the slice
-	assert.Equal(t, 1, len(pipelines))
+	assert.Equal(t, 2, len(pipelines))
 }
 
 func TestAzDoPipelineIsValid(t *testing.T) {

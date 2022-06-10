@@ -2,6 +2,8 @@ package static
 
 import (
 	_ "embed"
+
+	"github.com/amido/stacks-cli/internal/util"
 )
 
 // The following static configuration sets the URLs to the repos for
@@ -32,7 +34,7 @@ func Config(key string) []byte {
 
 	switch key {
 	case "stacks_frameworks":
-		result = []byte(stacks_frameworks)
+		result = []byte(util.TransformCRLF(stacks_frameworks))
 	case "framework_defs":
 		result = []byte(framework_defs)
 	case "help_urls":

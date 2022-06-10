@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/scaffold"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -25,6 +26,9 @@ func init() {
 	var nocleanup bool
 	var force bool
 
+	// - scaffold directories
+	var cacheDir string
+
 	// - project settings
 	var project_name string
 	var project_vcs_type string
@@ -35,11 +39,7 @@ func init() {
 	var framework_type string
 	var framework_option string
 	var framework_version string
-	var framework_property_1 string
-	var framework_property_2 string
-	var framework_property_3 string
-	var framework_property_4 string
-	var framework_property_5 string
+	var framework_properties []string
 
 	// - platform settings
 	var platform_type string
@@ -66,10 +66,15 @@ func init() {
 	var network_base_domain_external string
 	var network_base_domain_internal string
 
+	// get the default directories
+	defaultCacheDir := util.GetDefaultCacheDir()
+
 	// Add the run command to the root
 	rootCmd.AddCommand(scaffoldCmd)
 
 	// Configure the flags
+	scaffoldCmd.Flags().StringVar(&cacheDir, "cachedir", defaultCacheDir, "Cache directory to be used for all downloads")
+
 	scaffoldCmd.Flags().StringVarP(&project_name, "name", "n", "", "Name of the project to create")
 	scaffoldCmd.Flags().StringVar(&project_vcs_type, "sourcecontrol", "github", "Type of source control being used")
 	scaffoldCmd.Flags().StringVarP(&project_vcs_url, "sourcecontrolurl", "u", "", "Url of the remote for source control")
@@ -80,11 +85,7 @@ func init() {
 	scaffoldCmd.Flags().StringVarP(&framework_version, "frameworkversion", "V", "latest", "Version of the framework package to download")
 
 	// get the properties from the command line
-	scaffoldCmd.Flags().StringVar(&framework_property_1, "frameworkprop1", "", "Property to pass to the project settings")
-	scaffoldCmd.Flags().StringVar(&framework_property_2, "frameworkprop2", "", "Property to pass to the project settings")
-	scaffoldCmd.Flags().StringVar(&framework_property_3, "frameworkprop3", "", "Property to pass to the project settings")
-	scaffoldCmd.Flags().StringVar(&framework_property_4, "frameworkprop4", "", "Property to pass to the project settings")
-	scaffoldCmd.Flags().StringVar(&framework_property_5, "frameworkprop5", "", "Property to pass to the project settings")
+	scaffoldCmd.Flags().StringSliceVar(&framework_properties, "frameworkprops", []string{}, "Properties to pass to the project settings")
 
 	scaffoldCmd.Flags().StringVarP(&platform_type, "platformtype", "P", "", "Type of platform being deployed to")
 
@@ -131,11 +132,7 @@ func init() {
 	viper.BindPFlag("project.framework.version", scaffoldCmd.Flags().Lookup("frameworkversion"))
 
 	// -- bind the framework properties to the project framework
-	viper.BindPFlag("project.framework.properties.prop1", scaffoldCmd.Flags().Lookup("frameworkprop1"))
-	viper.BindPFlag("project.framework.properties.prop2", scaffoldCmd.Flags().Lookup("frameworkprop2"))
-	viper.BindPFlag("project.framework.properties.prop3", scaffoldCmd.Flags().Lookup("frameworkprop4"))
-	viper.BindPFlag("project.framework.properties.prop4", scaffoldCmd.Flags().Lookup("frameworkprop4"))
-	viper.BindPFlag("project.framework.properties.prop5", scaffoldCmd.Flags().Lookup("frameworkprop5"))
+	viper.BindPFlag("project.framework.properties", scaffoldCmd.Flags().Lookup("frameworkprops"))
 
 	viper.BindPFlag("settingsfile", scaffoldCmd.Flags().Lookup("settingsfile"))
 
@@ -153,6 +150,8 @@ func init() {
 
 	viper.BindPFlag("network.base.domain.external", scaffoldCmd.Flags().Lookup("domain"))
 	viper.BindPFlag("network.base.domain.internal", scaffoldCmd.Flags().Lookup("internaldomain"))
+
+	viper.BindPFlag("directory.cache", scaffoldCmd.Flags().Lookup("cachedir"))
 
 	viper.BindPFlag("options.cmdlog", scaffoldCmd.Flags().Lookup("cmdlog"))
 	viper.BindPFlag("options.dryrun", scaffoldCmd.Flags().Lookup("dryrun"))

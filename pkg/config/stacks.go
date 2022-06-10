@@ -1,36 +1,44 @@
 package config
 
+import (
+	"fmt"
+
+	"github.com/amido/stacks-cli/internal/util"
+)
+
 type Stacks struct {
-	Dotnet Dotnet `mapstructure:"dotnet"`
-	Java   Java   `mapstructure:"java"`
-	NodeJS NodeJS `mapstructure:"nodejs"`
-	Infra  Infra  `mapstructure:"infra"`
+	Dotnet Dotnet `mapstructure:"dotnet" yaml:"dotnet"`
+	Java   Java   `mapstructure:"java" yaml:"java"`
+	NodeJS NodeJS `mapstructure:"nodejs" yaml:"nodejs"`
+	Infra  Infra  `mapstructure:"infra" yaml:"infra"`
 }
 
 type Dotnet struct {
-	Webapi RepoInfo `mapstructure:"webapi"`
-	CQRS   RepoInfo `mapstructure:"cqrs"`
-	Events RepoInfo `mapstructure:"events"`
+	Webapi RepoInfo `mapstructure:"webapi" yaml:"webapi"`
+	CQRS   RepoInfo `mapstructure:"cqrs" yaml:"cqrs"`
 }
 
 type Java struct {
-	Webapi RepoInfo `mapstructure:"webapi"`
-	CQRS   RepoInfo `mapstructure:"cqrs"`
-	Events RepoInfo `mapstructure:"events"`
+	Webapi RepoInfo `mapstructure:"webapi"  yaml:"webapi"`
+	CQRS   RepoInfo `mapstructure:"cqrs"  yaml:"cqrs"`
+	Events RepoInfo `mapstructure:"events" yaml:"events"`
 }
 
 type NodeJS struct {
-	CSR RepoInfo `mapstructure:"csr"`
-	SSR RepoInfo `mapstructure:"ssr"`
+	CSR RepoInfo `mapstructure:"csr" yaml:"csr"`
+	SSR RepoInfo `mapstructure:"ssr" yaml:"ssr"`
 }
 
 type Infra struct {
-	AKS RepoInfo `mapstructure:"aks"`
+	AKS RepoInfo `mapstructure:"aks" yaml:"aks"`
 }
 
 type RepoInfo struct {
-	URL   string `mapstructure:"url"`
-	Trunk string `mapstructure:"trunk"`
+	Options string `mapstructure:"options" yaml:"options,omitempty"`
+	Version string `mapstructure:"version" yaml:"version,omitempty"`
+	Type    string `mapstructure:"type" yaml:"type,omitempty"`
+	Name    string `mapstructure:"name" yaml:"name,omitempty"`
+	ID      string `mapstructure:"id" yaml:"id,omitempty"`
 }
 
 // GetSrcURLMap returns a map of the source control repositores
@@ -39,7 +47,6 @@ func (stacks *Stacks) GetSrcURLMap() map[string]RepoInfo {
 	srcUrls := map[string]RepoInfo{
 		"dotnet_webapi": stacks.Dotnet.Webapi,
 		"dotnet_cqrs":   stacks.Dotnet.CQRS,
-		"dotnet_events": stacks.Dotnet.Events,
 		"java_webapi":   stacks.Java.Webapi,
 		"java_cqrs":     stacks.Java.CQRS,
 		"java_events":   stacks.Java.Events,
@@ -54,4 +61,24 @@ func (stacks *Stacks) GetSrcURLMap() map[string]RepoInfo {
 func (stacks *Stacks) GetSrcURL(key string) RepoInfo {
 	srcUrls := stacks.GetSrcURLMap()
 	return srcUrls[key]
+}
+
+// Normalize checks to see if the older API is being used and will take
+// the values from that and populate the new structure
+// It will return an error object to be used as a warning for people to update their structure
+func (r *RepoInfo) Normalize() string {
+	var msg string
+
+	// if the type is empty, default to github
+	if r.Type == "" {
+		r.Type = "github"
+	}
+
+	// ensure that the type of the repo is correct
+	validTypes := []string{"github", "nuget"}
+	if !util.SliceContains(validTypes, r.Type) {
+		msg = fmt.Sprintf("Specified type of '%s' is invalid, please check your configuration", r.Type)
+	}
+
+	return msg
 }

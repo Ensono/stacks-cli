@@ -74,7 +74,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "pipeline",
 			Prompt: &survey.Select{
 				Message: "What pipeline is being targeted?",
-				Options: []string{"azdo"},
+				Options: []string{"azdo", "gha"},
 				Default: "azdo",
 			},
 			Validate: survey.Required,
@@ -83,7 +83,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "cloud_platform",
 			Prompt: &survey.Select{
 				Message: "Which cloud is Stacks being setup in?",
-				Options: []string{"azure"},
+				Options: []string{"aws", "azure"},
 				Default: "azure",
 			},
 			Validate: survey.Required,
@@ -176,12 +176,19 @@ func (a *Answers) getProjectQuestions(qType string) []*survey.Question {
 			},
 		}
 	case "dotnet", "java":
+
+		// define the list of options for each of the different languages
+		options := []string{"webapi", "cqrs"}
+		if qType == "java" {
+			options = append(options, "events")
+		}
+
 		questions = []*survey.Question{
 			{
 				Name: "framework_option",
 				Prompt: &survey.Select{
 					Message: "Which option of the framework do you require?",
-					Options: []string{"webapi", "cqrs", "events"},
+					Options: options,
 				},
 				Validate: survey.Required,
 			},
@@ -199,7 +206,7 @@ func (a *Answers) getProjectQuestions(qType string) []*survey.Question {
 				Name: "framework_option",
 				Prompt: &survey.Select{
 					Message: "Which type of infrastructure is required?",
-					Options: []string{"aks"},
+					Options: []string{"eks", "aks"},
 					Default: "aks",
 				},
 				Validate: survey.Required,
@@ -323,28 +330,11 @@ func (a *Answers) RunInteractive(config *Config) error {
 
 		// check to see if any properties have been specified, and if they have
 		// create a properties object to work with the
-		properties := FrameworkProperties{}
+		properties := []string{}
 		if pa.FrameworkProperties != "" {
 
 			// split the properties based comma and then iterate around setting the framework properties
-			for idx, value := range strings.Split(pa.FrameworkProperties, ",") {
-
-				// trim any space from the value
-				value = strings.TrimSpace(value)
-
-				switch idx {
-				case 1:
-					properties.Prop1 = value
-				case 2:
-					properties.Prop2 = value
-				case 3:
-					properties.Prop3 = value
-				case 4:
-					properties.Prop4 = value
-				case 5:
-					properties.Prop5 = value
-				}
-			}
+			properties = strings.Split(pa.FrameworkProperties, ",")
 
 		}
 

@@ -124,6 +124,12 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 			versionArgs = "-version"
 			re = *regexp.MustCompile(`"(?P<version>.*)"`)
 
+		case "nx":
+
+			versionCmd = "node"
+			versionArgs = "--version"
+			re = *regexp.MustCompile(`"v(?P<version>.*)"`)
+
 		default:
 			versionCmd = ""
 		}

@@ -9,7 +9,7 @@ import (
 type Stacks struct {
 	Dotnet Dotnet `mapstructure:"dotnet" yaml:"dotnet"`
 	Java   Java   `mapstructure:"java" yaml:"java"`
-	NodeJS NodeJS `mapstructure:"nodejs" yaml:"nodejs"`
+	Nx     Nx     `mapstructure:"nx" yaml:"nx"`
 	Infra  Infra  `mapstructure:"infra" yaml:"infra"`
 }
 
@@ -24,9 +24,9 @@ type Java struct {
 	Events RepoInfo `mapstructure:"events" yaml:"events"`
 }
 
-type NodeJS struct {
-	CSR RepoInfo `mapstructure:"csr" yaml:"csr"`
-	SSR RepoInfo `mapstructure:"ssr" yaml:"ssr"`
+type Nx struct {
+	NextJs RepoInfo `mapstructure:"next" yaml:"next"`
+	Apps   RepoInfo `mapstructure:"apps" yaml:"apps"`
 }
 
 type Infra struct {
@@ -50,8 +50,8 @@ func (stacks *Stacks) GetSrcURLMap() map[string]RepoInfo {
 		"java_webapi":   stacks.Java.Webapi,
 		"java_cqrs":     stacks.Java.CQRS,
 		"java_events":   stacks.Java.Events,
-		"nodejs_csr":    stacks.NodeJS.CSR,
-		"nodejs_ssr":    stacks.NodeJS.SSR,
+		"nx_next":       stacks.Nx.NextJs,
+		"nx_apps":       stacks.Nx.Apps,
 		"infra_aks":     stacks.Infra.AKS,
 	}
 

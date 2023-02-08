@@ -170,7 +170,7 @@ func (a *Answers) getProjectQuestions(qType string) []*survey.Question {
 				Name: "framework_type",
 				Prompt: &survey.Select{
 					Message: "What framework should be used for the project?",
-					Options: []string{"dotnet", "java", "infra"},
+					Options: []string{"dotnet", "java", "nx", "infra"},
 				},
 				Validate: survey.Required,
 			},
@@ -189,6 +189,35 @@ func (a *Answers) getProjectQuestions(qType string) []*survey.Question {
 				Prompt: &survey.Select{
 					Message: "Which option of the framework do you require?",
 					Options: options,
+				},
+				Validate: survey.Required,
+			},
+			{
+				Name: "framework_properties",
+				Prompt: &survey.Input{
+					Message: "Specify any additional framework properties. (Use a comma to separate each one).",
+					Default: "",
+				},
+			},
+		}
+	case "nx":
+		options := []string{"next", "apps"}
+
+		questions = []*survey.Question{
+			{
+				Name: "framework_option",
+				Prompt: &survey.Select{
+					Message: "Which option of the framework do you require?",
+					Options: options,
+					Description: func(value string, index int) string {
+						if value == "next" {
+							return "Stacks Workspace with NextJs"
+						}
+						if value == "apps" {
+							return "Empty Stacks Nx Workspace"
+						}
+						return ""
+					},
 				},
 				Validate: survey.Required,
 			},

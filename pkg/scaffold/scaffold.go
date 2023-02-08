@@ -318,7 +318,9 @@ func (s *Scaffold) processProject(project config.Project) {
 	}
 
 	// configure the pipeline in the project
-	s.configurePipeline(&project)
+	if s.Config.HasPipeline() {
+		s.configurePipeline(&project)
+	}
 
 	// configure the git repository
 	s.configureGitRepository(&project)

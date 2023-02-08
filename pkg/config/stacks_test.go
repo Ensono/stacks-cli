@@ -92,8 +92,8 @@ func TestDefaultSrcUrlMap(t *testing.T) {
 	assert.Equal(t, "https://github.com/amido/stacks-java", srcURLs["java_webapi"].Name)
 	assert.Equal(t, "https://github.com/amido/stacks-java-cqrs", srcURLs["java_cqrs"].Name)
 	assert.Equal(t, "https://github.com/amido/stacks-java-cqrs-events", srcURLs["java_events"].Name)
-	assert.Equal(t, "https://github.com/amido/stacks-typescript-csr", srcURLs["nodejs_csr"].Name)
-	assert.Equal(t, "https://github.com/amido/stacks-typescript-ssr", srcURLs["nodejs_ssr"].Name)
+	assert.Equal(t, "https://github.com/amido/stacks-nx", srcURLs["nx_next"].Name)
+	assert.Equal(t, "https://github.com/amido/stacks-nx", srcURLs["nx_apps"].Name)
 }
 
 func TestSrcUrlMap(t *testing.T) {

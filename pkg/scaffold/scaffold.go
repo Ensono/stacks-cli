@@ -95,9 +95,10 @@ func (s *Scaffold) Run() error {
 //
 // The method reads in the Action and determines what is requied
 // The currently supported actions are
-//		copy - copies data from the temporary dir to the working dir
-//		cmd - run a command on the local machine
-//			The command is set using the `command` parameter
+//
+//	copy - copies data from the temporary dir to the working dir
+//	cmd - run a command on the local machine
+//		The command is set using the `command` parameter
 func (s *Scaffold) PerformOperation(operation config.Operation, project *config.Project, path string, cloneDir string) error {
 
 	var command string
@@ -318,9 +319,7 @@ func (s *Scaffold) processProject(project config.Project) {
 	}
 
 	// configure the pipeline in the project
-	if s.Config.HasPipeline() {
-		s.configurePipeline(&project)
-	}
+	s.configurePipeline(&project)
 
 	// configure the git repository
 	s.configureGitRepository(&project)
@@ -365,6 +364,11 @@ func (s *Scaffold) setProjectDirs(project *config.Project) error {
 
 // configurePipeline is responsible for setting up the build pipeline and variables file
 func (s *Scaffold) configurePipeline(project *config.Project) {
+
+	if len(project.Settings.Pipeline) == 0 {
+		s.Logger.Info("No pipelines settings have been defined in the project for the CLI to configure")
+		return
+	}
 
 	// get the pipeline settings
 	pipelineSettings := project.Settings.GetPipeline(s.Config.Input.Pipeline)

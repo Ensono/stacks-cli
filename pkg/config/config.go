@@ -62,10 +62,6 @@ func (c *Config) Check() error {
 	return err
 }
 
-func (c *Config) HasPipeline() bool {
-	return c.Input.Pipeline != ""
-}
-
 // IsDryRun returns the boolean value of the dryrun option
 func (c *Config) IsDryRun() bool {
 	return c.Input.Options.DryRun

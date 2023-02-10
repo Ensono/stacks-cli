@@ -243,7 +243,6 @@ func (s *Scaffold) processProject(project config.Project) {
 		downloader = downloaders.NewNugetDownloader(
 			repoInfo.Name,
 			repoInfo.ID,
-			repoInfo.Version,
 			project.Framework.Version,
 			s.Config.Input.Directory.CacheDir,
 			s.Config.Input.Directory.TempDir,

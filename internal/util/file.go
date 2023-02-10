@@ -185,6 +185,15 @@ func Unzip(src, dest string) (string, error) {
 			return "", err
 		}
 
+		// Ensure that the file is read/writable
+		// This is so that the stackscli.yml file can be read, and so that the files can be deleted
+		if runtime.GOOS != "windows" {
+			err = os.Chmod(filePath, 0775)
+			if err != nil {
+				return "", err
+			}
+		}
+
 		// close the files
 		outFile.Close()
 		rc.Close()

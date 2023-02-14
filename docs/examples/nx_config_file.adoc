@@ -1,0 +1,81 @@
+==== Nx Next.js project using a configuration file
+
+Thew CLI can be used with a configuration file to generate the Ensono Digital Stacks based projects.
+
+NOTE: The configuration file that is used in the following example is from the <<Nx Next.js project using the interactive command>> example, however any valid configuration file can be used.
+
+[source,bash]
+----
+stacks-cli scaffold -c projects/stackscli.yml
+----
+
+The CLI will read in the configuration file and scaffold the requested projects.
+
+.Scaffolding an Nx project with a configuration file
+image::images/stackscli-nx-nextjs-config-file.png[]
+
+As has been seen with the scaffolding command and the command line examples, the resultant project has been created as follows.
+
+[source,text,linenums]
+----
+.
+`-- website
+    |-- README.md
+    |-- apps
+    |   `-- myapp
+    |       |-- Dockerfile
+    |       |-- build
+    |       |   |-- helm
+    |       |   |   |-- Chart.yaml
+    |       |   |   |-- charts
+    |       |   |   |-- templates
+    |       |   |   |   |-- NOTES.txt
+    |       |   |   |   |-- _helpers.tpl
+    |       |   |   |   |-- deployment.yaml
+    |       |   |   |   |-- hpa.yaml
+    |       |   |   |   |-- ingress.yaml
+    |       |   |   |   |-- service.yaml
+    |       |   |   |   |-- serviceaccount.yaml
+    |       |   |   |   `-- tests
+    |       |   |   |       `-- test-connection.yaml
+    |       |   |   |-- values-prod.yaml
+    |       |   |   `-- values.yaml
+    |       |   `-- terraform
+    |       |       |-- data.tf
+    |       |       |-- main.tf
+    |       |       |-- nonprod.tfvars
+    |       |       |-- outputs.tf
+    |       |       |-- prod.tfvars
+    |       |       |-- variables.tf
+    |       |       `-- versions.tf
+    |       |-- index.d.ts
+    |       |-- jest.config.ts
+    |       |-- next-env.d.ts
+    |       |-- next.config.js
+    |       |-- pages
+    |       |   |-- _app.tsx
+    |       |   |-- index.module.css
+    |       |   |-- index.tsx
+    |       |   `-- styles.css
+    |       |-- project.json
+    |       |-- public
+    |       |-- specs
+    |       |   `-- index.spec.tsx
+    |       |-- tsconfig.json
+    |       `-- tsconfig.spec.json
+    |-- babel.config.json
+    |-- build
+    |   |-- azDevOps
+    |   |   |-- azuredevops-runner.yaml
+    |   |   |-- azuredevops-stages.yaml
+    |   |   `-- azuredevops-vars.yaml
+    |   `-- taskctl
+    |       |-- contexts.yaml
+    |       `-- tasks.yaml
+    |-- commitlint.config.js
+    |-- jest.config.ts
+    |-- jest.preset.js
+    |-- libs
+----
+
+NOTE: The output has been truncated as there are over 5,000 files in the project.

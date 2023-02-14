@@ -1,15 +1,6 @@
 # OSX 
 .DS_Store
 
-# Sample implementation 
-# .vscode/
-*.yml
-!_examples/*.yml
-!build/*.yml
-!Taskfile.yml
-!theme.yml
-!internal/**/*.yml
-
 # built binary to publish
 bin/
 

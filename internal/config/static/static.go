@@ -50,6 +50,7 @@ func FrameworkCommands(framework string) []string {
 	commands := map[string][]string{
 		"dotnet": {"dotnet", "git"},
 		"java":   {"java", "git"},
+		"nx":     {"node", "npx", "git"},
 	}
 
 	return commands[framework]

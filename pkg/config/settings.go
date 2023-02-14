@@ -115,7 +115,7 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 			specificVersion, err = util.DotnetSDKVersion(globalJsonPath)
 
 			if err != nil {
-				logger.Errorf("Issue retrieving global .NET version: %s", err.Error())
+				logger.Warnf("Issue retrieving global .NET version: %s", err.Error())
 			}
 
 		case "java":
@@ -123,6 +123,12 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 			versionCmd = "java"
 			versionArgs = "-version"
 			re = *regexp.MustCompile(`"(?P<version>.*)"`)
+
+		case "nx":
+
+			versionCmd = "node"
+			versionArgs = "--version"
+			re = *regexp.MustCompile(`"v(?P<version>.*)"`)
 
 		default:
 			versionCmd = ""
@@ -152,7 +158,7 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 		// if a specific version has been specified modify this constraint
 		constraint := cmd.Version
 		if specificVersion != "" {
-			constraint = fmt.Sprintf(">= %s", specificVersion)
+			constraint = fmt.Sprintf("= %s", specificVersion)
 		}
 
 		met := s.CompareVersion(constraint, versionFound, logger)

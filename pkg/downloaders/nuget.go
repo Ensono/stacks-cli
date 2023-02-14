@@ -49,11 +49,10 @@ type NugetItemCatalogEntry struct {
 	Version        string "json:`version`"
 }
 
-func NewNugetDownloader(name string, id string, version string, frameworkVersion string, cacheDir string, tempDir string) *Nuget {
+func NewNugetDownloader(name string, id string, version string, cacheDir string, tempDir string) *Nuget {
 	nuget.Name = name
 	nuget.ID = id
 	nuget.Version = version
-	nuget.FrameworkVersion = frameworkVersion
 	nuget.CacheDir = cacheDir
 	nuget.TempDir = tempDir
 

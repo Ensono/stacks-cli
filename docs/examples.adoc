@@ -1,4 +1,4 @@
-:example_company: MyCompany
+:example_company: Ensono Digital
 :example_area: core
 :example_component: backend
 :example_domain: stacks-example.com
@@ -13,13 +13,17 @@
 :example_dotnet_framework_version: v6.0.274
 :example_java_framework: java
 :example_java_framework_version: v1.0.0
+:example_nx_framework: nx
+:example_nx_framework_version: latest
+:example_nx_area: frontend
+:example_nx_component: ui
 :example_framework_option: webapi
 :example_project_src_url: https://github.com/my-company/my-webapi
 
 
 == Examples
 
-This section provides some examples on how to run the CLI to setup a project from the Amido Stacks projects.
+This section provides some examples on how to run the CLI to setup a project from the Ensono Digital Stacks projects.
 
 NOTE: It is assumed that the Stacks CLI command has been installed and is in the path to be called using the `stacks` name.
 
@@ -56,7 +60,7 @@ The following table shows the additional options that are required when scaffold
 [options="header"]
 |===
 | Name | Value | Description
-| framework | `{example_dotnet_framework}` | Framework being used, e.g. `dotnet`, `java` or `infra`
+| framework | `{example_dotnet_framework}` | Framework being used, e.g. `dotnet`, `java`, `nx` or `infra`
 | framework_version | `{example_dotnet_framework_version}` | Version of the framework option to grab.
 |===
 
@@ -74,7 +78,7 @@ The following table shows the additional options that are required when scaffold
 [options="header"]
 |===
 | Name | Value | Description
-| framework | `{example_java_framework}` | Framework being used, e.g. `dotnet`, `java` or `infra`
+| framework | `{example_java_framework}` | Framework being used, e.g. `dotnet`, `java`, `nx` or `infra`
 | framework_version | `{example_java_framework_version}` | Version of the framework option to grab.
 |===
 
@@ -84,6 +88,24 @@ include::examples/java_command_line.adoc[]
 include::examples/java_interactive.adoc[]
 
 include::examples/java_config_file.adoc[]
+
+=== Nx
+
+The following table shows the additional options that are required when scaffolding the Nx examples
+
+.Nx Specific settings
+[options="header"]
+|===
+| Name | Value | Description
+| framework | `{example_nx_framework}` | Framework being used, e.g. `dotnet`, `java`, `nx` or `infra`
+| framework_version | `{example_nx_framework_version}` | Version of the framework option to grab.
+|===
+
+include::examples/nx_command_line.adoc[]
+
+include::examples/nx_interactive.adoc[]
+
+include::examples/nx_config_file.adoc[]
 
 === Running scaffold command again
 
@@ -100,10 +122,6 @@ image::images/stackscli-scaffold-project-guard.png[]
 As can be seen the CLI will not overwrite anything at the same target path.
 
 It is possible to change this behaviour, by adding the `--force` option to the command line. This will remove any existing directory and recreate the project in its place.
-
-NOTE: If the project directory already exists but it is empty, e.g. it does not contain any files or directories, then the CLI will continue to use the directory and warn that it has done so.
-
-image::images/stackscli-overwrite-empty-dir.png[]
 
 [source,bash]
 ----
@@ -164,3 +182,12 @@ In this case the error will still be displayed, but a a warning will state that 
 
 .Dotnet command bypass version check
 image::images/stacks-scaffold-command-version-check-force.png[]
+
+[IMPORTANT]
+====
+There are two different version checks that are performed by the Stacks CLI when using a .NET project.
+
+If a `global.json` file is present in the the project, it provides and absolute version of .NET that is required. It _is_ possible to force the setup of a project but the results may vary, as shown in <<Dotnet command version check>>.
+
+If the `global.json` file does not exist, but a version constraint exists in the project settings, this will be evaluated and a similar message will be shown as before.
+====

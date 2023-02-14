@@ -38,9 +38,11 @@ contexts:
         - --rm
         - -v
         - ${PWD}:/app
+        - -e
+        - PSModulePath=/modules        
         - -w
         - /app
-        - amidostacks/runner-pwsh-asciidoctor:0.3.97-main
+        - amidostacks/runner-pwsh-asciidoctor:0.3.151-stable
         - pwsh
         - -NoProfile
         - -Command        

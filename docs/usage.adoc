@@ -13,7 +13,7 @@ The CLI will download the specified projects and run a series of operations to c
 As the CLI is a single binary the quickest way to install it is to download it and put it somewhere in your PATH. The following code snippets show how this can be achieved using Bash and PowerShell.
 
 ==== Linux and Mac OS
-[source,bash,subs="attributes"]
+[source,console,subs="attributes"]
 ----
 # Download the binary to a location in the PATH
 ## Mac OS
@@ -138,8 +138,9 @@ The commands for each of the supported frameworks are as follows:
 [options="header"]
 |===
 | Framework | Commands
-| dotnet | `dotnet`
-| java | `java`
+| dotnet | `dotnet`, `git`
+| java | `git`, `java`, `mvn`
+| nx | `git`, `node`, `npx`
 |===
 
 If a command cannot be located, the CLI will be terminated. This does not mean the command does not exist on the machine, rather that it is not accessble using the PATH environment variable. The Stacks CLI is not a package manager and as such will not attempt to install the missing commands.
@@ -155,7 +156,7 @@ NOTE: Although the screenshot shows the detection of the framework commands when
 
 === Logging
 
-The Amido Stacks CLI is designed to be as simple and efficient to use as possible, however there are cases when it is useful to gewt more information from the CLI when it is being run.
+The Ensono Digital Stacks CLI is designed to be as simple and efficient to use as possible, however there are cases when it is useful to gewt more information from the CLI when it is being run.
 
 Bu default the CLI runs with `info` level logging, which means that simple messages about what is happening are displayed. If an error occurs within the CLI itself then this will be displayed, however when the CLI runs an external command, as is the case when it runs configuration from a project, and it fails you may see messages similar to the following:
 

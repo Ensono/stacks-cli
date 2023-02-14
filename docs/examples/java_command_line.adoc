@@ -53,8 +53,33 @@ image::images/example-java-webapi-cmdline.png[]
 As the option to save all the commands that are executed by the CLI has been specified, the `cmdlog.txt` file for the above command is as follows.
 
 .Command log for the Java webapi scaffold
-image::images/example-java-webapi-cmdlog.png[]
-
+----
+[C:\Users\rseymour\scratch\projects\my-webapi] java -version
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn process-resources -f stacksclipom.xml -P copy-devops-resources -P generate-settings-file -Dtarget.dir=C:\Users\rseymour\scratch\projects\my-webapi --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn clean archetype:create-from-project -f ./java/pom.xml -DpropertyFile=./java/archetype.properties -s C:\Users\rseymour\scratch\projects\my-webapi/settings.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn install -f ./java/target/generated-sources/archetype/pom.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn archetype:generate -DoutputDirectory=C:\Users\rseymour\scratch\projects\my-webapi -DarchetypeGroupId=com.amido.stacks.workloads -DarchetypeArtifactId=stacks-api-archetype -DarchetypeVersion=1.0.0 -DgroupId=com.MyCompany.core -DartifactId=my-webapi -Dpackage=com.MyCompany.core.backend --quiet -B
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn process-resources -f stacksclipom.xml -P rename-source-folder -Dtemp.project.dir=my-webapi -Dtarget.dir=C:\Users\rseymour\scratch\projects\my-webapi --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn process-resources -f C:\Users\rseymour\scratch\projects\my-webapi/java/pom.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn dependency:resolve -f C:\Users\rseymour\scratch\projects\my-webapi/java/pom.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn fmt:format -f C:\Users\rseymour\scratch\projects\my-webapi/java/pom.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn process-resources -f ./api-tests/pom.xml -P archetype-resources --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn clean archetype:create-from-project -f ./api-tests/pom-temp.xml -DpropertyFile=./api-tests/archetype.properties -s C:\Users\rseymour\scratch\projects\my-webapi/settings.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn install -f ./api-tests/target/generated-sources/archetype/pom.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn archetype:generate -DoutputDirectory=C:\Users\rseymour\scratch\projects\my-webapi -DarchetypeGroupId=com.amido.stacks.tests -DarchetypeArtifactId=stacks-api-tests-archetype -DarchetypeVersion=1.0.0 -DgroupId=com.MyCompany.core -DartifactId=api-tests -Dpackage=com.MyCompany.core.backend.tests -DpactLocation=com/MyCompany/core/backend/tests --quiet -B
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn process-resources -f C:\Users\rseymour\scratch\projects\my-webapi/api-tests/pom-temp.xml -P setup-workload-resources --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn process-resources -f C:\Users\rseymour\scratch\projects\my-webapi/api-tests/pom.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn fmt:format -f C:\Users\rseymour\scratch\projects\my-webapi/api-tests/pom.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn dependency:resolve -f C:\Users\rseymour\scratch\projects\my-webapi/api-tests/pom.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn clean archetype:create-from-project -f ./api-tests-karate/pom.xml -DpropertyFile=./api-tests-karate/archetype.properties -s C:\Users\rseymour\scratch\projects\my-webapi/settings.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn install -f ./api-tests-karate/target/generated-sources/archetype/pom.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn archetype:generate -DoutputDirectory=C:\Users\rseymour\scratch\projects\my-webapi -DarchetypeGroupId=com.amido.stacks.tests -DarchetypeArtifactId=stacks-api-tests-karate-archetype -DarchetypeVersion=1.0.0 -DgroupId=org.MyCompany.core -DartifactId=api-tests-karate -Dpackage=org.MyCompany.core.backend.tests --quiet -B
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn process-resources -f C:\Users\rseymour\scratch\projects\my-webapi/api-tests-karate/pom.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn dependency:resolve -f C:\Users\rseymour\scratch\projects\my-webapi/api-tests-karate/pom.xml --quiet
+[C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn clean -f stacksclipom.xml -P clean-workload -Dtarget.dir=C:\Users\rseymour\scratch\projects\my-webapi --quiet
+[C:\Users\rseymour\scratch\projects\my-webapi] git init
+[C:\Users\rseymour\scratch\projects\my-webapi] git remote add origin https://github.com/ensonodigital/mywebapi
+----
 
 The resultant project, as stated by the `Project path:` statement in the screenshot, contains all the necessary files to run a simple Java WebApi. The following listing shows that the solutions have been renamed with the `company` name as the namespace.
 

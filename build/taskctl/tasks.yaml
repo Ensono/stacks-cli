@@ -22,7 +22,8 @@ tasks:
     description: Build Docs for Stacks CLI
     context: docsenv
     command:
-      - /app/build/scripts/Build-Docs.ps1 -BuildNumber $BUILDNUMBER -BasePath /app
+      # - /app/build/scripts/Build-Docs.ps1 -BuildNumber $BUILDNUMBER -BasePath /app
+      - Invoke-AsciiDoc -PDF -basepath /app -config /app/docs.json
 
   test:unit:
     context: buildenv

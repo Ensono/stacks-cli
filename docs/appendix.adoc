@@ -42,10 +42,9 @@ Location: `internal/config/static/framework_def.yml`
 
 .Framework Definitions
 [[framework_definitions,{listing-caption} {counter:refnum}]]
-[source,yaml,subs="attributes"]
-----
+....
 include::../internal/config/static/framework_def.yml[]
-----
+....
 
 ==== Stacks Frameworks
 
@@ -58,9 +57,9 @@ Location: `internal/config/static/stacks_frameworks.yml`
 .Stacks Frameworks
 [[stacks_frameworks,{listing-caption} {counter:refnum}]]
 [source,yaml,subs="attributes"]
-----
+....
 include::../internal/config/static/stacks_frameworks.yml[]
-----
+....
 
 To get the correct URL, the CLI will use the configuration that has been set for the project, e.g.
 

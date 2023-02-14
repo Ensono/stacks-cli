@@ -1,6 +1,6 @@
 ==== .NET WebApi project using the interactive command
 
-The interactive command is designed to ask questions on the command line about the configuration required for setting up Amido Stacks. It will then save this configuration out to a file that can be read in using the `scaffold` command.
+The interactive command is designed to ask questions on the command line about the configuration required for setting up Ensono Digital Stacks. It will then save this configuration out to a file that can be read in using the `scaffold` command.
 
 [source,bash]
 ----

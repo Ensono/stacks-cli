@@ -106,11 +106,6 @@ If this is not specified then all of the files in the `artifactsDir` will be upl
 
 The main build pipeline file has a stage called Release, which downloads the necessary artifacts and then calls the `release` task on Taskctl to perform the release.
 
-The script will check to see if any of the required values are missing, if they are a message similar to the following is displayed.
-
-.Taskctl release with missing required values
-image::images/Taskctl-release-error.png[]
-
 ==== Build Documentation
 
 All of the documentation for the CLI is kept in the `docs/` directory of the repository. It is all written in https://asciidoctor.org/docs/asciidoc-writers-guide/[Asciidoc] which is a much more comprehensive definition for writing documentation to Markdown.
@@ -135,10 +130,9 @@ All of these steps are performed by the PowerShell script, `build/scripts/Conver
 
 .Convert Asciidoc to Markdown
 [[convert_adoc_to_md_script,{listing-caption} {counter:refnum}]]
-[source,powershell,subs="attributes"]
-----
+....
 include::../build/scripts/ConvertTo-Markdown.ps1[]
-----
+....
 
 This script iterates around the `.adoc` files in the `docs/` directory and performs the conversion to XML and then MD on each one. The intended method of execution of the script is within the `{docs_build_docker_image}` Docker image. The image contains `pandoc`, `asciidoctor`, and `powershell`. The following shows and example of the Docker command executed by Taskctl.
 

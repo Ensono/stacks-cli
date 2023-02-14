@@ -1,0 +1,67 @@
+==== NX Nextjs project from the command line
+
+Run the following command to scaffold a new Nx project based on the Ensono Digital NextJS project. The project will be created in the working directory, which in this case will be the directory that the command is being run in.
+
+[options="header"]
+[cols="a,a"]
+|===
+| Bash | PowerShell
+|[source,bash,subs="attributes"]
+----
+stacks-cli scaffold -A {example_nx_area} \
+                --company {example_company} \
+                --component {example_nx_component} \
+                --domain {example_domain} \
+                -F {example_nx_framework} \
+                -n website \
+                -p azdo \
+                -P aks \
+                --tfcontainer {example_project_name} \
+                --tfgroup {example_tf_group} \
+                --tfstorage {example_tf_storage} \
+                -O next \
+                -V {example_nx_framework_version} \
+                -u {example_project_src_url} \
+                -C azure \
+                -G website-resources \
+                -R westeurope \                
+                --cmdlog
+----
+|[source,powershell,subs="attributes"]
+----
+stacks-cli scaffold -A {example_nx_area} `
+                --company {example_company} `
+                --component {example_nx_component} `
+                --domain {example_domain} `
+                -F {example_nx_framework} `
+                -n website `
+                -p azdo `
+                -P aks `
+                --tfcontainer {example_project_name} `
+                --tfgroup {example_tf_group} `
+                --tfstorage {example_tf_storage} `
+                -O next `
+                -V {example_nx_framework_version} `
+                -u {example_project_src_url} `
+                -C azure `
+                -G website-resources `
+                -R westeurope `
+                --cmdlog
+----
+|===
+
+This command will download version {example_nx_framework_version}, from the GitHub releases for the project, into a temporary directory. It will then run the specified Maven commands from the project settings file and scaffold a new project with the specified name, in the current directory. Once the project has been setup it will be initialised as Git repository and, where applicable, set the remote origin for the repo. All of the commands that are executed by the CLI will be saved in a file called `cmdlog.txt`.
+
+.CLI scaffolding Nx project from the command line
+[[example_cli_nx_cmdline,{figure_caption} {counter:refnum}]]
+image::images/example-nx-nextjs-cmdline.png[]
+
+As the option to save all the commands that are executed by the CLI has been specified, the `cmdlog.txt` file for the above command is as follows.
+
+.Command log for a new Nx NextJS project
+----
+[/var/folders/_p/zqfl7d1j5sz9w_cnbp2djv7m0000gn/T/stackscli1ea0182df6/stacks-nx-main] npx --yes @ensono-stacks/create-stacks-workspace@latest website --dir=/Users/russells/scratch/projects/website --nxVersion=latest --preset=next --business.company=Ensono --business.domain=frontend --business.component=ui --cloud.platform=azure --cloud.region=westeurope --cloud.group=website-resources --pipeline=azdo --terraform.group=supporting-group --terraform.storage=kjh56sdfnjnkjn --terraform.container=my-webapi --vcs.type=github --vcs.url=https://github.com/my-company/my-webapi --overwrite --skipGit --no-nxCloud --no-interactive
+[/Users/russells/scratch/projects/website] git init
+[/Users/russells/scratch/projects/website] git remote add origin https://github.com/my-company/my-webapi
+----
+

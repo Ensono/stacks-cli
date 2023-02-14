@@ -1,0 +1,91 @@
+==== Nx Next.js project using the interactive command
+
+To create a Stacks Nx Project with the Next.js App pre-configured, start by running the interactive command.
+
+[source,zsh]
+----
+stacks-cli interactive
+----
+
+When prompted for the framework type, select `nx`, followed by `next` as the framework option. Complete the remaining questions as required to generate the `stacks.yml` config file. This process is shown below.
+
+image::images/stackscli-interactive-nx.png[]
+
+The resulting `stacks.yml` file is shown below.
+
+[source,yaml]
+----
+log:
+  level: info
+  format: text
+  colour: true
+directory:
+  working: projects
+business:
+  company: Ensono Digital
+  domain: frontend
+  component: ui
+cloud:
+  platform: azure
+network:
+  base:
+    domain:
+      external: example-stacks.com
+pipeline: azdo
+project:
+- name: website
+  framework:
+    type: nx
+    option: next
+    version: latest
+  sourcecontrol:
+    type: github
+    url: https://github.com/ensonodigitial/stacks-nx-next.git
+  cloud:
+    region: westeurope
+    group: frontend-resources
+stacks:
+  dotnet:
+    webapi:
+      type: nuget
+      name: Amido.Stacks.Templates
+      id: stacks-dotnet
+    cqrs:
+      type: nuget
+      name: Amido.Stacks.CQRS.Templates
+      id: stacks-dotnet-cqrs
+  java:
+    webapi:
+      version: master
+      name: https://github.com/amido/stacks-java
+    cqrs:
+      version: main
+      name: https://github.com/amido/stacks-java-cqrs
+    events:
+      version: main
+      name: https://github.com/amido/stacks-java-cqrs-events
+  nx:
+    next:
+      version: main
+      name: https://github.com/amido/stacks-nx
+    apps:
+      version: main
+      name: https://github.com/amido/stacks-nx
+  infra:
+    aks:
+      version: master
+      name: https://github.com/amido/stacks-infrastructure-aks/
+terraform:
+  backend:
+    storage: kjh56sdfnjnkjn
+    group: stacks-ancillary-resources
+    container: tfstate
+options:
+  cmdlog: false
+  dryrun: false
+  nobanner: false
+  nocliversion: false
+----
+
+The command that needs to be run next is displayed at the end of the interactive command.
+

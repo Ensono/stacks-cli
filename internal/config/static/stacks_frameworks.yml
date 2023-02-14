@@ -18,14 +18,14 @@ stacks:
     events:
       name: https://github.com/amido/stacks-java-cqrs-events
       version: main
-  nodejs:
-    csr: 
-      name: https://github.com/amido/stacks-typescript-csr
-      version: master
-    ssr:
-      name: https://github.com/amido/stacks-typescript-ssr
-      version: master
+  nx:
+    next:
+      name: https://github.com/amido/stacks-nx
+      version: main
+    apps:
+      name: https://github.com/amido/stacks-nx
+      version: main
   infra:
-    aks: 
+    aks:
       name: https://github.com/amido/stacks-infrastructure-aks/
       version: master

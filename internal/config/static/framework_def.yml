@@ -17,6 +17,16 @@
     arguments: -version
     pattern: '"(?P<version>.*)"'
 
+- name: nx
+  commands:
+    - node
+    - npx
+    - git
+  version:
+    command: node
+    arguments: --version
+    pattern: '"v(?P<version>.*)"'
+
 - name: infra
   commands:
     - git

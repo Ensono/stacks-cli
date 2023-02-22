@@ -45,7 +45,7 @@ func TestInteractiveSuite(t *testing.T) {
 	// only run the interactive test when not on windows
 	// this is because the questions are repeated in the Windows console which causes
 	// an issue with the expect
-	if util.GetPlatform() != "windows" {
+	if util.GetPlatformOS() != "windows" {
 		suite.Run(t, s)
 	}
 }

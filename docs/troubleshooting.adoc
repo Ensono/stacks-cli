@@ -2,8 +2,6 @@
 
 The section provides some troubleshooting points when the CLI does not operate as expected.
 
-=== Project scaffolding errors
+include::troubleshooting/project_scaffolding_errors.adoc[]
 
-When the CLI runs the commands from the project settings file, any errors from the command are suppressed and the only output is the exit error code.
-
-To see the actual error that has been generated run the CLI using the `-loglevel debug` option.
+include::troubleshooting/windows_terminals.adoc[]

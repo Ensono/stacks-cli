@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"runtime"
 	"testing"
 
 	"github.com/amido/stacks-cli/internal/config/static"
@@ -194,7 +193,7 @@ func TestSetDefaultValueWorkingDir(t *testing.T) {
 	// this is required because the filepath.IsAbs function works out what an absolute path
 	// based on the platform. Thus on windows "/" is not absolute
 	var abs_path string
-	if runtime.GOOS == "windows" {
+	if util.GetPlatformOS() == "windows" {
 		abs_path = "c:\\Users\\operator\\test"
 	} else {
 		abs_path = "/home/operator/test"

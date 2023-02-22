@@ -24,7 +24,7 @@ func IsUnixShell() bool {
 
 		// if the output is not null then it is running in a *Nix like shell
 		// so change the delimiter
-		if string(output) != "" {
+		if string(output) != "" && string(output) != "$0" {
 			result = true
 		}
 	}

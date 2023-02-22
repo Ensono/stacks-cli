@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
+	"github.com/amido/stacks-cli/internal/models"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
 	yaml "github.com/goccy/go-yaml"
@@ -28,6 +29,13 @@ func New(conf *config.Config, logger *logrus.Logger) *Interactive {
 func (i *Interactive) Run() error {
 
 	var err error
+
+	// check to see if running in MINGW64
+	platform := &models.Platform{}
+	err = platform.RunEnvironmentChecks()
+	if err != nil {
+		return err
+	}
 
 	// create an answers config object so that the questions can be asked
 	answers := config.Answers{}

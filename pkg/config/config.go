@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"text/template"
 
@@ -362,7 +361,7 @@ func (config *Config) OpenOnlineHelp(cliCmd string, logger *logrus.Logger) bool 
 	url := config.Help.GetUrl(cliCmd)
 
 	// use the name of the operating system to determine how to open the webpage
-	switch runtime.GOOS {
+	switch util.GetPlatformOS() {
 	case "linux":
 		cmd = "xdg-open"
 		args = url

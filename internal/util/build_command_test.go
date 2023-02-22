@@ -49,7 +49,7 @@ func TestBuildCommand(t *testing.T) {
 
 			// check that the command
 			if cmd != table.test {
-				t.Error("Command has not been sect correctly")
+				t.Error("Command has not been set correctly")
 			}
 
 			if len(args) != table.count {

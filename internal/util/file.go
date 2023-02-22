@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-	"runtime"
 	"strings"
 )
 
@@ -62,7 +61,7 @@ func CopyDirectory(srcDir, dest string) error {
 		}
 
 		// // On Windows, it always returns the syscall.EWINDOWS error, wrapped in *PathError.
-		if runtime.GOOS != "windows" {
+		if GetPlatformOS() != "windows" {
 			// ensure file ownership for current process owner
 			if err := os.Lchown(destPath, os.Geteuid(), os.Getegid()); err != nil {
 				return err
@@ -187,7 +186,7 @@ func Unzip(src, dest string) (string, error) {
 
 		// Ensure that the file is read/writable
 		// This is so that the stackscli.yml file can be read, and so that the files can be deleted
-		if runtime.GOOS != "windows" {
+		if GetPlatformOS() != "windows" {
 			err = os.Chmod(filePath, 0775)
 			if err != nil {
 				return "", err
@@ -225,7 +224,7 @@ func GetDefaultTempDir() string {
 	// `C:\Users\RUSSEL~1\AppData\Local\Temp`. So detect Windows and set the tempdir using the $UserProfile
 	// environment var and then append AppData\Local\Temp to it
 	// Other OSes will use thje os.TempDir
-	if runtime.GOOS == "windows" {
+	if GetPlatformOS() == "windows" {
 		tmpPath = filepath.Join(os.Getenv("USERPROFILE"), "AppData", "Local", "Temp", dir)
 	} else {
 		tmpPath = filepath.Join(os.TempDir(), dir)

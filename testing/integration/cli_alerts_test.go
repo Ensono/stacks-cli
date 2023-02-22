@@ -171,7 +171,7 @@ func (suite *CLIAlertSuite) TestFrameworkAppsNotFound() {
 	var envPath string = os.Getenv("PATH")
 
 	// set the path according to the OS
-	switch util.GetPlatform() {
+	switch util.GetPlatformOS() {
 	case "windows":
 		path = "C:/Windows/System32"
 	default:

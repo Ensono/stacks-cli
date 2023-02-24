@@ -2,7 +2,6 @@ package util
 
 import (
 	"regexp"
-	"runtime"
 )
 
 // BuildCommand builds up the command to be used, depending on the OS in use
@@ -22,7 +21,7 @@ func BuildCommand(command string, arguments string) (string, []string) {
 
 	// if running on Windows then the cmd needs to be set to "cmd" and /C and the command prepended
 	// to the args slice, otherwise set cmd to command
-	if runtime.GOOS == "windows" {
+	if GetPlatformOS() == "windows" {
 		cmd = "cmd"
 		args = append([]string{"/C", command}, args...)
 	} else {

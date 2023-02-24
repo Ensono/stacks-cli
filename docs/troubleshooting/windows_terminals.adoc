@@ -1,0 +1,26 @@
+=== Windows Terminals
+
+Microsoft Windows is able to run different shells natively, such as PowerShell, Bash and the command prompt. Traditionally Windows has always accepted the back slash `\` as a path delimiter, however PowerShell understands both `\` and `/` in a path. Finally, if running Git Bash for example, only `/` is understood.
+
+NOTE: This is not applicable when running the CLI in Windows Subsystem for Linux (WSL)
+
+This becomes a problem when the `interactive` sub-command is run in Git Bash (or equivalent) because the `\` is interpreted as the escape character, which can lead to this:
+
+`stacks-cli scaffold -c C:\Users\auser\answers.yaml` --> `stacks-cli scaffold -c c:Usersauseranswers.yaml``
+
+Indeed this can become worse if the escape character preceded a `t` for example, in which case the shell would interpret that as a tab.
+
+To prevent this from happening the CLI has been updated to detect the shell that it is running in as well as the operating system. This is achieved by running the command `echo $0` which will yield a shell name, `bash`, `sh`, `zsh`, if running in one of those shells, nothing if running in PowerShell and `$0` when in the Command Prompt.
+
+By using this the correct path delimiter is used.
+
+==== Mingw64
+
+There is an issue with the survey package that is being used for the interactive session in that it does not work properly in a Mingw64 based terminal on Windows.
+
+Reference: https://github.com/go-survey/survey/issues/148
+
+To prevent the application from stopping with an unhelpful error the CLI now detects this shell environment and will exit gracefully.
+
+.Running Stacks CLI in Git Bash on Windows (MINGW64)
+image::images/stackscli-gitbash-shell.png[]

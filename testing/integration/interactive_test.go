@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package integration
@@ -5,7 +6,6 @@ package integration
 import (
 	"fmt"
 	"path/filepath"
-	"runtime"
 	"testing"
 
 	"github.com/ActiveState/termtest"
@@ -45,7 +45,7 @@ func TestInteractiveSuite(t *testing.T) {
 	// only run the interactive test when not on windows
 	// this is because the questions are repeated in the Windows console which causes
 	// an issue with the expect
-	if runtime.GOOS != "windows" {
+	if util.GetPlatformOS() != "windows" {
 		suite.Run(t, s)
 	}
 }

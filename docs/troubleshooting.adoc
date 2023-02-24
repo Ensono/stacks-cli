@@ -5,3 +5,7 @@ The section provides some troubleshooting points when the CLI does not operate a
 include::troubleshooting/project_scaffolding_errors.adoc[]
 
 include::troubleshooting/windows_terminals.adoc[]
+
+include::troubleshooting/access_denied.adoc[]
+
+include::troubleshooting/bad_format.adoc[]

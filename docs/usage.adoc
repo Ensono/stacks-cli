@@ -8,6 +8,22 @@ The Stacks CLI is built using Go, which means that it is a single binary which c
 
 The CLI will download the specified projects and run a series of operations to customise them according to the user's requirements. The steps that are to be performed in each project is governed by a project settings file, which by default is called `stackscli.yml`.
 
+=== Pre-Requisites
+
+In order to download and use the Stacks CLI tool, there are some programs that are required. The following table shows what is required and in what circumstance.
+
+[cols="1,2,4,1a"]
+|===
+| Name | Scenario | Description | CLI Aware
+| `curl` | All (Linux, Mac OS) | Used to download the `stacks-cli` binary |
+| `git` | All | Command used by the CLI to clone repositories to build up the projects |
+| `dotnet` | .NET applications | When working with .NET projects | icon:checkmark[fw]
+| `java`, `mvn` | Java applications | When working with Java projects | icon:checkmark[fw]
+| `node`, `npx` | NodeJS applications | When working with NodeJS projects | icon:checkmark[fw]
+|===
+
+NOTE: The CLI is aware of what programs are required for .NET, Java and NodeJS based apps and will display a message when one of them is missing.
+
 === Installation
 
 As the CLI is a single binary the quickest way to install it is to download it and put it somewhere in your PATH. The following code snippets show how this can be achieved using Bash and PowerShell.
@@ -23,8 +39,10 @@ curl https://github.com/amido/stacks-cli/releases/download/v{stackscli_version}/
 curl https://github.com/amido/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-linux-amd64-{stackscli_version} -o /usr/local/bin/stacks-cli
 
 ## Ensure that the command is executable
-chmod +x /usr//local/bin/stacks-cli
+chmod +x /usr/local/bin/stacks-cli
 ----
+
+NOTE: Please ensure that the downloaded command can be executed by assigning the execute bit. Please see <<Access Denied when running stacks-cli>> for more information.
 
 ==== Windows
 

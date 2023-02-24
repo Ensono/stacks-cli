@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
+	"github.com/amido/stacks-cli/internal/models"
+	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
 	yaml "github.com/goccy/go-yaml"
 	"github.com/sirupsen/logrus"
@@ -27,6 +29,13 @@ func New(conf *config.Config, logger *logrus.Logger) *Interactive {
 func (i *Interactive) Run() error {
 
 	var err error
+
+	// check to see if running in MINGW64
+	platform := &models.Platform{}
+	err = platform.RunEnvironmentChecks()
+	if err != nil {
+		return err
+	}
 
 	// create an answers config object so that the questions can be asked
 	answers := config.Answers{}
@@ -66,5 +75,14 @@ stacks-cli scaffold -c %s`, path)
 
 // getPath builds the path to where the configuration file should be saved
 func (i *Interactive) getPath() string {
-	return filepath.Join(i.Config.Input.Directory.WorkingDir, "stacks.yml")
+	path := filepath.Join(i.Config.Input.Directory.WorkingDir, "stacks.yml")
+
+	// check to see if in Unix shell and ensure using forward `/` slash if it is
+	// This is a edge-case where Bash could be running on Windows which requires that the
+	// path delimiters need to be set to `/`
+	if util.IsUnixShell() {
+		path = filepath.ToSlash(path)
+	}
+
+	return path
 }

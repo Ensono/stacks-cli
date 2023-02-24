@@ -3,10 +3,10 @@ package config
 import (
 	"os"
 	"path/filepath"
-	"runtime"
 	"testing"
 
 	"github.com/amido/stacks-cli/internal/config/static"
+	"github.com/amido/stacks-cli/internal/util"
 	yaml "github.com/goccy/go-yaml"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,7 +21,7 @@ func setupInputConfigTests(t *testing.T, create bool) (func(t *testing.T), strin
 	if create {
 		for _, filename := range []string{"dotnet", "git"} {
 
-			if runtime.GOOS == "windows" {
+			if util.GetPlatformOS() == "windows" {
 				filename += ".exe"
 			}
 
@@ -30,7 +30,7 @@ func setupInputConfigTests(t *testing.T, create bool) (func(t *testing.T), strin
 			defer file.Close()
 
 			// if not running on windows set the executable bit
-			if runtime.GOOS != "windows" {
+			if util.GetPlatformOS() != "windows" {
 				_ = os.Chmod(path, 0555)
 			}
 		}

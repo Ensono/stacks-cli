@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package integration
@@ -7,7 +8,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 
@@ -171,7 +171,7 @@ func (suite *CLIAlertSuite) TestFrameworkAppsNotFound() {
 	var envPath string = os.Getenv("PATH")
 
 	// set the path according to the OS
-	switch runtime.GOOS {
+	switch util.GetPlatformOS() {
 	case "windows":
 		path = "C:/Windows/System32"
 	default:

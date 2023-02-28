@@ -42,7 +42,10 @@ contexts:
         - PSModulePath=/modules        
         - -w
         - /app
-        - amidostacks/runner-pwsh-asciidoctor:0.3.151-stable
+        - --env-file
+        - envfile        
+        - amidostacks/runner-pwsh-asciidoctor:0.3.158-stable
         - pwsh
         - -NoProfile
-        - -Command        
+        - -Command
+    before: envfile -e home,path

@@ -1,16 +1,17 @@
 {
-    "title": "Stacks CLI Manual",
+    "title": "Stacks CLI Manual - {{ BUILDNUMBER }}",
     "output": "{{ basepath }}/outputs/docs/{{ format }}",
     "trunkBranch": "main",
     "path": "{{ basepath }}/docs/manual.adoc",
     "libs": [
-        "asciidoctor-diagram"
+
     ],
     "pdf": {
         "attributes": [
             "pdf-theme={{ basepath }}/build/conf/pdf/theme.yml",
             "pdf-fontsdir=\"{{ basepath }}/docs/styles/fonts;GEM_FONTS_DIR\"",
-            "allow-uri-read"
+            "allow-uri-read",
+            "stackscli_version={{ BUILDNUMBER }}"
         ]
     },
     "html": {
@@ -19,7 +20,8 @@
             "allow-uri-read",
             "toc=left",
             "java=/usr/bin/java",
-            "graphvizdot=/usr/bin/dot"
+            "graphvizdot=/usr/bin/dot",
+            "stackscli_version={{ BUILDNUMBER }}"
         ]
     }
 }

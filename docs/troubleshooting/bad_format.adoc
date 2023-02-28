@@ -1,0 +1,21 @@
+=== Bad Format
+
+The Stacks CLI is built for specific platform combinations. The following table shows the combinations that are currently supported.
+
+.Stacks CLI supported architectures
+[options="header",cols="1a,1,1",stripes=even]
+|===
+| Operating System | amd64 | arm
+| icon:linux[fw] Linux | icon:check-square[fw] | 
+| icon:apple[fw] Mac OS | icon:check-square[fw] | icon:check-square[fw]
+| icon:windows[fw] Windows | icon:check-square[fw] | 
+|===
+
+NOTE: In the table `arm` includes Apple Silicon
+
+If the incorrect binary for your CPU is downloaded the following error maybe displayed.
+
+.Bad format running Mac OS ARM binary on AMD64 Linux
+image::images/stackscli-bad-format.png[]
+
+Please download the correct format.

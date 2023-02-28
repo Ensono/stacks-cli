@@ -1,0 +1,16 @@
+=== Access Denied when running stacks-cli
+
+After the command has been downloaded on a Linux or MacOS computer, the execution bit must be set. If this is not done an Access Denied error will be displayed:
+
+.Access denied running the stacks-cli command
+image::images/stackscli-permission-denied.png[]
+
+The command to set the execution bit is shown below.
+
+[source,bash]
+----
+# Assuming that the command has been downloaded to /usr/local/bin/stacks-cli
+
+chmod u+x /usr/local/bin/stacks-cli
+----
+

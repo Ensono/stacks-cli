@@ -5,7 +5,7 @@ After the command has been downloaded on a Linux or MacOS computer, the executio
 .Access denied running the stacks-cli command
 image::images/stackscli-permission-denied.png[]
 
-The command to set te execution bit is shown below.
+The command to set the execution bit is shown below.
 
 [source,bash]
 ----

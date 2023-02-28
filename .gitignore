@@ -27,6 +27,8 @@ inttest/
 build/tests
 
 cmdlog.txt
+cmds.log
+envfile
 
 .env
 

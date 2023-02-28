@@ -17,9 +17,9 @@ In order to download and use the Stacks CLI tool, there are some programs that a
 | Name | Scenario | Description | CLI Aware
 | `curl` | All (Linux, Mac OS) | Used to download the `stacks-cli` binary |
 | `git` | All | Command used by the CLI to clone repositories to build up the projects |
-| `dotnet` | .NET applications | When working with .NET projects | icon:checkmark[fw]
-| `java`, `mvn` | Java applications | When working with Java projects | icon:checkmark[fw]
-| `node`, `npx` | NodeJS applications | When working with NodeJS projects | icon:checkmark[fw]
+| `dotnet` | .NET applications | When working with .NET projects | icon:check-square[fw]
+| `java`, `mvn` | Java applications | When working with Java projects | icon:check-square[fw]
+| `node`, `npx` | NodeJS applications | When working with NodeJS projects | icon:check-square[fw]
 |===
 
 NOTE: The CLI is aware of what programs are required for .NET, Java and NodeJS based apps and will display a message when one of them is missing.
@@ -138,9 +138,9 @@ The CLI will validate certain inputs to make sure that they are valid for use wi
 
 In some cases the CLI will modify the inputs, for example if a space is present in the company name it will be replaced with an underscore:
 
- - "My Company" -> "My_Company"
- - "My Fantastic Company" -> "My_Fantastic_Company"
- - "My  Company" -> "My_Company"
+ - "My Company" icon:arrow-right[fw] "My_Company"
+ - "My Fantastic Company" icon:arrow-right[fw] "My_Fantastic_Company"
+ - "My  Company" icon:arrow-right[fw] "My_Company"
 
 === Command Availability Checks
 

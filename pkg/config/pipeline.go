@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/config/static"
+	"github.com/amido/stacks-cli/internal/config/staticFiles"
 	"github.com/amido/stacks-cli/internal/util"
 )
 
@@ -81,7 +81,7 @@ func (p *Pipeline) GetVariableTemplate(workingDir string) string {
 			template = string(content)
 		}
 	} else {
-		template = static.GetPipelineTemplate(p.Type)
+		template = staticFiles.GetPipelineTemplate(p.Type)
 	}
 
 	return template

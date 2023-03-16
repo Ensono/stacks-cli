@@ -11,7 +11,6 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/bobesa/go-domain-util/domainutil"
@@ -31,11 +30,18 @@ type ReplaceConfig struct {
 }
 
 type Config struct {
+	Commands      Commands       `mapstructure:"commands"`
+	FrameworkDefs []FrameworkDef `mapstructure:"frameworks" yaml:"frameworks"`
 	Input         InputConfig
-	Self          SelfConfig
+	Internal      Internal
+	Help          Help `mapstructure:"help"`
 	Replace       []ReplaceConfig
-	FrameworkDefs []FrameworkDef
-	Help          Help
+	Self          SelfConfig
+	Stacks        Stacks `mapstructure:"stacks" yaml:"stacks"` // Holds the information about the projects in stacks
+}
+
+func (c *Config) Init() {
+	c.Internal.AddFiles()
 }
 
 // Check checks the configuration and ensures that there are some projects
@@ -385,18 +391,4 @@ func (config *Config) OpenOnlineHelp(cliCmd string, logger *logrus.Logger) bool 
 	}
 
 	return result
-}
-
-// GetFrameworks gets the static configuration of the stacks frameworks and
-// unmarshals it into a returning InputConfig object
-// This is so that the configuration can be read by other apps based on the CLI
-func (config *Config) GetFrameworks() (Stacks, error) {
-
-	var err error
-
-	// get the static configuration
-	stacks_frameworks := static.Config("stacks_frameworks")
-	err = yaml.Unmarshal(stacks_frameworks, &config.Input)
-
-	return config.Input.Stacks, err
 }

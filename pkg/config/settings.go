@@ -89,7 +89,7 @@ func (s *Settings) GetRequiredVersion(name string) string {
 // and ensures that they are the correct version
 //
 // path - pa
-func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, path string, tmpPath string) []models.Command {
+func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, path string, tmpPath string) ([]models.Command, string) {
 
 	var err error
 	var incorrect []models.Command
@@ -97,6 +97,7 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 	var versionArgs string
 	var specificVersion string
 	var re regexp.Regexp
+	var info string
 
 	// iterate around the framework commands
 	for _, cmd := range s.Framework.Commands {
@@ -116,6 +117,10 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 
 			if err != nil {
 				logger.Warnf("Issue retrieving global .NET version: %s", err.Error())
+			}
+
+			if specificVersion != "" {
+				info = "Specific version constraint has been found in project using the 'global.json' file"
 			}
 
 		case "java":
@@ -174,7 +179,7 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 
 	}
 
-	return incorrect
+	return incorrect, info
 }
 
 // CompareVersion compares the specified version against the contsraint

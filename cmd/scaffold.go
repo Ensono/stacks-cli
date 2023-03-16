@@ -21,7 +21,6 @@ func init() {
 	// declare variables that will be populated from the command line
 	// - options
 	var cmdlog bool
-	var dryrun bool
 	var saveConfig bool
 	var nocleanup bool
 	var force bool
@@ -107,7 +106,6 @@ func init() {
 	scaffoldCmd.Flags().StringVar(&network_base_domain_internal, "internaldomain", "", "Internal domain for the app")
 
 	scaffoldCmd.Flags().BoolVar(&cmdlog, "cmdlog", false, "Specify if commands should be logged")
-	scaffoldCmd.Flags().BoolVar(&dryrun, "dryrun", false, "Perform a dryrun of the CLI. No changes will be made on disk")
 	scaffoldCmd.Flags().BoolVar(&saveConfig, "save", false, "Save the the configuration from interactive or command line settings. Has no effect when using a configuration file.")
 	scaffoldCmd.Flags().BoolVar(&nocleanup, "nocleanup", false, "If set, do not perform cleanup at the end of the scaffolding")
 	scaffoldCmd.Flags().BoolVar(&force, "force", false, "If set, remove existing project directories before attempting to create new ones")
@@ -154,7 +152,6 @@ func init() {
 	viper.BindPFlag("directory.cache", scaffoldCmd.Flags().Lookup("cachedir"))
 
 	viper.BindPFlag("options.cmdlog", scaffoldCmd.Flags().Lookup("cmdlog"))
-	viper.BindPFlag("options.dryrun", scaffoldCmd.Flags().Lookup("dryrun"))
 	viper.BindPFlag("options.save", scaffoldCmd.Flags().Lookup("save"))
 	viper.BindPFlag("options.nocleanup", scaffoldCmd.Flags().Lookup("nocleanup"))
 	viper.BindPFlag("options.force", scaffoldCmd.Flags().Lookup("force"))

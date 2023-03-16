@@ -1,11 +1,16 @@
-// This file contains the static template to be used for writing out the variables
-// for the Azure DevOps pipeline
-
-package static
+package staticFiles
 
 import (
 	_ "embed"
 )
+
+// Set the banner that is written out to the screen when stacks is run
+//
+//go:embed banner.txt
+var IntFile_Banner string
+
+//go:embed config.yml
+var IntFile_config string
 
 //go:embed azdo_variable_template.yml
 var Azdo_Variable_Template_Tmpl string

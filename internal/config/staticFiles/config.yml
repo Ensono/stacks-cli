@@ -1,0 +1,76 @@
+frameworks:
+  - name: dotnet
+    commands:
+      - dotnet
+      - git
+    version:
+      command: dotnet
+      arguments: --version
+      pattern: (?P<version>.*)
+
+  - name: java
+    commands:
+      - java
+      - git
+      - mvn
+    version:
+      command: java
+      arguments: -version
+      pattern: '"(?P<version>.*)"'
+
+  - name: nx
+    commands:
+      - node
+      - npx
+      - git
+    version:
+      command: node
+      arguments: --version
+      pattern: '"v(?P<version>.*)"'
+
+  - name: infra
+    commands:
+      - git
+
+stacks:
+  dotnet:
+    webapi:
+      name: Amido.Stacks.Templates
+      type: nuget
+      id: stacks-dotnet
+    cqrs:
+      name: Amido.Stacks.CQRS.Templates
+      type: nuget
+      id: stacks-dotnet-cqrs
+  java:
+    webapi:
+      name: https://github.com/amido/stacks-java
+      version: master
+    cqrs:
+      name: https://github.com/amido/stacks-java-cqrs
+      version: main
+    events:
+      name: https://github.com/amido/stacks-java-cqrs-events
+      version: main
+  nx:
+    next:
+      name: https://github.com/amido/stacks-nx
+      version: main
+    apps:
+      name: https://github.com/amido/stacks-nx
+      version: main
+  infra:
+    aks:
+      name: https://github.com/amido/stacks-infrastructure-aks/
+      version: master
+
+help:
+  root: "https://stacks.amido.com/docs/stackscli/usage"
+  scaffold: "https://stacks.amido.com/docs/stackscli/runtime_config#scaffold-options"
+  interactive: "https://stacks.amido.com/docs/stackscli/runtime_config#interactive-options"
+  version: "https://stacks.amido.com/docs/stackscli/runtime_config#version-options"
+
+commands:
+  git:
+    - git init
+    - git remote add origin {{ .Project.SourceControl.URL }}

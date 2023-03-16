@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/models"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
@@ -206,7 +205,7 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	// Get the URL for the repository to download
 	key := project.Framework.GetMapKey()
-	repoInfo := s.Config.Input.Stacks.GetSrcURL(key)
+	repoInfo := s.Config.Stacks.GetSrcURL(key)
 
 	// if the URL is empty, emit error message and state why this might be the case
 	if repoInfo == (config.RepoInfo{}) {
@@ -277,7 +276,7 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	// check to see if any framework commands have been set and check the
 	// version if they have
-	incorrect := project.Settings.CheckCommandVersions(s.Config, s.Logger, project.Directory.WorkingDir, project.Directory.TempDir)
+	incorrect, info := project.Settings.CheckCommandVersions(s.Config, s.Logger, project.Directory.WorkingDir, project.Directory.TempDir)
 	if len(incorrect) > 0 {
 
 		var parts []string
@@ -287,6 +286,10 @@ func (s *Scaffold) processProject(project config.Project) {
 			parts = append(parts,
 				fmt.Sprintf("\tVersion constraint for '%s' is '%s', but found '%s'", wrong.Binary, wrong.VersionRequired, wrong.VersionFound),
 			)
+
+			if info != "" {
+				parts = append(parts, info)
+			}
 		}
 
 		s.Logger.Errorf("Unable to process project as framework versions are incorrect.\n\n%s", strings.Join(parts, "\n"))
@@ -418,7 +421,7 @@ func (s *Scaffold) configureGitRepository(project *config.Project) {
 	}
 
 	// iterate around the static git commands
-	for _, command := range static.GitCmds {
+	for _, command := range s.Config.Commands.Git {
 
 		// split the command string into a cmd and args so that the operation model
 		// can be configured and the PerformOperation method used

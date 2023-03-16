@@ -4,28 +4,29 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
-	"github.com/amido/stacks-cli/internal/config/static"
+	yaml "github.com/goccy/go-yaml"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 var basicConfiguration = []byte(`
-project:
-- name: tests
-  framework:
-    type: dotnet
-    option: webapi
+input:
+  project:
+    - name: tests
+      framework:
+        type: dotnet
+        option: webapi
 `)
 
 var srcUrlConfiguration = []byte(`
-project:
-- name: tests
-  framework:
-    type: dotnet
-    option: webapi
+input:
+  project:
+    - name: tests
+      framework:
+        type: dotnet
+        option: webapi
 
 stacks:
   dotnet:
@@ -61,6 +62,7 @@ func setupTestCase(t *testing.T, configuration []byte) (func(t *testing.T), stri
 func TestDefaultSrcUrlMap(t *testing.T) {
 
 	config := Config{}
+	config.Init()
 
 	// setup the enviornment
 	cleanup, configFile := setupTestCase(t, basicConfiguration)
@@ -69,23 +71,25 @@ func TestDefaultSrcUrlMap(t *testing.T) {
 	// Read in the configuration file
 	viper.SetConfigFile(configFile)
 
-	// read in the static configuration of the src repo urls
-	stacks_config := strings.NewReader(string(static.Config("stacks_frameworks")))
-	viper.MergeConfig(stacks_config)
-
 	// Read in the configuration file
 	if err := viper.MergeInConfig(); err != nil {
 		fmt.Printf("[ERROR] Unable to read in configuration file: %v\n", err)
 	}
 
+	// Unmarshal the internal static config
+	err := yaml.Unmarshal(config.Internal.GetFileContent("config"), &config)
+	if err != nil {
+		t.Errorf("Unable to parse internal config: %v", err)
+	}
+
 	// unmarshal the data
-	err := viper.Unmarshal(&config.Input)
+	err = viper.Unmarshal(&config.Input)
 	if err != nil {
 		t.Errorf("Unable to parse configuration data: %v", err)
 	}
 
 	// get the src URL map
-	srcURLs := config.Input.Stacks.GetSrcURLMap()
+	srcURLs := config.Stacks.GetSrcURLMap()
 
 	assert.Equal(t, "Amido.Stacks.Templates", srcURLs["dotnet_webapi"].Name)
 	assert.Equal(t, "Amido.Stacks.CQRS.Templates", srcURLs["dotnet_cqrs"].Name)
@@ -99,6 +103,13 @@ func TestDefaultSrcUrlMap(t *testing.T) {
 func TestSrcUrlMap(t *testing.T) {
 
 	config := Config{}
+	config.Init()
+
+	// Unmarshal the internal static config
+	err := yaml.Unmarshal(config.Internal.GetFileContent("config"), &config)
+	if err != nil {
+		t.Errorf("Unable to parse internal config: %v", err)
+	}
 
 	// setup the enviornment
 	cleanup, configFile := setupTestCase(t, srcUrlConfiguration)
@@ -108,23 +119,19 @@ func TestSrcUrlMap(t *testing.T) {
 	viper.Reset()
 	viper.SetConfigFile(configFile)
 
-	// read in the static configuration of the src repo urls
-	stacks_config := strings.NewReader(string(static.Config("stacks_frameworks")))
-	viper.MergeConfig(stacks_config)
-
 	// Read in the configuration file
 	if err := viper.MergeInConfig(); err != nil {
 		fmt.Printf("[ERROR] Unable to read in configuration file: %v\n", err)
 	}
 
 	// unmarshal the data
-	err := viper.Unmarshal(&config.Input)
+	err = viper.Unmarshal(&config)
 	if err != nil {
 		t.Errorf("Unable to parse configuration data: %v", err)
 	}
 
 	// get the src URL map
-	srcURLs := config.Input.Stacks.GetSrcURLMap()
+	srcURLs := config.Stacks.GetSrcURLMap()
 
 	assert.Equal(t, "https://github.com/amido/stacks-dotnet-newfeature", srcURLs["dotnet_webapi"].Name)
 }

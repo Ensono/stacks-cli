@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package integration
@@ -97,24 +98,8 @@ func (suite *BaseIntegration) WriteConfigFile(filename string) string {
 		suite.ConfigFilename = filename
 	}
 
-	// read in the static frameworks so that they can be added to the configuration file
-	// this is so that they have a value and are not null which will prevent the CLI
-	// from working properly
-	/*
-		stacks_frameworks := string(static.Config("stacks_frameworks"))
-
-		stacks := config.InputConfig{}
-		err := yaml.Unmarshal([]byte(stacks_frameworks), &stacks)
-		if err != nil {
-			suite.T().Fatalf("Error setting stacks frameworks: %s", err.Error())
-		}
-	*/
-
 	cfg := config.Config{}
-	stacks, err := cfg.GetFrameworks()
-	if err != nil {
-		suite.T().Fatalf("Error setting stacks frameworks: %s", err.Error())
-	}
+	cfg.Internal.AddFiles()
 
 	// create the configuration
 	input := config.InputConfig{
@@ -196,7 +181,6 @@ func (suite *BaseIntegration) WriteConfigFile(filename string) string {
 				},
 			},
 		},
-		Stacks: stacks,
 		Terraform: config.Terraform{
 			Backend: config.TerraformBackend{
 				Storage:   tf_storage,

@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/util"
 	yaml "github.com/goccy/go-yaml"
 	log "github.com/sirupsen/logrus"
@@ -32,6 +31,7 @@ func setupConfigTests(t *testing.T) (func(t *testing.T), string) {
 func TestGetVersionWithDefaultVersionNumber(t *testing.T) {
 
 	config := Config{}
+	config.Init()
 
 	// state what is expected from the method
 	expected := "0.0.1-workstation"
@@ -44,6 +44,7 @@ func TestGetVersionWithDefaultVersionNumber(t *testing.T) {
 
 func TestGetVersion(t *testing.T) {
 	config := Config{}
+	config.Init()
 	config.Input.Version = "100.98.99"
 
 	// get the actual version
@@ -123,6 +124,7 @@ func TestWriteVariableTemplate(t *testing.T) {
 	}
 	replacements := Replacements{}
 	config := Config{}
+	config.Init()
 
 	// call the method to create the variable file
 	msg, err1 := config.WriteVariablesFile(&project, pipeline, replacements)
@@ -236,6 +238,7 @@ func TestWriteCmdLog(t *testing.T) {
 	defer cleanup(t)
 
 	config := Config{}
+	config.Init()
 
 	// check for empty error when the cmdlog is not enabled
 	err := config.WriteCmdLog(dir, "test for no error")
@@ -604,6 +607,7 @@ func TestExecuteCommand(t *testing.T) {
 
 	// Create a logger
 	config := Config{}
+	config.Init()
 	logger := log.New()
 
 	// setup the environment
@@ -626,10 +630,11 @@ func TestExecuteCommand(t *testing.T) {
 func TestGetFrameworkCommands(t *testing.T) {
 
 	config := Config{}
+	config.Init()
+	// config.Internal.AddFiles()
 
 	// get the static data and unmarshal into a config object
-	framework_defs := static.Config("framework_defs")
-	err := yaml.Unmarshal(framework_defs, &config.FrameworkDefs)
+	err := yaml.Unmarshal(config.Internal.GetFileContent("config"), &config)
 	if err != nil {
 		t.Errorf("Error parsing the framework definitions: %s", err.Error())
 	}
@@ -665,16 +670,4 @@ func TestGetFrameworkCommands(t *testing.T) {
 			t.Error(table.message)
 		}
 	}
-}
-
-func TestGetFrameworks(t *testing.T) {
-
-	config := Config{}
-
-	// attempt to get the stacks as a model
-	stacks, err := config.GetFrameworks()
-
-	assert.Equal(t, nil, err)
-	assert.Equal(t, "Amido.Stacks.Templates", stacks.Dotnet.Webapi.Name)
-
 }

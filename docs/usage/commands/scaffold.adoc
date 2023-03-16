@@ -1,0 +1,13 @@
+==== Scaffold
+
+The `scaffold` command is the main command that will be used. This downloads the specified projects, customises them and sets them up in the specified directory. To see the help for this command run the following:
+
+[source,bash]
+----
+stacks-cli scaffold -h
+----
+
+.Help page for `scaffold` command
+image::images/stackscli-scaffold-help.png[]
+
+The <<Examples>> section has a lot of examples showing how to run the Stacks CLI.

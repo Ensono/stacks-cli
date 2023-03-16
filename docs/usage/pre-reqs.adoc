@@ -1,0 +1,15 @@
+=== Pre-Requisites
+
+In order to download and use the Stacks CLI tool, there are some programs that are required. The following table shows what is required and in what circumstance.
+
+[cols="1,2,4,1a"]
+|===
+| Name | Scenario | Description | CLI Aware
+| `curl` | All (Linux, Mac OS) | Used to download the `stacks-cli` binary |
+| `git` | All | Command used by the CLI to clone repositories to build up the projects |
+| `dotnet` | .NET applications | When working with .NET projects | icon:check-square[fw]
+| `java`, `mvn` | Java applications | When working with Java projects | icon:check-square[fw]
+| `node`, `npx` | NodeJS applications | When working with NodeJS projects | icon:check-square[fw]
+|===
+
+NOTE: The CLI is aware of what programs are required for .NET, Java and NodeJS based apps and will display a message when one of them is missing.

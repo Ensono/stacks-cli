@@ -1,0 +1,29 @@
+=== Installation
+
+As the CLI is a single binary the quickest way to install it is to download it and put it somewhere in your PATH. The following code snippets show how this can be achieved using Bash and PowerShell.
+
+==== Linux and Mac OS
+[source,console,subs="attributes"]
+----
+# Download the binary to a location in the PATH
+## Mac OS
+curl https://github.com/amido/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-darwin-amd64-{stackscli_version} -o /usr/local/bin/stacks-cli
+
+## Linux
+curl https://github.com/amido/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-linux-amd64-{stackscli_version} -o /usr/local/bin/stacks-cli
+
+## Ensure that the command is executable
+chmod +x /usr/local/bin/stacks-cli
+----
+
+NOTE: Please ensure that the downloaded command can be executed by assigning the execute bit. Please see <<Access Denied when running stacks-cli>> for more information.
+
+==== Windows
+
+The following PowerShell snippet will download the application to the user's Downloads directory. It is up to the user to put it somewhere that is accessible on the PATH or use the full path to the app when using it.
+
+[source,powershell,subs="attributes"]
+----
+# Download the binary
+Invoke-RestMethod -Uri https://github.com/amido/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-windows-amd64-{stackscli_version}.exe -OutFile $env:USERPROFILE\Downloads\stacks-cli.exe
+----

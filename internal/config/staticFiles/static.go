@@ -12,15 +12,15 @@ var IntFile_Banner string
 //go:embed config.yml
 var IntFile_config string
 
-//go:embed azdo_variable_template.yml
-var Azdo_Variable_Template_Tmpl string
+//go:embed ado_variable_template.yml
+var Ado_Variable_Template_Tmpl string
 
 func GetPipelineTemplate(name string) string {
 	var template string
 
 	switch name {
 	case "azdo":
-		template = Azdo_Variable_Template_Tmpl
+		template = Ado_Variable_Template_Tmpl
 	}
 
 	return template

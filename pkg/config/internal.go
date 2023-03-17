@@ -33,7 +33,7 @@ func (i *Internal) AddFiles() {
 
 	i.Files["azdo"] = internalFileInfo{
 		filename: "azdo_variable_template.yml",
-		data:     []byte(staticFiles.Azdo_Variable_Template_Tmpl),
+		data:     []byte(staticFiles.Ado_Variable_Template_Tmpl),
 	}
 
 }

@@ -1,6 +1,10 @@
 package cmd
 
 import (
+	"log"
+	"os"
+
+	"github.com/amido/stacks-cli/internal/config/staticFiles"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/scaffold"
 	"github.com/spf13/cobra"
@@ -65,6 +69,9 @@ func init() {
 	var network_base_domain_external string
 	var network_base_domain_internal string
 
+	// - overrides
+	var override_ado_variables string
+
 	// get the default directories
 	defaultCacheDir := util.GetDefaultCacheDir()
 
@@ -105,6 +112,8 @@ func init() {
 	scaffoldCmd.Flags().StringVarP(&network_base_domain_external, "domain", "d", "", "External domain for the app")
 	scaffoldCmd.Flags().StringVar(&network_base_domain_internal, "internaldomain", "", "Internal domain for the app")
 
+	scaffoldCmd.Flags().StringVar(&override_ado_variables, "adovariables", "", "Path to the ado variables override file")
+
 	scaffoldCmd.Flags().BoolVar(&cmdlog, "cmdlog", false, "Specify if commands should be logged")
 	scaffoldCmd.Flags().BoolVar(&saveConfig, "save", false, "Save the the configuration from interactive or command line settings. Has no effect when using a configuration file.")
 	scaffoldCmd.Flags().BoolVar(&nocleanup, "nocleanup", false, "If set, do not perform cleanup at the end of the scaffolding")
@@ -115,46 +124,65 @@ func init() {
 	// The project is a slice, so that multiple projects can be specified, however
 	// only one can be specified on the command line and in Environment variables
 	// Viper works out that this is a slice and will bind to the first element of the slice
-	viper.BindPFlag("project.name", scaffoldCmd.Flags().Lookup("name"))
-	viper.BindPFlag("project.platform.type", scaffoldCmd.Flags().Lookup("platformtype"))
-	viper.BindPFlag("project.sourcecontrol.type", scaffoldCmd.Flags().Lookup("sourcecontrol"))
-	viper.BindPFlag("project.sourcecontrol.url", scaffoldCmd.Flags().Lookup("sourcecontrolurl"))
+	viper.BindPFlag("input.project.name", scaffoldCmd.Flags().Lookup("name"))
+	viper.BindPFlag("input.project.platform.type", scaffoldCmd.Flags().Lookup("platformtype"))
+	viper.BindPFlag("input.project.sourcecontrol.type", scaffoldCmd.Flags().Lookup("sourcecontrol"))
+	viper.BindPFlag("input.project.sourcecontrol.url", scaffoldCmd.Flags().Lookup("sourcecontrolurl"))
 
-	viper.BindPFlag("project.settingsfile", scaffoldCmd.Flags().Lookup("projectsettingsfile"))
-	viper.BindPFlag("project.cloud.region", scaffoldCmd.Flags().Lookup("cloudregion"))
-	viper.BindPFlag("project.cloud.group", scaffoldCmd.Flags().Lookup("cloudgroup"))
+	viper.BindPFlag("input.project.settingsfile", scaffoldCmd.Flags().Lookup("projectsettingsfile"))
+	viper.BindPFlag("input.project.cloud.region", scaffoldCmd.Flags().Lookup("cloudregion"))
+	viper.BindPFlag("input.project.cloud.group", scaffoldCmd.Flags().Lookup("cloudgroup"))
 
 	// configure the project framework settings
-	viper.BindPFlag("project.framework.type", scaffoldCmd.Flags().Lookup("framework"))
-	viper.BindPFlag("project.framework.option", scaffoldCmd.Flags().Lookup("frameworkoption"))
-	viper.BindPFlag("project.framework.version", scaffoldCmd.Flags().Lookup("frameworkversion"))
+	viper.BindPFlag("input.project.framework.type", scaffoldCmd.Flags().Lookup("framework"))
+	viper.BindPFlag("input.project.framework.option", scaffoldCmd.Flags().Lookup("frameworkoption"))
+	viper.BindPFlag("input.project.framework.version", scaffoldCmd.Flags().Lookup("frameworkversion"))
 
 	// -- bind the framework properties to the project framework
-	viper.BindPFlag("project.framework.properties", scaffoldCmd.Flags().Lookup("frameworkprops"))
+	viper.BindPFlag("input.project.framework.properties", scaffoldCmd.Flags().Lookup("frameworkprops"))
 
-	viper.BindPFlag("settingsfile", scaffoldCmd.Flags().Lookup("settingsfile"))
+	viper.BindPFlag("input.settingsfile", scaffoldCmd.Flags().Lookup("settingsfile"))
 
-	viper.BindPFlag("pipeline", scaffoldCmd.Flags().Lookup("pipeline"))
+	viper.BindPFlag("input.pipeline", scaffoldCmd.Flags().Lookup("pipeline"))
 
-	viper.BindPFlag("cloud.platform", scaffoldCmd.Flags().Lookup("cloud"))
+	viper.BindPFlag("input.cloud.platform", scaffoldCmd.Flags().Lookup("cloud"))
 
-	viper.BindPFlag("business.company", scaffoldCmd.Flags().Lookup("company"))
-	viper.BindPFlag("business.domain", scaffoldCmd.Flags().Lookup("area"))
-	viper.BindPFlag("business.component", scaffoldCmd.Flags().Lookup("component"))
+	viper.BindPFlag("input.business.company", scaffoldCmd.Flags().Lookup("company"))
+	viper.BindPFlag("input.business.domain", scaffoldCmd.Flags().Lookup("area"))
+	viper.BindPFlag("input.business.component", scaffoldCmd.Flags().Lookup("component"))
 
-	viper.BindPFlag("terraform.backend.storage", scaffoldCmd.Flags().Lookup("tfstorage"))
-	viper.BindPFlag("terraform.backend.group", scaffoldCmd.Flags().Lookup("tfgroup"))
-	viper.BindPFlag("terraform.backend.container", scaffoldCmd.Flags().Lookup("tfcontainer"))
+	viper.BindPFlag("input.terraform.backend.storage", scaffoldCmd.Flags().Lookup("tfstorage"))
+	viper.BindPFlag("input.terraform.backend.group", scaffoldCmd.Flags().Lookup("tfgroup"))
+	viper.BindPFlag("input.terraform.backend.container", scaffoldCmd.Flags().Lookup("tfcontainer"))
 
-	viper.BindPFlag("network.base.domain.external", scaffoldCmd.Flags().Lookup("domain"))
-	viper.BindPFlag("network.base.domain.internal", scaffoldCmd.Flags().Lookup("internaldomain"))
+	viper.BindPFlag("input.network.base.domain.external", scaffoldCmd.Flags().Lookup("domain"))
+	viper.BindPFlag("input.network.base.domain.internal", scaffoldCmd.Flags().Lookup("internaldomain"))
 
-	viper.BindPFlag("directory.cache", scaffoldCmd.Flags().Lookup("cachedir"))
+	viper.BindPFlag("input.directory.cache", scaffoldCmd.Flags().Lookup("cachedir"))
 
-	viper.BindPFlag("options.cmdlog", scaffoldCmd.Flags().Lookup("cmdlog"))
-	viper.BindPFlag("options.save", scaffoldCmd.Flags().Lookup("save"))
-	viper.BindPFlag("options.nocleanup", scaffoldCmd.Flags().Lookup("nocleanup"))
-	viper.BindPFlag("options.force", scaffoldCmd.Flags().Lookup("force"))
+	viper.BindPFlag("input.overrides.ado_variables_path", scaffoldCmd.Flags().Lookup("adovariables"))
+
+	viper.BindPFlag("input.options.cmdlog", scaffoldCmd.Flags().Lookup("cmdlog"))
+	viper.BindPFlag("input.options.save", scaffoldCmd.Flags().Lookup("save"))
+	viper.BindPFlag("input.options.nocleanup", scaffoldCmd.Flags().Lookup("nocleanup"))
+	viper.BindPFlag("input.options.force", scaffoldCmd.Flags().Lookup("force"))
+}
+
+// ScaffoldOverrides updates the main configuration with any override files that have been specified on
+// the command line.
+// It is not set as a prerun function because it has to be read in at the appropriate point in the root command
+func ScaffoldOverrides() {
+
+	override_ado_variables := viper.GetString("input.overrides.ado_variables_path")
+	if override_ado_variables != "" {
+		data, err := os.ReadFile(override_ado_variables)
+		if err != nil {
+			log.Fatalf("Unable to read in ADO variables override file (%s): %s", err.Error(), override_ado_variables)
+			App.Logger.Exit(3)
+		}
+
+		staticFiles.Ado_Variable_Template_Tmpl = string(data)
+	}
 }
 
 func executeScaffoldRun(ccmd *cobra.Command, args []string) {

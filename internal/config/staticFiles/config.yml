@@ -69,6 +69,7 @@ help:
   scaffold: "https://stacks.amido.com/docs/stackscli/runtime_config#scaffold-options"
   interactive: "https://stacks.amido.com/docs/stackscli/runtime_config#interactive-options"
   version: "https://stacks.amido.com/docs/stackscli/runtime_config#version-options"
+  export: "https://stacks.amido.com/docs/stackscli/runtime_config#export-options"
 
 commands:
   git:

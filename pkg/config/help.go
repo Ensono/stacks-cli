@@ -6,6 +6,7 @@ type Help struct {
 	Scaffold    string `mapstructure:"scaffold"`
 	Interactive string `mapstructure:"interactive"`
 	Version     string `mapstructure:"version"`
+	Export      string `mapstructure:"export"`
 }
 
 func (help *Help) GetUrl(cmd string) string {
@@ -21,6 +22,8 @@ func (help *Help) GetUrl(cmd string) string {
 		url = help.Interactive
 	case "version":
 		url = help.Version
+	case "export":
+		url = help.Export
 	}
 
 	return url

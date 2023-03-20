@@ -66,6 +66,8 @@ func init() {
 
 	var githubToken string
 
+	var override_internal_config string
+
 	cobra.OnInitialize(initConfig)
 
 	// get the default directories
@@ -89,23 +91,26 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&githubToken, "token", "", "GitHub token to perform authenticated requests against the GitHub API")
 
+	rootCmd.PersistentFlags().StringVar(&override_internal_config, "internalconfig", "", "Path to the configuration override file")
+
 	// Bind command line arguments
 	viper.BindPFlags(rootCmd.Flags())
 
 	// Configure the logging options
-	viper.BindPFlag("log.format", rootCmd.PersistentFlags().Lookup("logformat"))
-	viper.BindPFlag("log.colour", rootCmd.PersistentFlags().Lookup("logcolour"))
-	viper.BindPFlag("log.level", rootCmd.PersistentFlags().Lookup("loglevel"))
-	viper.BindPFlag("log.file", rootCmd.PersistentFlags().Lookup("logfile"))
+	viper.BindPFlag("input.log.format", rootCmd.PersistentFlags().Lookup("logformat"))
+	viper.BindPFlag("input.log.colour", rootCmd.PersistentFlags().Lookup("logcolour"))
+	viper.BindPFlag("input.log.level", rootCmd.PersistentFlags().Lookup("loglevel"))
+	viper.BindPFlag("input.log.file", rootCmd.PersistentFlags().Lookup("logfile"))
 
-	viper.BindPFlag("directory.working", rootCmd.PersistentFlags().Lookup("workingdir"))
-	viper.BindPFlag("directory.temp", rootCmd.PersistentFlags().Lookup("tempdir"))
+	viper.BindPFlag("input.directory.working", rootCmd.PersistentFlags().Lookup("workingdir"))
+	viper.BindPFlag("input.directory.temp", rootCmd.PersistentFlags().Lookup("tempdir"))
 
-	viper.BindPFlag("options.nobanner", rootCmd.PersistentFlags().Lookup("nobanner"))
-	viper.BindPFlag("options.nocliversion", rootCmd.PersistentFlags().Lookup("nocliversion"))
-	viper.BindPFlag("options.onlinehelp", rootCmd.PersistentFlags().Lookup("onlinehelp"))
-	viper.BindPFlag("options.dryrun", rootCmd.PersistentFlags().Lookup("dryrun"))
+	viper.BindPFlag("input.options.nobanner", rootCmd.PersistentFlags().Lookup("nobanner"))
+	viper.BindPFlag("input.options.nocliversion", rootCmd.PersistentFlags().Lookup("nocliversion"))
+	viper.BindPFlag("input.options.onlinehelp", rootCmd.PersistentFlags().Lookup("onlinehelp"))
+	viper.BindPFlag("input.options.dryrun", rootCmd.PersistentFlags().Lookup("dryrun"))
 
+	viper.BindPFlag("input.overrides.internal_config", rootCmd.Flags().Lookup("internalconfig"))
 }
 
 // initConfig reads in a config file and ENV vars if set
@@ -149,16 +154,35 @@ func preRun(ccmd *cobra.Command, args []string) {
 		App.Logger.Exit(1)
 	}
 
-	err = viper.Unmarshal(&Config.Input)
+	// Determine if the internal configuration has been overridden
+	override_internal := viper.GetString("input.overrides.internal_config")
+	if override_internal != "" {
+		data, err := os.ReadFile(override_internal)
+		if err != nil {
+			log.Fatalf("Unable to read in specific override file (%s): %s", err.Error(), override_internal)
+			App.Logger.Exit(2)
+		}
+
+		viper.MergeConfig(strings.NewReader(string(data)))
+	}
+
+	ScaffoldOverrides()
+
+	// Unmarshal the configuration into the models in the application
+	err = viper.Unmarshal(&Config)
 	if err != nil {
 		log.Fatalf("Unable to read configuration into models: %v", err)
-		App.Logger.Exit(2)
+		App.Logger.Exit(4)
 	}
 
 	// Configure application logging
 	// This is done after unmarshalling of the configuration so that the
 	// model values can be used rather than the strings from viper
 	App.ConfigureLogging(Config.Input.Log)
+
+	if Config.Input.Overrides.InternalConfigPath != "" {
+		App.Logger.Infof("Using config override file: %s", Config.Input.Overrides.InternalConfigPath)
+	}
 
 	// Set the version of the app in the configuration
 	Config.Input.Version = version

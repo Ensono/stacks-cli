@@ -28,6 +28,7 @@ type InputConfig struct {
 	Terraform    Terraform `mapstructure:"terraform"`
 	SettingsFile string    `mapstructure:"settingsfile" json:",omitempty"`
 	Options      Options   `mapstructure:"options"`
+	Overrides    Overrides `mapstructure:"overrides"`
 }
 
 // CheckFrameworks iterates around each of the projects and builds up a list of the frameworks

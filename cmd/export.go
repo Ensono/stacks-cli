@@ -30,7 +30,7 @@ func init() {
 	// Configure the flags
 	exportCmd.Flags().StringVarP(&directory, "directory", "d", util.GetDefaultWorkingDir(), "Directory to be used to export the files to")
 
-	viper.BindPFlag("directory.export", exportCmd.Flags().Lookup("directory"))
+	viper.BindPFlag("input.directory.export", exportCmd.Flags().Lookup("directory"))
 }
 
 func executeExportFiles(ccmd *cobra.Command, args []string) {

@@ -32,7 +32,7 @@ type ReplaceConfig struct {
 type Config struct {
 	Commands      Commands       `mapstructure:"commands"`
 	FrameworkDefs []FrameworkDef `mapstructure:"frameworks" yaml:"frameworks"`
-	Input         InputConfig
+	Input         InputConfig    `mapstructure:"input" yaml:"input"`
 	Internal      Internal
 	Help          Help `mapstructure:"help"`
 	Replace       []ReplaceConfig

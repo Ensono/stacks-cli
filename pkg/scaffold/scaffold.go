@@ -205,43 +205,43 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	// Get the URL for the repository to download
 	key := project.Framework.GetMapKey()
-	repoInfo := s.Config.Stacks.GetSrcURL(key)
+	packageInfo := s.Config.Stacks.GetComponentPackage(key)
 
 	// if the URL is empty, emit error message and state why this might be the case
-	if repoInfo == (config.RepoInfo{}) {
+	if packageInfo == (config.Package{}) {
 		s.Logger.Errorf(`The URL for the specified framework option, %s, is empty. Have you specified the correct framework option?`, project.Framework.Option)
 		return
 	}
 
 	// ensure that the RepoInfo object is correctly configured
-	msg := repoInfo.Normalize()
+	msg := packageInfo.Normalize()
 	if msg != "" {
 		s.Logger.Warn(msg)
 	}
 
 	// download the template using the appropriate action
 	var downloader interfaces.Downloader
-	switch repoInfo.Type {
-	case "github":
+	switch packageInfo.Type {
+	case "git":
 
 		// check that the URL is valid, if not skip this project and move onto the next one
-		_, err = url.ParseRequestURI(repoInfo.Name)
+		_, err = url.ParseRequestURI(packageInfo.Name)
 		if err != nil {
 			s.Logger.Errorf("Unable to download framework option as URL is invalid: %s", err.Error())
 			return
 		}
 
 		downloader = downloaders.NewGitDownloader(
-			repoInfo.Name,
-			repoInfo.Version,
+			packageInfo.URL,
+			packageInfo.Version,
 			project.Framework.Version,
 			s.Config.Input.Directory.TempDir,
 			s.Config.Input.Options.Token,
 		)
 	case "nuget":
 		downloader = downloaders.NewNugetDownloader(
-			repoInfo.Name,
-			repoInfo.ID,
+			packageInfo.Name,
+			packageInfo.ID,
 			project.Framework.Version,
 			s.Config.Input.Directory.CacheDir,
 			s.Config.Input.Directory.TempDir,

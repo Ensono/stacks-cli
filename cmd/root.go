@@ -175,6 +175,9 @@ func preRun(ccmd *cobra.Command, args []string) {
 		App.Logger.Exit(4)
 	}
 
+	// ensure that the components are checked for uniqueness
+	Config.Stacks.SetUniqueComponents()
+
 	// Configure application logging
 	// This is done after unmarshalling of the configuration so that the
 	// model values can be used rather than the strings from viper

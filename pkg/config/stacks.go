@@ -7,6 +7,88 @@ import (
 )
 
 type Stacks struct {
+	Components []StacksComponent `mapstructure:"components" yaml:"components"`
+
+	named map[string]StacksComponent
+}
+
+func (s *Stacks) GetComponent(ref string) (StacksComponent, error) {
+
+	var err error
+	stacks_component := StacksComponent{}
+
+	// if the named map contains the component return it, otherwise return
+	// empty and set the error
+	if val, ok := s.named[ref]; ok {
+		stacks_component = val
+	} else {
+		err = fmt.Errorf("unable to find component with reference: %s", ref)
+	}
+
+	return stacks_component, err
+}
+
+func (s *Stacks) GetComponentCount() int {
+	return len(s.named)
+}
+
+// SetUniqueComponents rewrites the slice of Stacks so that it is a unique
+// list. Later values in the original slice take precedence
+func (s *Stacks) SetUniqueComponents() {
+
+	// create a map to hold the unique values of the slice
+	s.named = make(map[string]StacksComponent)
+
+	// iterate around the components that have been set
+	for _, component := range s.Components {
+
+		// update the named map with the component
+		s.named[component.GetName()] = component
+	}
+}
+
+func (s *Stacks) GetComponentPackage(name string) Package {
+	component, _ := s.GetComponent(name)
+	return component.Package
+
+}
+
+func (s *Stacks) GetComponentPackageRef(name string) string {
+	var result string
+	pkg := s.GetComponentPackage(name)
+
+	switch pkg.Type {
+	case "git":
+		result = pkg.URL
+	case "nuget":
+		result = pkg.Name
+	}
+
+	return result
+}
+
+// Normalize checks to see if the older API is being used and will take
+// the values from that and populate the new structure
+// It will return an error object to be used as a warning for people to update their structure
+func (p *Package) Normalize() string {
+	var msg string
+
+	// if the type is empty, default to github
+	if p.Type == "" {
+		p.Type = "github"
+	}
+
+	// ensure that the type of the repo is correct
+	validTypes := []string{"git", "nuget"}
+	if !util.SliceContains(validTypes, p.Type) {
+		msg = fmt.Sprintf("Specified type of '%s' is invalid, please check your configuration", p.Type)
+	}
+
+	return msg
+}
+
+/*
+type Stacks struct {
 	Dotnet Dotnet `mapstructure:"dotnet" yaml:"dotnet"`
 	Java   Java   `mapstructure:"java" yaml:"java"`
 	Nx     Nx     `mapstructure:"nx" yaml:"nx"`
@@ -82,3 +164,4 @@ func (r *RepoInfo) Normalize() string {
 
 	return msg
 }
+*/

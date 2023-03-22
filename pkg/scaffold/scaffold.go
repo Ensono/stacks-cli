@@ -225,7 +225,7 @@ func (s *Scaffold) processProject(project config.Project) {
 	case "git":
 
 		// check that the URL is valid, if not skip this project and move onto the next one
-		_, err = url.ParseRequestURI(packageInfo.Name)
+		_, err = url.ParseRequestURI(packageInfo.URL)
 		if err != nil {
 			s.Logger.Errorf("Unable to download framework option as URL is invalid: %s", err.Error())
 			return

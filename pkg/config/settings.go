@@ -34,11 +34,12 @@ type Setup struct {
 }
 
 type Operation struct {
-	Action          string `mapstructure:"action"`
-	Command         string `mapstructure:"cmd"`
-	Arguments       string `mapstructure:"args"`
-	Description     string `mapstructure:"desc"`
-	ApplyProperties bool   `mapstructure:"applyProperties"`
+	Action          string   `mapstructure:"action"`
+	Command         string   `mapstructure:"cmd"`
+	Arguments       string   `mapstructure:"args"`
+	Description     string   `mapstructure:"desc"`
+	ApplyProperties bool     `mapstructure:"applyProperties"`
+	Tags            []string `mapstructure:"tags"`
 }
 
 type SettingsFramework struct {

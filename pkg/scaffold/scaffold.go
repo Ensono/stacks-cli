@@ -310,12 +310,17 @@ func (s *Scaffold) processProject(project config.Project) {
 			// output information about the operation being performed
 			s.Logger.Info(op.Description)
 
-			// perform the operation
-			err = s.PerformOperation(op, &project, phase.Directory, dir)
+			// determine if this operation should be run by checking the tags
+			if s.shouldRun(op.Tags, project.Framework.Option) {
+				s.Logger.Warnf("Operation not permitted to run for this framework: %s", project.Framework.Option)
+			} else {
+				// perform the operation
+				err = s.PerformOperation(op, &project, phase.Directory, dir)
 
-			if err != nil {
-				s.Logger.Errorf("issue encountered performing '%s' operation: %s", phase.Name, err.Error())
-				break
+				if err != nil {
+					s.Logger.Errorf("issue encountered performing '%s' operation: %s", phase.Name, err.Error())
+					break
+				}
 			}
 		}
 	}
@@ -470,4 +475,15 @@ func (s *Scaffold) cleanup() {
 			s.Logger.Fatalf("Unable to remove temporary directory: %s", err.Error())
 		}
 	}
+}
+
+// shouldRun determines if the operation should be run given the tags and the keyword to look for
+func (s *Scaffold) shouldRun(tags []string, keyword string) bool {
+	var result bool = true
+
+	if len(tags) > 0 && !util.SliceContains(tags, keyword) {
+		result = false
+	}
+
+	return result
 }

@@ -3,7 +3,6 @@ package config
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -258,7 +257,7 @@ func TestWriteCmdLog(t *testing.T) {
 
 	// get the content of the cmdlog so it can be checked to be what is expected
 	expected := fmt.Sprintf("[%s] my-command args\n", dir)
-	actual, _ := ioutil.ReadFile(config.Self.CmdLogPath)
+	actual, _ := os.ReadFile(config.Self.CmdLogPath)
 
 	assert.Equal(t, nil, err)                 // ensure no errors
 	assert.Equal(t, true, cmdlogExists)       // file exists

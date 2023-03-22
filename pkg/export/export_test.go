@@ -1,7 +1,6 @@
 package export
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -75,7 +74,7 @@ func TestExportedFiles(t *testing.T) {
 		}
 
 		// get the files in the exported directory and compare against the specified list
-		files, _ := ioutil.ReadDir(table.dir)
+		files, _ := os.ReadDir(table.dir)
 
 		filenames := []string{}
 		for _, info := range files {

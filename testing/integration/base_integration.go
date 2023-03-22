@@ -6,7 +6,6 @@ package integration
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -201,7 +200,7 @@ func (suite *BaseIntegration) WriteConfigFile(filename string) string {
 
 	configFile := filepath.Join(suite.ProjectDir, suite.ConfigFilename)
 
-	err = ioutil.WriteFile(configFile, data, 0666)
+	err = os.WriteFile(configFile, data, 0666)
 
 	if err != nil {
 		suite.T().Fatalf("Error writing out configuration file: %s", err.Error())
@@ -226,7 +225,7 @@ func (suite *BaseIntegration) RunCommand(command string, arguments string, ignor
 	// write out the command thst ius being run
 	cmdlogFile := filepath.Join(suite.ProjectDir, "cmdlog.txt")
 
-	err := ioutil.WriteFile(cmdlogFile, []byte(fmt.Sprintf("%s %s", command, arguments)), 0666)
+	err := os.WriteFile(cmdlogFile, []byte(fmt.Sprintf("%s %s", command, arguments)), 0666)
 
 	if err != nil {
 		suite.T().Fatalf("Error writing command to log file: %s", err.Error())
@@ -297,7 +296,7 @@ func (suite *BaseIntegration) SetDotnetVersion(version string) {
 		}
 	}
 
-	ioutil.WriteFile(globalJsonPath, []byte(sdkVersion), os.ModePerm)
+	os.WriteFile(globalJsonPath, []byte(sdkVersion), os.ModePerm)
 
 }
 

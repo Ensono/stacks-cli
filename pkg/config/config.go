@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -121,7 +120,7 @@ func (c *Config) Save(usedConfig string) (string, error) {
 		return savedConfigFile, fmt.Errorf("problem converting configuration to YAML syntax")
 	}
 
-	err = ioutil.WriteFile(savedConfigFile, data, 0)
+	err = os.WriteFile(savedConfigFile, data, 0)
 	if err != nil {
 		return savedConfigFile, fmt.Errorf("problem writing configuration to file")
 	}

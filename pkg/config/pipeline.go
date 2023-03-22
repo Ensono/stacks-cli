@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -77,7 +76,7 @@ func (p *Pipeline) GetVariableTemplate(workingDir string) string {
 		}
 
 		if util.Exists(path) {
-			content, _ := ioutil.ReadFile(path)
+			content, _ := os.ReadFile(path)
 			template = string(content)
 		}
 	} else {
@@ -146,7 +145,7 @@ func (p *Pipeline) ReplacePatterns(dir string) []error {
 		}
 
 		// read the file into a variable
-		content, err := ioutil.ReadFile(buildFile)
+		content, err := os.ReadFile(buildFile)
 		if err != nil {
 			errs = append(errs, err)
 			return errs

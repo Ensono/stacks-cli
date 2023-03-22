@@ -50,12 +50,17 @@ func (i *Interactive) Run() error {
 
 	i.Logger.Infof("Saving configuration to file: %s", path)
 
+	// create an output object to hold the input, thgis so that the file is written
+	// out correctly
+	output := config.Output{}
+	output.Input = i.Config.Input
+
 	// marshal the InputObject and write to the specified path
 	//
 	// The github.com/goccy libray is being used here instead because it allows items
 	// to be omitted when they are empty, muchlike the built in JSON parser
 	// The built in YAML parser does not support this
-	data, err := yaml.Marshal(&i.Config.Input)
+	data, err := yaml.Marshal(&output)
 
 	if err != nil {
 		return err

@@ -102,90 +102,92 @@ func (suite *BaseIntegration) WriteConfigFile(filename string) string {
 	cfg.Internal.AddFiles()
 
 	// create the configuration
-	input := config.InputConfig{
-		Directory: config.Directory{
-			WorkingDir: suite.ProjectDir,
-		},
-		Business: config.Business{
-			Company:   suite.Company,
-			Domain:    area,
-			Component: component,
-		},
-		Cloud: config.Cloud{
-			Platform: platform,
-		},
-		Network: config.Network{
-			Base: config.NetworkBase{
-				Domain: config.DomainType{
-					External: domain,
+	input := config.Config{
+		Input: config.InputConfig{
+			Directory: config.Directory{
+				WorkingDir: suite.ProjectDir,
+			},
+			Business: config.Business{
+				Company:   suite.Company,
+				Domain:    area,
+				Component: component,
+			},
+			Cloud: config.Cloud{
+				Platform: platform,
+			},
+			Network: config.Network{
+				Base: config.NetworkBase{
+					Domain: config.DomainType{
+						External: domain,
+					},
 				},
 			},
-		},
-		Pipeline: pipeline,
-		Project: []config.Project{
-			{
-				Name: fmt.Sprintf("%s-1", suite.Project),
-				Framework: config.Framework{
-					Type:    framework,
-					Option:  framework_option,
-					Version: *framework_version,
+			Pipeline: pipeline,
+			Project: []config.Project{
+				{
+					Name: fmt.Sprintf("%s-1", suite.Project),
+					Framework: config.Framework{
+						Type:    framework,
+						Option:  framework_option,
+						Version: *framework_version,
+					},
+					Platform: config.Platform{
+						Type: platform,
+					},
+					SourceControl: config.SourceControl{
+						Type: "github",
+						URL:  fmt.Sprintf("https://github.com/dummy/%s-1", suite.Project),
+					},
+					Cloud: config.Cloud{
+						Region:        cloud_region,
+						ResourceGroup: cloud_group,
+					},
 				},
-				Platform: config.Platform{
-					Type: platform,
+				{
+					Name: fmt.Sprintf("%s-2", suite.Project),
+					Framework: config.Framework{
+						Type:    framework,
+						Option:  framework_option,
+						Version: *framework_version,
+					},
+					Platform: config.Platform{
+						Type: platform,
+					},
+					SourceControl: config.SourceControl{
+						Type: "github",
+						URL:  "",
+					},
+					Cloud: config.Cloud{
+						Region:        cloud_region,
+						ResourceGroup: cloud_group,
+					},
 				},
-				SourceControl: config.SourceControl{
-					Type: "github",
-					URL:  fmt.Sprintf("https://github.com/dummy/%s-1", suite.Project),
-				},
-				Cloud: config.Cloud{
-					Region:        cloud_region,
-					ResourceGroup: cloud_group,
+				{
+					Name: fmt.Sprintf("%s-3", suite.Project),
+					Framework: config.Framework{
+						Type:    framework,
+						Option:  framework_option,
+						Version: *framework_version,
+					},
+					Platform: config.Platform{
+						Type: platform,
+					},
+					SourceControl: config.SourceControl{
+						Type: "github",
+						URL:  "",
+					},
+					Cloud: config.Cloud{
+						Region:        cloud_region,
+						ResourceGroup: cloud_group,
+					},
 				},
 			},
-			{
-				Name: fmt.Sprintf("%s-2", suite.Project),
-				Framework: config.Framework{
-					Type:    framework,
-					Option:  framework_option,
-					Version: *framework_version,
+			Terraform: config.Terraform{
+				Backend: config.TerraformBackend{
+					Storage:   tf_storage,
+					Container: tf_container,
+					Group:     tf_group,
 				},
-				Platform: config.Platform{
-					Type: platform,
-				},
-				SourceControl: config.SourceControl{
-					Type: "github",
-					URL:  "",
-				},
-				Cloud: config.Cloud{
-					Region:        cloud_region,
-					ResourceGroup: cloud_group,
-				},
-			},
-			{
-				Name: fmt.Sprintf("%s-3", suite.Project),
-				Framework: config.Framework{
-					Type:    framework,
-					Option:  framework_option,
-					Version: *framework_version,
-				},
-				Platform: config.Platform{
-					Type: platform,
-				},
-				SourceControl: config.SourceControl{
-					Type: "github",
-					URL:  "",
-				},
-				Cloud: config.Cloud{
-					Region:        cloud_region,
-					ResourceGroup: cloud_group,
-				},
-			},
-		},
-		Terraform: config.Terraform{
-			Backend: config.TerraformBackend{
-				Storage:   tf_storage,
-				Container: tf_container,
-				Group:     tf_group,
 			},
 		},
 	}

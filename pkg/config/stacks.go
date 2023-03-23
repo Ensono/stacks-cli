@@ -7,48 +7,51 @@ import (
 )
 
 type Stacks struct {
-	Components []StacksComponent `mapstructure:"components" yaml:"components"`
+	// Components []StacksComponent `mapstructure:"components" yaml:"components"`
+
+	Components map[string]StacksComponent `mapstructure:"components" yaml:"components"`
 
 	named map[string]StacksComponent
 }
 
-func (s *Stacks) GetComponent(ref string) (StacksComponent, error) {
+// func (s *Stacks) GetComponent(ref string) (StacksComponent, error) {
 
-	var err error
-	stacks_component := StacksComponent{}
+// 	var err error
+// 	stacks_component := StacksComponent{}
 
-	// if the named map contains the component return it, otherwise return
-	// empty and set the error
-	if val, ok := s.named[ref]; ok {
-		stacks_component = val
-	} else {
-		err = fmt.Errorf("unable to find component with reference: %s", ref)
-	}
+// 	// if the named map contains the component return it, otherwise return
+// 	// empty and set the error
+// 	if val, ok := s.named[ref]; ok {
+// 		stacks_component = val
+// 	} else {
+// 		err = fmt.Errorf("unable to find component with reference: %s", ref)
+// 	}
 
-	return stacks_component, err
-}
+// 	return stacks_component, err
+// }
 
 func (s *Stacks) GetComponentCount() int {
-	return len(s.named)
+	return len(s.Components)
 }
 
 // SetUniqueComponents rewrites the slice of Stacks so that it is a unique
 // list. Later values in the original slice take precedence
-func (s *Stacks) SetUniqueComponents() {
+// func (s *Stacks) SetUniqueComponents() {
 
-	// create a map to hold the unique values of the slice
-	s.named = make(map[string]StacksComponent)
+// 	// create a map to hold the unique values of the slice
+// 	s.named = make(map[string]StacksComponent)
 
-	// iterate around the components that have been set
-	for _, component := range s.Components {
+// 	// iterate around the components
+// 	for _, component := range s.Components {
 
-		// update the named map with the component
-		s.named[component.GetName()] = component
-	}
-}
+// 		// update the named map with the component
+// 		s.named[component.GetName()] = component
+// 	}
+// }
 
 func (s *Stacks) GetComponentPackage(name string) Package {
-	component, _ := s.GetComponent(name)
+	// component, _ := s.GetComponent(name)
+	component := s.Components[name]
 	return component.Package
 
 }

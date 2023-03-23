@@ -312,8 +312,6 @@ func (s *Scaffold) processProject(project config.Project) {
 
 			// determine if this operation should be run by checking the tags
 			if s.shouldRun(op.Tags, project.Framework.Option) {
-				s.Logger.Warnf("Operation not permitted to run for this framework: %s", project.Framework.Option)
-			} else {
 				// perform the operation
 				err = s.PerformOperation(op, &project, phase.Directory, dir)
 
@@ -321,6 +319,9 @@ func (s *Scaffold) processProject(project config.Project) {
 					s.Logger.Errorf("issue encountered performing '%s' operation: %s", phase.Name, err.Error())
 					break
 				}
+
+			} else {
+				s.Logger.Warnf("Operation not permitted to run for this framework: %s", project.Framework.Option)
 			}
 		}
 	}
@@ -479,10 +480,12 @@ func (s *Scaffold) cleanup() {
 
 // shouldRun determines if the operation should be run given the tags and the keyword to look for
 func (s *Scaffold) shouldRun(tags []string, keyword string) bool {
-	var result bool = true
+	var result bool
 
-	if len(tags) > 0 && !util.SliceContains(tags, keyword) {
-		result = false
+	if len(tags) == 0 {
+		result = true
+	} else if len(tags) > 0 && util.SliceContains(tags, keyword) {
+		result = true
 	}
 
 	return result

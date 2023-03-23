@@ -34,56 +34,64 @@ frameworks:
 
 stacks:
   components:
-    - group: dotnet
+    dotnet_webapi:
+      group: dotnet
       name: webapi
       package:
         name: Amido.Stacks.Templates
         type: nuget
         id: stacks-dotnet
 
-    - group: dotnet
+    dotnet_cqrs:
+      group: dotnet
       name: cqrs
       package:
         name: Amido.Stacks.CQRS.Templates
         type: nuget
         id: stacks-dotnet-cqrs
 
-    - group: java
+    java_webapi:
+      group: java
       name: webapi
       package:
         url: https://github.com/amido/stacks-java
         version: master
         type: git
 
-    - group: java
+    java_cqrs:
+      group: java
       name: cqrs
       package:
         url: https://github.com/amido/stacks-java-cqrs
         version: main
         type: git
 
-    - group: java
+    java_events:
+      group: java
       name: events
       package:
         url: https://github.com/amido/stacks-java-cqrs-events
         version: main
         type: git
 
-    - group: nx
+    nx_next:
+      group: nx
       name: next
       package:
         url: https://github.com/amido/stacks-nx
         version: main
         type: git
 
-    - group: nx
+    nx_apps:
+      group: nx
       name: apps
       package:
         url: https://github.com/amido/stacks-nx
         version: main
         type: git
 
-    - group: infra
+    infra_aks:
+      group: infra
       name: aks
       package:
         url: https://github.com/amido/stacks-infrastructure-aks/

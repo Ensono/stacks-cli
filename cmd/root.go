@@ -110,7 +110,7 @@ func init() {
 	viper.BindPFlag("input.options.onlinehelp", rootCmd.PersistentFlags().Lookup("onlinehelp"))
 	viper.BindPFlag("input.options.dryrun", rootCmd.PersistentFlags().Lookup("dryrun"))
 
-	viper.BindPFlag("input.overrides.internal_config", rootCmd.Flags().Lookup("internalconfig"))
+	viper.BindPFlag("input.overrides.internal_config", rootCmd.PersistentFlags().Lookup("internalconfig"))
 }
 
 // initConfig reads in a config file and ENV vars if set
@@ -164,6 +164,7 @@ func preRun(ccmd *cobra.Command, args []string) {
 		}
 
 		viper.MergeConfig(strings.NewReader(string(data)))
+
 	}
 
 	ScaffoldOverrides()
@@ -176,7 +177,7 @@ func preRun(ccmd *cobra.Command, args []string) {
 	}
 
 	// ensure that the components are checked for uniqueness
-	Config.Stacks.SetUniqueComponents()
+	// Config.Stacks.SetUniqueComponents()
 
 	// Configure application logging
 	// This is done after unmarshalling of the configuration so that the

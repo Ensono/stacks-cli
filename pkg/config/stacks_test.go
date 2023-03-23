@@ -9,20 +9,21 @@ import (
 
 	yaml "github.com/goccy/go-yaml"
 	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
 )
 
 var internalConfig = []byte(`
 stacks:
   components:
-    - group: dotnet
+    dotnet_webapi:
+      group: dotnet
       name: webapi
       package:
         url: https://github.com/amido/stacks-dotnet-newfeature
         version: main
         type: git
 
-    - group: infra
+    infra_keyvault:
+      group: infra
       name: keyvault
       package:
         url: https://github.com/amido/stacks-infrastructure-kv
@@ -80,8 +81,9 @@ func setupTestCase(t *testing.T, configuration []byte) (func(t *testing.T), stri
 	return deferFunc, inputConfigFilePath, internalConfigFilePath
 }
 
-// TestComponents tests the built in components and their values
-func TestComponents(t *testing.T) {
+func TestStacksComponents(t *testing.T) {
+
+	var expected int = 8
 
 	config := Config{}
 	config.Init()
@@ -110,32 +112,13 @@ func TestComponents(t *testing.T) {
 		t.Errorf("Unable to parse configuration data: %v", err)
 	}
 
-	config.Stacks.SetUniqueComponents()
-
-	// Ensure that the components have been set correctly, according to the built in config
-	data := make(map[string]string)
-	data["dotnet_webapi"] = "Amido.Stacks.Templates"
-	data["dotnet_cqrs"] = "Amido.Stacks.CQRS.Templates"
-	data["java_webapi"] = "https://github.com/amido/stacks-java"
-	data["java_cqrs"] = "https://github.com/amido/stacks-java-cqrs"
-	data["java_events"] = "https://github.com/amido/stacks-java-cqrs-events"
-	data["nx_next"] = "https://github.com/amido/stacks-nx"
-	data["nx_apps"] = "https://github.com/amido/stacks-nx"
-	data["infra_aks"] = "https://github.com/amido/stacks-infrastructure-aks/"
-
-	for key, value := range data {
-		assert.Equal(t, value, config.Stacks.GetComponentPackageRef(key))
-	}
-
-	// check that there are the expected number of configurations
-	if len(data) != config.Stacks.GetComponentCount() {
-		t.Errorf("inconsistent number of components, expected %d but got %d", len(data), config.Stacks.GetComponentCount())
+	if len(config.Stacks.Components) != expected {
+		t.Errorf("Unexpected number of components, %d instead of %d", len(config.Stacks.Components), expected)
 	}
 }
 
-// TestComponentOverrideAndAdd checks that an existing component can be overridden and that news
-// ones can be supplied
-func TestComponentOverrideAndAdd(t *testing.T) {
+func TestOverriddenStacksComponents(t *testing.T) {
+	var expected int = 9
 
 	config := Config{}
 	config.Init()
@@ -164,76 +147,24 @@ func TestComponentOverrideAndAdd(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unable to read in override for internal configuration: %v", err)
 	}
-	viper.MergeConfig(strings.NewReader(string(data)))
+	err = viper.MergeConfig(strings.NewReader(string(data)))
+	if err != nil {
+		t.Errorf("Unable to merge in override configuration: %v", err)
+	}
 
-	// unmarshal the data
 	err = viper.Unmarshal(&config)
 	if err != nil {
 		t.Errorf("Unable to parse configuration data: %v", err)
 	}
 
-	config.Stacks.SetUniqueComponents()
-
-	assert.Equal(t, "https://github.com/amido/stacks-dotnet-newfeature", config.Stacks.GetComponentPackageRef("dotnet_webapi"))
-	assert.Equal(t, "https://github.com/amido/stacks-infrastructure-kv", config.Stacks.GetComponentPackageRef("infra_keyvault"))
-
-}
-
-func TestSetUniqueCommands(t *testing.T) {
-
-	tables := []struct {
-		cfg   Config
-		count int
-		msg   string
-	}{
-		{
-			Config{
-				Stacks: Stacks{
-					Components: []StacksComponent{
-						{
-							Group: "dotnet",
-							Name:  "webapi",
-						},
-					},
-				},
-			},
-			1,
-			"Slice should be unaffected",
-		},
-		{
-			Config{
-				Stacks: Stacks{
-					Components: []StacksComponent{
-						{
-							Group: "dotnet",
-							Name:  "webapi",
-							Package: Package{
-								URL: "https://github.com/amido/stacks-dotnet-cqrs",
-							},
-						},
-						{
-							Group: "dotnet",
-							Name:  "webapi",
-							Package: Package{
-								URL: "https://github.com/amido/stacks-dotnet",
-							},
-						},
-					},
-				},
-			},
-			1,
-			"There should only be one component in the final config",
-		},
+	if len(config.Stacks.Components) != expected {
+		t.Errorf("Unexpected number of components, %d instead of %d", len(config.Stacks.Components), expected)
 	}
 
-	for _, table := range tables {
-
-		// ensure that no duplicates exist
-		table.cfg.Stacks.SetUniqueComponents()
-
-		// check that the number of components is correct
-		if table.cfg.Stacks.GetComponentCount() != table.count {
-			t.Error(table.msg)
-		}
+	// check that the dotnet_webapi URL has been overrwritten
+	expected_url := "https://github.com/amido/stacks-dotnet-newfeature"
+	if config.Stacks.Components["dotnet_webapi"].Package.URL != expected_url {
+		t.Errorf("'dotnet_webapi' URL should have been overridden, expected %s but got %s", expected_url, config.Stacks.Components["dotnet_webapi"].Package.URL)
 	}
+
 }

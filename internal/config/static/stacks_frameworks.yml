@@ -29,3 +29,6 @@ stacks:
     aks:
       name: https://github.com/amido/stacks-infrastructure-aks/
       version: master
+    data: 
+      name: https://github.com/amido/stacks-data-infrastructure
+      version: master

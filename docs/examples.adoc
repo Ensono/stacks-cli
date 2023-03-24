@@ -25,7 +25,7 @@
 
 This section provides some examples on how to run the CLI to setup a project from the Ensono Digital Stacks projects.
 
-NOTE: It is assumed that the Stacks CLI command has been installed and is in the path to be called using the `stacks` name.
+NOTE: It is assumed that the Stacks CLI command has been installed and is in the path to be called using the `stacks-cli` name.
 
 The following table shows the settings that are being used in each of the examples.
 
@@ -107,6 +107,12 @@ include::examples/nx_interactive.adoc[]
 
 include::examples/nx_config_file.adoc[]
 
+=== Using internal configuration
+
+include::examples/export.adoc[]
+
+include::examples/scaffold_ioverride.adoc[]
+
 === Running scaffold command again
 
 Due to the fact that the CLI does quite a lot of work, it will not attempt to create the projects if the project path already exists. For example, running the same command as before, without changing any of the settings will result in an error being displayed during the creation of the project.
@@ -128,7 +134,7 @@ It is possible to change this behaviour, by adding the `--force` option to the c
 stacks-cli scaffold -c ./stacks.yml --force
 ----
 
-.Force removal of existng project directories
+.Force removal of existing project directories
 image::images/stackscli-scaffold-project-guard-force.png[]
 
 === Checking Framework command versions

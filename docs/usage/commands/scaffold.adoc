@@ -11,3 +11,81 @@ stacks-cli scaffold -h
 image::images/stackscli-scaffold-help.png[]
 
 The <<Examples>> section has a lot of examples showing how to run the Stacks CLI.
+
+===== Overriding internal configuration
+
+When new features are added to components or new components need to be tested, the CLI scaffold command accepts an override file using the `--internalconfig` argument.
+
+Only specific parts of the configuration need to be overridden to satisfy the requirement; the while config does not need to be passed in.
+
+The CLI has a number of components already configured. By using an override file with the appropriate configuration they can be modified. Take the following table as an example.
+
+[cols="1a,1a",options="header"]
+|====
+| Internal Config (section) | Override Config
+| 
+[source,yml]
+----
+include::../../../internal/config/staticFiles/config.yml[lines=35..59]
+----
+|
+[source,yml]
+----
+stacks:
+  components:
+    dotnet_webapi:
+      group: dotnet
+      name: webapi
+      package:
+        url: https://github.com/ensonodigital/stacks-dotnet-v2
+        type: git
+
+    infra_data:
+      group: infra
+      name: data
+      package:
+        url: https://github.com/ensonodigital/stacks-infra-data
+        type: git
+----
+|====
+
+With these two files the resultant packages that the CLI can use will be:
+
+[source,yml,linenums]
+----
+stacks:
+  components:
+    dotnet_webapi:
+      group: dotnet
+      name: webapi
+      package:
+        url: https://github.com/ensonodigital/stacks-dotnet-v2
+        type: git
+
+    dotnet_cqrs:
+      group: dotnet
+      name: cqrs
+      package:
+        name: Amido.Stacks.CQRS.Templates
+        type: nuget
+        id: stacks-dotnet-cqrs
+
+    java_webapi:
+      group: java
+      name: webapi
+      package:
+        url: https://github.com/amido/stacks-java
+        version: master
+        type: git
+
+    infra_data:
+      group: infra
+      name: data
+      package:
+        name: https://github.com/ensonodigital/stacks-infra-data
+        type: git        
+----
+
+As can be seen the `dotnet_webapi` compnent ULR, on line 7, has been updated to reflect the new URL as well as change the type of package.
+
+Lines 26 - 31 show the new component that has been added with the override configuration.

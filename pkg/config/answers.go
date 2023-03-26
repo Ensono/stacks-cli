@@ -151,7 +151,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 	return questions
 }
 
-func (a *Answers) getProjectQuestions(qType string) []*survey.Question {
+func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Question {
 
 	var questions []*survey.Question
 
@@ -170,7 +170,7 @@ func (a *Answers) getProjectQuestions(qType string) []*survey.Question {
 				Name: "framework_type",
 				Prompt: &survey.Select{
 					Message: "What framework should be used for the project?",
-					Options: []string{"dotnet", "java", "nx", "infra"},
+					Options: config.Stacks.GetComponentNames(), // []string{"dotnet", "java", "nx", "infra"},
 				},
 				Validate: survey.Required,
 			},
@@ -178,17 +178,17 @@ func (a *Answers) getProjectQuestions(qType string) []*survey.Question {
 	case "dotnet", "java":
 
 		// define the list of options for each of the different languages
-		options := []string{"webapi", "cqrs"}
-		if qType == "java" {
-			options = append(options, "events")
-		}
+		// options := []string{"webapi", "cqrs"}
+		// if qType == "java" {
+		// 	options = append(options, "events")
+		// }
 
 		questions = []*survey.Question{
 			{
 				Name: "framework_option",
 				Prompt: &survey.Select{
 					Message: "Which option of the framework do you require?",
-					Options: options,
+					Options: config.Stacks.GetComponentOptions(qType),
 				},
 				Validate: survey.Required,
 			},
@@ -201,14 +201,14 @@ func (a *Answers) getProjectQuestions(qType string) []*survey.Question {
 			},
 		}
 	case "nx":
-		options := []string{"next", "apps"}
+		// options := []string{"next", "apps"}
 
 		questions = []*survey.Question{
 			{
 				Name: "framework_option",
 				Prompt: &survey.Select{
 					Message: "Which option of the framework do you require?",
-					Options: options,
+					Options: config.Stacks.GetComponentOptions(qType),
 					Description: func(value string, index int) string {
 						if value == "next" {
 							return "Stacks Workspace with NextJs"
@@ -235,7 +235,7 @@ func (a *Answers) getProjectQuestions(qType string) []*survey.Question {
 				Name: "framework_option",
 				Prompt: &survey.Select{
 					Message: "Which type of infrastructure is required?",
-					Options: []string{"eks", "aks"},
+					Options: config.Stacks.GetComponentOptions(qType),
 					Default: "aks",
 				},
 				Validate: survey.Required,
@@ -340,19 +340,19 @@ func (a *Answers) RunInteractive(config *Config) error {
 		pa := ProjectAnswers{}
 
 		// - pre questions
-		err = survey.Ask(a.getProjectQuestions("pre"), &pa)
+		err = survey.Ask(a.getProjectQuestions("pre", config), &pa)
 		if err != nil {
 			continue
 		}
 
 		// - specific questions based on the framework selected
-		err = survey.Ask(a.getProjectQuestions(pa.FrameworkType), &pa)
+		err = survey.Ask(a.getProjectQuestions(pa.FrameworkType, config), &pa)
 		if err != nil {
 			continue
 		}
 
 		// - post questions
-		err = survey.Ask(a.getProjectQuestions("post"), &pa)
+		err = survey.Ask(a.getProjectQuestions("post", config), &pa)
 		if err != nil {
 			continue
 		}

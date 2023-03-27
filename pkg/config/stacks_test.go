@@ -4,48 +4,81 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
-	"github.com/amido/stacks-cli/internal/config/static"
+	yaml "github.com/goccy/go-yaml"
 	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
 )
 
+var internalConfig = []byte(`
+stacks:
+  components:
+    dotnet_webapi:
+      group: dotnet
+      name: webapi
+      package:
+        url: https://github.com/amido/stacks-dotnet-newfeature
+        version: main
+        type: git
+
+    infra_keyvault:
+      group: infra
+      name: keyvault
+      package:
+        url: https://github.com/amido/stacks-infrastructure-kv
+        version: main
+        type: git
+
+    golang_webapi:
+      group: golang
+      name: webapi
+      package:
+        url: https://github.com/amido/stacks-golang-webapi
+        version: main
+        type: git
+ 
+`)
+
 var basicConfiguration = []byte(`
-project:
-- name: tests
-  framework:
-    type: dotnet
-    option: webapi
+input:
+  project:
+    - name: tests
+      framework:
+        type: dotnet
+        option: webapi
 `)
 
 var srcUrlConfiguration = []byte(`
-project:
-- name: tests
-  framework:
-    type: dotnet
-    option: webapi
-
-stacks:
-  dotnet:
-    webapi:
-      name: https://github.com/amido/stacks-dotnet-newfeature
-      version: main
+input:
+  project:
+    - name: tests
+      framework:
+        type: dotnet
+        option: webapi
 `)
 
-func setupTestCase(t *testing.T, configuration []byte) (func(t *testing.T), string) {
+func setupTestCase(t *testing.T, configuration []byte) (func(t *testing.T), string, string) {
 	t.Log("Setting up configuration test environment")
 
 	// create a temporary directory
 	tempDir := t.TempDir()
 
-	// write out the configuration file to the directory
-	configFilePath := filepath.Join(tempDir, "testconfig.yml")
-	if err := os.WriteFile(configFilePath, configuration, 0666); err != nil {
+	// write out the input configuration file to the directory
+	inputConfigFilePath := filepath.Join(tempDir, "testconfig.yml")
+	if err := os.WriteFile(inputConfigFilePath, configuration, 0666); err != nil {
 		t.Logf("[ERROR] Unable to write out configuration file: %v", err)
 	} else {
-		t.Logf("Config file successfully written")
+		t.Logf("Config file successfully written: %s", inputConfigFilePath)
+	}
+
+	// write out the internal configuration to the directory
+	internalConfigFilePath := filepath.Join(tempDir, "internalconfig.yml")
+	if err := os.WriteFile(internalConfigFilePath, internalConfig, 0666); err != nil {
+		t.Logf("[ERROR] Unable to write out configuration file: %v", err)
+	} else {
+		t.Logf("Internal config file successfully written: %s", internalConfigFilePath)
 	}
 
 	deferFunc := func(t *testing.T) {
@@ -55,76 +88,270 @@ func setupTestCase(t *testing.T, configuration []byte) (func(t *testing.T), stri
 		}
 	}
 
-	return deferFunc, configFilePath
+	return deferFunc, inputConfigFilePath, internalConfigFilePath
 }
 
-func TestDefaultSrcUrlMap(t *testing.T) {
+func TestStacksComponents(t *testing.T) {
+
+	var expected int = 8
 
 	config := Config{}
+	config.Init()
+
+	// Unmarshal the internal static config
+	static_config := config.Internal.GetFileContent("config")
+	err := yaml.Unmarshal(static_config, &config)
+	if err != nil {
+		t.Errorf("Unable to parse internal config: %v", err)
+	}
 
 	// setup the enviornment
-	cleanup, configFile := setupTestCase(t, basicConfiguration)
+	cleanup, configFile, _ := setupTestCase(t, basicConfiguration)
 	defer cleanup(t)
 
 	// Read in the configuration file
 	viper.SetConfigFile(configFile)
-
-	// read in the static configuration of the src repo urls
-	stacks_config := strings.NewReader(string(static.Config("stacks_frameworks")))
-	viper.MergeConfig(stacks_config)
 
 	// Read in the configuration file
 	if err := viper.MergeInConfig(); err != nil {
 		fmt.Printf("[ERROR] Unable to read in configuration file: %v\n", err)
 	}
 
-	// unmarshal the data
-	err := viper.Unmarshal(&config.Input)
+	err = viper.Unmarshal(&config)
 	if err != nil {
 		t.Errorf("Unable to parse configuration data: %v", err)
 	}
 
-	// get the src URL map
-	srcURLs := config.Input.Stacks.GetSrcURLMap()
-
-	assert.Equal(t, "Amido.Stacks.Templates", srcURLs["dotnet_webapi"].Name)
-	assert.Equal(t, "Amido.Stacks.CQRS.Templates", srcURLs["dotnet_cqrs"].Name)
-	assert.Equal(t, "https://github.com/amido/stacks-java", srcURLs["java_webapi"].Name)
-	assert.Equal(t, "https://github.com/amido/stacks-java-cqrs", srcURLs["java_cqrs"].Name)
-	assert.Equal(t, "https://github.com/amido/stacks-java-cqrs-events", srcURLs["java_events"].Name)
-	assert.Equal(t, "https://github.com/amido/stacks-nx", srcURLs["nx_next"].Name)
-	assert.Equal(t, "https://github.com/amido/stacks-nx", srcURLs["nx_apps"].Name)
+	if len(config.Stacks.Components) != expected {
+		t.Errorf("Unexpected number of components, %d instead of %d", len(config.Stacks.Components), expected)
+	}
 }
 
-func TestSrcUrlMap(t *testing.T) {
+func TestOverriddenStacksComponents(t *testing.T) {
+	var expected int = 10
 
 	config := Config{}
+	config.Init()
+
+	// Unmarshal the internal static config
+	static_config := config.Internal.GetFileContent("config")
+	err := yaml.Unmarshal(static_config, &config)
+	if err != nil {
+		t.Errorf("Unable to parse internal config: %v", err)
+	}
 
 	// setup the enviornment
-	cleanup, configFile := setupTestCase(t, srcUrlConfiguration)
+	cleanup, configFile, internalConfigFile := setupTestCase(t, basicConfiguration)
 	defer cleanup(t)
 
 	// Read in the configuration file
-	viper.Reset()
 	viper.SetConfigFile(configFile)
-
-	// read in the static configuration of the src repo urls
-	stacks_config := strings.NewReader(string(static.Config("stacks_frameworks")))
-	viper.MergeConfig(stacks_config)
 
 	// Read in the configuration file
 	if err := viper.MergeInConfig(); err != nil {
 		fmt.Printf("[ERROR] Unable to read in configuration file: %v\n", err)
 	}
 
-	// unmarshal the data
-	err := viper.Unmarshal(&config.Input)
+	// add in the internal configuration
+	data, err := os.ReadFile(internalConfigFile)
+	if err != nil {
+		t.Errorf("Unable to read in override for internal configuration: %v", err)
+	}
+	err = viper.MergeConfig(strings.NewReader(string(data)))
+	if err != nil {
+		t.Errorf("Unable to merge in override configuration: %v", err)
+	}
+
+	err = viper.Unmarshal(&config)
 	if err != nil {
 		t.Errorf("Unable to parse configuration data: %v", err)
 	}
 
-	// get the src URL map
-	srcURLs := config.Input.Stacks.GetSrcURLMap()
+	if len(config.Stacks.Components) != expected {
+		t.Errorf("Unexpected number of components, %d instead of %d", len(config.Stacks.Components), expected)
+	}
 
-	assert.Equal(t, "https://github.com/amido/stacks-dotnet-newfeature", srcURLs["dotnet_webapi"].Name)
+	// check that the dotnet_webapi URL has been overrwritten
+	expected_url := "https://github.com/amido/stacks-dotnet-newfeature"
+	if config.Stacks.Components["dotnet_webapi"].Package.URL != expected_url {
+		t.Errorf("'dotnet_webapi' URL should have been overridden, expected %s but got %s", expected_url, config.Stacks.Components["dotnet_webapi"].Package.URL)
+	}
+
+}
+
+// TestGetComponentNames ensures that the expected names are returned from the system
+func TestGetComponentNames(t *testing.T) {
+
+	// create a set of tests
+	tables := []struct {
+		expectedFrameworks []string
+		override           bool
+	}{
+		{
+			[]string{"dotnet", "infra", "java", "nx"},
+			false,
+		},
+		{
+			[]string{"dotnet", "golang", "infra", "java", "nx"},
+			true,
+		},
+	}
+
+	for _, table := range tables {
+
+		// initialise the configuration each time so that each time a new config is being tested
+		config := Config{}
+		config.Init()
+
+		// Unmarshal the internal static config
+		static_config := config.Internal.GetFileContent("config")
+		err := yaml.Unmarshal(static_config, &config)
+		if err != nil {
+			t.Errorf("Unable to parse internal config: %v", err)
+		}
+
+		// if the override has been set then ensure the internalconfig os overwritten
+		if table.override {
+			// setup the enviornment
+			cleanup, configFile, internalConfigFile := setupTestCase(t, basicConfiguration)
+			defer cleanup(t)
+
+			// Read in the configuration file
+			viper.SetConfigFile(configFile)
+
+			// Read in the configuration file
+			if err := viper.MergeInConfig(); err != nil {
+				fmt.Printf("[ERROR] Unable to read in configuration file: %v\n", err)
+			}
+
+			// add in the internal configuration
+			data, err := os.ReadFile(internalConfigFile)
+			if err != nil {
+				t.Errorf("Unable to read in override for internal configuration: %v", err)
+			}
+			err = viper.MergeConfig(strings.NewReader(string(data)))
+			if err != nil {
+				t.Errorf("Unable to merge in override configuration: %v", err)
+			}
+
+			err = viper.Unmarshal(&config)
+			if err != nil {
+				t.Errorf("Unable to parse configuration data: %v", err)
+			}
+		}
+
+		frameworks := config.Stacks.GetComponentNames()
+
+		actualCount := len(frameworks)
+		expectedCount := len(table.expectedFrameworks)
+
+		if actualCount != expectedCount {
+			t.Errorf("Unexpected number of options for %s. Expected %d got %d", table.expectedFrameworks, expectedCount, actualCount)
+		}
+
+		if !reflect.DeepEqual(frameworks, table.expectedFrameworks) {
+			t.Errorf("Unexpected options returned. Expected %v got %v", table.expectedFrameworks, frameworks)
+		}
+	}
+}
+
+// TestGetComponentOptionsDefault checks that the options returned are expected for the internal config
+// as well as ones that been added
+func TestGetComponentOptionsDefault(t *testing.T) {
+
+	tables := []struct {
+		framework       string
+		expectedOptions []string
+		override        bool
+	}{
+		{
+			"dotnet",
+			[]string{"cqrs", "webapi"},
+			false,
+		},
+		{
+			"java",
+			[]string{"cqrs", "events", "webapi"},
+			false,
+		},
+		{
+			"nx",
+			[]string{"apps", "next"},
+			false,
+		},
+		{
+			"infra",
+			[]string{"aks"},
+			false,
+		},
+		{
+			"infra",
+			[]string{"aks", "keyvault"},
+			true,
+		},
+		{
+			"golang",
+			[]string{"webapi"},
+			true,
+		},
+	}
+
+	for _, table := range tables {
+
+		// initialise the configuration each time so that each time a new config is being tested
+		config := Config{}
+		config.Init()
+
+		// Unmarshal the internal static config
+		static_config := config.Internal.GetFileContent("config")
+		err := yaml.Unmarshal(static_config, &config)
+		if err != nil {
+			t.Errorf("Unable to parse internal config: %v", err)
+		}
+
+		// if the override has been set then ensure the internalconfig os overwritten
+		if table.override {
+			// setup the enviornment
+			cleanup, configFile, internalConfigFile := setupTestCase(t, basicConfiguration)
+			defer cleanup(t)
+
+			// Read in the configuration file
+			viper.SetConfigFile(configFile)
+
+			// Read in the configuration file
+			if err := viper.MergeInConfig(); err != nil {
+				fmt.Printf("[ERROR] Unable to read in configuration file: %v\n", err)
+			}
+
+			// add in the internal configuration
+			data, err := os.ReadFile(internalConfigFile)
+			if err != nil {
+				t.Errorf("Unable to read in override for internal configuration: %v", err)
+			}
+			err = viper.MergeConfig(strings.NewReader(string(data)))
+			if err != nil {
+				t.Errorf("Unable to merge in override configuration: %v", err)
+			}
+
+			err = viper.Unmarshal(&config)
+			if err != nil {
+				t.Errorf("Unable to parse configuration data: %v", err)
+			}
+		}
+
+		// get the options associated with the framework
+		options := config.Stacks.GetComponentOptions(table.framework)
+
+		// get the expected number of options
+		expectedCount := len(table.expectedOptions)
+
+		if len(options) != expectedCount {
+			t.Errorf("Unexpected number of options for %s. Expected %d got %d", table.framework, expectedCount, len(options))
+		}
+
+		if !reflect.DeepEqual(options, table.expectedOptions) {
+			t.Errorf("Unexpected options returned. Expected %v got %v", table.expectedOptions, options)
+		}
+	}
+
 }

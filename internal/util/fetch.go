@@ -2,7 +2,7 @@ package util
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -26,7 +26,7 @@ func GitClone(repoUrl, ref, trunk string, tmpPath string, token string) (string,
 		return archiveUrl, fmt.Errorf("StatusCode: %d", resp.StatusCode)
 	}
 
-	zip, err := ioutil.ReadAll(resp.Body)
+	zip, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}

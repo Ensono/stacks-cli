@@ -3,7 +3,7 @@ package util
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 )
 
 // DotnetSDKVersion returns th required Dotnet SDK version from the specified file
@@ -18,7 +18,7 @@ func DotnetSDKVersion(file string) (string, error) {
 	if Exists(file) {
 
 		// read the contents of the file into a map
-		jsonStr, err = ioutil.ReadFile(file)
+		jsonStr, err = os.ReadFile(file)
 
 		if err != nil {
 			return "", err

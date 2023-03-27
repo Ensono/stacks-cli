@@ -1,0 +1,111 @@
+frameworks:
+  - name: dotnet
+    commands:
+      - dotnet
+      - git
+    version:
+      command: dotnet
+      arguments: --version
+      pattern: (?P<version>.*)
+
+  - name: java
+    commands:
+      - java
+      - git
+      - mvn
+    version:
+      command: java
+      arguments: -version
+      pattern: '"(?P<version>.*)"'
+
+  - name: nx
+    commands:
+      - node
+      - npx
+      - git
+    version:
+      command: node
+      arguments: --version
+      pattern: '"v(?P<version>.*)"'
+
+  - name: infra
+    commands:
+      - git
+
+stacks:
+  components:
+    dotnet_webapi:
+      group: dotnet
+      name: webapi
+      package:
+        name: Amido.Stacks.Templates
+        type: nuget
+        id: stacks-dotnet
+
+    dotnet_cqrs:
+      group: dotnet
+      name: cqrs
+      package:
+        name: Amido.Stacks.CQRS.Templates
+        type: nuget
+        id: stacks-dotnet-cqrs
+
+    java_webapi:
+      group: java
+      name: webapi
+      package:
+        url: https://github.com/amido/stacks-java
+        version: master
+        type: git
+
+    java_cqrs:
+      group: java
+      name: cqrs
+      package:
+        url: https://github.com/amido/stacks-java-cqrs
+        version: main
+        type: git
+
+    java_events:
+      group: java
+      name: events
+      package:
+        url: https://github.com/amido/stacks-java-cqrs-events
+        version: main
+        type: git
+
+    nx_next:
+      group: nx
+      name: next
+      package:
+        url: https://github.com/amido/stacks-nx
+        version: main
+        type: git
+
+    nx_apps:
+      group: nx
+      name: apps
+      package:
+        url: https://github.com/amido/stacks-nx
+        version: main
+        type: git
+
+    infra_aks:
+      group: infra
+      name: aks
+      package:
+        url: https://github.com/amido/stacks-infrastructure-aks/
+        version: master
+        type: git
+
+help:
+  root: "https://stacks.amido.com/docs/stackscli/usage"
+  scaffold: "https://stacks.amido.com/docs/stackscli/runtime_config#scaffold-options"
+  interactive: "https://stacks.amido.com/docs/stackscli/runtime_config#interactive-options"
+  version: "https://stacks.amido.com/docs/stackscli/runtime_config#version-options"
+  export: "https://stacks.amido.com/docs/stackscli/runtime_config#export-options"
+
+commands:
+  git:
+    - git init
+    - git remote add origin {{ .Project.SourceControl.URL }}

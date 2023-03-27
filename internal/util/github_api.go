@@ -3,7 +3,7 @@ package util
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -35,7 +35,7 @@ func CallHTTPAPI(url string, token string) (map[string]interface{}, error) {
 	}
 
 	// read all of the data returned in the call
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 
 	// unmarshal the data into the map
 	err = json.Unmarshal(body, &data)

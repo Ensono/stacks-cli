@@ -1,7 +1,6 @@
 package config
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -130,7 +129,7 @@ stages:
 	`
 
 	// read in the contents of the build file, which should have been modified
-	actual, _ := ioutil.ReadFile(buildFile)
+	actual, _ := os.ReadFile(buildFile)
 
 	// check that there are no errors
 	for _, err := range errs {
@@ -185,7 +184,7 @@ stages:
 	`
 
 	// read in the contents of the build file, which should have been modified
-	actual, _ := ioutil.ReadFile(buildFile)
+	actual, _ := os.ReadFile(buildFile)
 
 	// check that there are no errors
 	for _, err := range errs {

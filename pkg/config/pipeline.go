@@ -2,13 +2,12 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/config/static"
+	"github.com/amido/stacks-cli/internal/config/staticFiles"
 	"github.com/amido/stacks-cli/internal/util"
 )
 
@@ -77,11 +76,11 @@ func (p *Pipeline) GetVariableTemplate(workingDir string) string {
 		}
 
 		if util.Exists(path) {
-			content, _ := ioutil.ReadFile(path)
+			content, _ := os.ReadFile(path)
 			template = string(content)
 		}
 	} else {
-		template = static.GetPipelineTemplate(p.Type)
+		template = staticFiles.GetPipelineTemplate(p.Type)
 	}
 
 	return template
@@ -146,7 +145,7 @@ func (p *Pipeline) ReplacePatterns(dir string) []error {
 		}
 
 		// read the file into a variable
-		content, err := ioutil.ReadFile(buildFile)
+		content, err := os.ReadFile(buildFile)
 		if err != nil {
 			errs = append(errs, err)
 			return errs

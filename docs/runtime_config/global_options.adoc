@@ -1,0 +1,25 @@
+==== Global Options
+
+The following options can be applied to any command within the Stacks CLI.
+
+.Global Options
+[options="header"]
+|===
+| Option | Environment Variable | Description | Default | Options 
+| `-c`, `--config` | AMIDOSTACKS_CONFIG | Path to the configuration file to use | | 
+| `-l`, `--loglevel` | AMIDOSTACKS_LOG_LEVEL | Level of logging to be used | `info` | `debug`, `info`, `warning`, `error`, `fatal` 
+| `-H`, `--onlinehelp` | AMIDOSTACKS_OPTIONS_ONLINEHELP | State if the command should open the webpage for the spcified command | `false` |
+| `-f`, `--logformat` | AMIDOSTACKS_LOG_FORMAT | Output type of the logging | `text` | `text`, `json` 
+| `--logcolur` | AMIDOSTACKS_LOG_COLOUR | State if logging should include colour | | 
+| `--logfile` | AMIDOSTACKS_LOG_FILE | Write all logs to the specified file | | 
+| `-w`, `--workingdirectory` | AMIDOSTACKS_DIRECTORY_WORKINGDIR | Directory that the projects should be created in | `${PWD}` | 
+| `--tempdir` | AMIDOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Stacks for its temp files | System temp directory | 
+| `--nobanner` | AMIDOSTACKS_OPTIONS_NOBANNER | Do not display the Stacks banner when running the command | `false` |
+| `--nocliversion` | AMIDOSTACKS_OPTIONS_NOCLIVERSION | Do not perform a version check for the latest version of the Ensono Digital Stacks CLI | `false` |
+| `--dryrun` | AMIDOSTACKS_DRYRUN | Perform a dryrun of all the CLI. Particularly useful when used with `--cmdlog` | `false` |
+| `--token` | AMIDOSTACKS_OPTIONS_TOKEN | The Stacks CLI can use the GitHub API to retrieve latest version infomration for the CLI as well as use it to ascertain Zip archive URLs without having to build up the URL to the asset manually.
+
+By default the GitHub API rate limits unauthenticated API requests to 60 requests per hour, however authenticated requests can get 5,000 per hour.
+
+The GitHub API will not be used if this value is not set.
+|===

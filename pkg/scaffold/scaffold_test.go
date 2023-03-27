@@ -111,3 +111,44 @@ func TestConfigurePipeline(t *testing.T) {
 
 	}
 }
+
+func TestShouldRun(t *testing.T) {
+
+	// create the test tables
+	tables := []struct {
+		tags     []string
+		keyword  string
+		expected bool
+		msg      string
+	}{
+		{
+			[]string{},
+			"webapi",
+			true,
+			"Operation should run as there are no tags",
+		},
+		{
+			[]string{"cqrs"},
+			"webapi",
+			false,
+			"Operation should not run as the keyword is not in the tags",
+		},
+		{
+			[]string{"nextjs", "apps"},
+			"apps",
+			true,
+			"Operation should run because the keyword exists in tags",
+		},
+	}
+
+	// iterate around the tables
+	for _, table := range tables {
+		s := Scaffold{}
+
+		result := s.shouldRun(table.tags, table.keyword)
+
+		if result != table.expected {
+			t.Error(table.msg)
+		}
+	}
+}

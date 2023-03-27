@@ -12,122 +12,17 @@ When using a configuration file it is possible to setup more than one project.
 
 The following tables show the configuration options that are available at the root level and the command level.
 
-==== Global Options
+include::runtime_config/global_options.adoc[]
 
-The following options can be applied to any command within the Stacks CLI.
+include::runtime_config/completion_options.adoc[]
 
-.Global Options
-[options="header"]
-|===
-| Option | Environment Variable | Description | Default | Options 
-| `-c`, `--config` | AMIDOSTACKS_CONFIG | Path to the configuration file to use | | 
-| `-l`, `--loglevel` | AMIDOSTACKS_LOG_LEVEL | Level of logging to be used | `info` | `debug`, `info`, `warning`, `error`, `fatal` 
-| `-H`, `--onlinehelp` | AMIDOSTACKS_OPTIONS_ONLINEHELP | State if the command should open the webpage for the spcified command | `false` |
-| `-f`, `--logformat` | AMIDOSTACKS_LOG_FORMAT | Output type of the logging | `text` | `text`, `json` 
-| `--logcolur` | AMIDOSTACKS_LOG_COLOUR | State if logging should include colour | | 
-| `--logfile` | AMIDOSTACKS_LOG_FILE | Write all logs to the specified file | | 
-| `-w`, `--workingdirectory` | AMIDOSTACKS_DIRECTORY_WORKINGDIR | Directory that the projects should be created in | `${PWD}` | 
-| `--tempdir` | AMIDOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Stacks for its temp files | System temp directory | 
-| `--nobanner` | AMIDOSTACKS_OPTIONS_NOBANNER | Do not display the Stacks banner when running the command | `false` |
-| `--nocliversion` | AMIDOSTACKS_OPTIONS_NOCLIVERSION | Do not perform a version check for the latest version of the Ensono Digital Stacks CLI | `false` |
-| `--token` | AMIDOSTACKS_OPTIONS_TOKEN | The Stacks CLI can use the GitHub API to retrieve latest version infomration for the CLI as well as use it to ascertain Zip archive URLs without having to build up the URL to the asset manually.
+include::runtime_config/interactive_options.adoc[]
 
-By default the GitHub API rate limits unauthenticated API requests to 60 requests per hour, however authenticated requests can get 5,000 per hour.
+include::runtime_config/scaffold_options.adoc[]
 
-The GitHub API will not be used if this value is not set.
-|===
+include::runtime_config/export_options.adoc[]
 
-==== Completion Options
-
-The CLI has a command called completion which can configure the local shell with tab based completion of commands.
-
-.Completion Options
-[options="header",cols="1,2"]
-|===
-| Option | Description
-| `bash` | Configure the Bash shell with auto-completion script
-| `fish` | Configure the Fish shell with auto-completion
-| `powershell` | Configure the PowerShell shell with auto-completion
-| `zsh` | Configure the Zsh shell with auto-completion
-|===
-
-For each of the different shells, the command `stacks-cli <SHELL> -h` can be used which will show the command to be used to export the script into the profile for the shell.
-
-.Loading completions into the shell for each new session
-|===
-| Shell | PowerShell | Linux | MacOS 
-| `bash` | | `stacks-cli completion bash > /etc/bash_completion.d/stacks-cli` | `stacks-cli completion bash > /usr/local/etc/bash_completion.d/stacks-cli`
-| `fish` | 2+| `stacks-cli completion fish > ~/.config/fish/completions/stacks-cli.fish`
-| `powershell` 3+| `stacks-cli completion powershell \| Out-String \| Invoke-Expression \| Out-File -FilePath $PROFILE -Append`
-| `zsh` | | `stacks-cli completion zsh > "${fpath[1]}/_stacks-cli"` | `stacks-cli completion zsh > /usr/local/share/zsh/site-functions/_stacks-cli` 
-|===
-
-
-
-==== Interactive Options
-
-As the configuration file for the CLI can seem a bit daunting it has an interactive mode which will prompt for answers to questions about how projects are to be configured.
-
-After the command has been run the resultant configuration file can be run with the `scaffold` command.
-
-There are no additional options to be specified for the interactive command over and above the global options.
-
-==== Scaffold Options
-
-.Scaffold Options
-[options="header"]
-|===
-| Option | Environment Variable | Description | Default | Options 
-| `-n`, `--name` | AMIDOSTACKS_PROJECT_NAME | Name of the project to create | | 
-| `--sourcecontrol` | AMIDOSTACKS_PROJECT_SOURCECONTROL_TYPE | Source control system to be used | `github` | 
-| `-u`, `--sourcecontrolurl` | AMIDOSTACKS_PROJECT_SOURCECONTROL_URL | URL to the remote repository | | 
-| `--projectsettingsfile` | AMIDOSTACKS_PROJECT_SETTINGSFILE | Each project will have its own `stackscli.yml` file, however this can ber overridden with a path to a different file using this option | `null` |
-| `-F`, `--framework` | AMIDOSTACKS_PROJECT_FRAMEWORK_TYPE | The framework that is to be used | | `dotnet`, `java`, `nx` 
-| `-O`, `--frameworkoption` | AMIDOSTACKS_PROJECT_FRAMEWORK_OPTION | The sort of project to be created | | For `dotnet` or `java`: webapi`, `cqrs`, `events` 
-
-For `nx`: `next`, `apps`
-| `-V`, `--frameworkversion` | AMIDOSTACKS_PROJECT_FRAMEWORK_VERSION | The version of the Ensono Digital Stacks project to use.
-
-This can be a version, a tag, a SHA ref or a branch. | `latest` | 
-| `--frameworkprops` | AMIDOSTACKS_PROJECT_FRAMEWORK_PROPERTIES 3+| Properties that need to be set to allow the scaffolding to run the correct command
-
-The project settings file will be defined by the project maintainers, but will may specify that a property needs to be set.
-| `-P`, `--platformtype` | AMIDOSTACKS_PLATFORM_TYPE | Platform being deployed to | | `aks` 
-| `-p`, `--pipeline` | AMIDOSTACKS_PIPELINE | Pipeline being used to build the project | | `azdo`, `gha` 
-| `-C`, `--cloud` | AMIDOSTACKS_CLOUD | Cloud platform being used | | `azure`, `aws`, `gcp` 
-| `-R`, `--cloudregion` | AMIDOSTACKS_CLOUD_REGION | Region that the project will be deployed to | | 
-| `-G`, `--cloudgroup` | AMIDOSTACKS_CLOUD_GROUP | Group in the cloud platform that will hold all the resources | | 
-| `--company` | AMIDOSTACKS_BUSINESS_COMPANY | Name of your company or organisation | | 
-| `-A`, `--area` | AMIDOSTACKS_BUSINESS_DOMAIN | Area of the company that is responsible for the project | | 
-| `--component` | AMIDOSTACKS_BUSINESS_COMPONENT | Component of the overall project | | 
-| `--tfstorage` | AMIDOSTACKS_TERRAFORM_BACKEND_STORAGE | Name of the storage account being used for the state | | 
-| `--tfgroup` | AMIDOSTACKS_TERRAFORM_BACKEND_GROUP | Group name of the storage account | | 
-| `--tfcontainer` | AMIDOSTACKS_TERRAFORM_BACKEND_CONTAINER | Container being used to store the data | | 
-| `-d`, `--domain` | AMIDOSTACKS_NETWORK_BASE_DOMAIN_EXTERNAL | External domain root to be used for the projects || 
-| `--internaldomain` | AMIDOSTACKS_NETWORK_BASE_DOMAIN_INTERNAL | Internal domain root to be used for projects. | If not specified then the internal domain will be inferred from the external by replacing the TLD with `internal`. Thus if `mydomain.com` is provided as the external domain then the internal will be set to `mydomain.internal`. |
-| `--cmdlog` | AMIDOSTACKS_OPTIONS_CMDLOG | Create a log file of all the commands that have been run during the scaffold process
-
-The command log is create in the current directory with the filename `cmdlog.txt` | `false` |
-| `--dryrun` | AMIDOSTACKS_OPTIONS_DRYRUN | Perform a dry run of the scaffold process. Useful for checking that things will be setup as required. No operations will be performed on the machine when run in this mode | `false` |
-| `--settingsfile` | AMIDOSTACKS_SETTINGSFILE | Name of the file to look for in the project | `stackscli.yml` | 
-| `--cmdlog` | AMIDOSTACKS_CMDLOG | Generate a log of all the commands that the CLI has run.
-
-The `cmdlog.txt` file is created in the directory that the CLI has been run in. | `false` |
-| `--dryrun` | AMIDOSTACKS_DRYRUN | Perform a dryrun of all the CLI. Particularly useful when used with `--cmdlog` | `false` |
-| `--save` | AMIDOSTACKS_SAVE | If using the interactive or command line mode for configuring the CLI, the given configuration can be saved to a file. This allows the configuration to be replayed again at a later date.
-
-The configuration is saved to `stacks.yml` in the specified working directory | `false` |
-| `--nocleanup` | AMIDOSTACKS_NOCLEANUP | Do not perform cleanup operations after the scaffoling has been completed | `false` |
-|`--force` | AMIDOSTACKS_FORCE | *This is a destructive operation*
-
-By using `force` the CLI will delete any projects, of the same name, that already exist in the working directory and then create the new project in its place.
-
-It will also continue to run if the command version checks fail. For example if the project calls for `dotnet` version 3.1 and you have 5.0.303, the CLI would not normally continue, but with `force` this will be ignored and the process will continue. | `false` | 
-|===
-
-==== Version Options
-
-There are no additional options that can be specified for this command. It returns the current version of the Stacks CLI.
+include::runtime_config/version_options.adoc[]
 
 === Command Log Format
 
@@ -188,7 +83,6 @@ log:
 
 options:
   cmdlog: false
-  dryrun: false
 
 stacks:
   dotnet:

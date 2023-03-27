@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
@@ -16,7 +15,7 @@ import (
 // using this as an inspiration https://github.com/moby/moby/blob/master/daemon/graphdriver/copy/copy.go
 // CopyDirectory
 func CopyDirectory(srcDir, dest string) error {
-	entries, err := ioutil.ReadDir(srcDir)
+	entries, err := os.ReadDir(srcDir)
 	if err != nil {
 		return err
 	}
@@ -68,9 +67,10 @@ func CopyDirectory(srcDir, dest string) error {
 			}
 		}
 
-		isSymlink := entry.Mode()&os.ModeSymlink != 0
+		fsInfo, _ := entry.Info()
+		isSymlink := fsInfo.Mode()&os.ModeSymlink != 0
 		if !isSymlink {
-			if err := os.Chmod(destPath, entry.Mode()); err != nil {
+			if err := os.Chmod(destPath, fsInfo.Mode()); err != nil {
 				return err
 			}
 		}

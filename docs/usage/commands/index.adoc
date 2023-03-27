@@ -1,0 +1,18 @@
+=== Commands
+
+The CLI has a number of commands and various options. The easiest way to see what is available it to run the `stacks-cli` command, which will display the help page.
+
+NOTE: The operation of the Stacks CLI is identical on every platform
+
+.Stacks CLI Help
+image::images/stackscli-global-help.png[]
+
+include::usage/commands/completion.adoc[]
+
+include::usage/commands/interactive.adoc[]
+
+include::usage/commands/scaffold.adoc[]
+
+include::usage/commands/export.adoc[]
+
+include::usage/commands/version.adoc[]

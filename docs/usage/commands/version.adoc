@@ -1,0 +1,13 @@
+===== Version
+
+The `version` command will return the current version of the CLI. This is useful for determining if you are running the latest version, although the <<CLI Connectivity Check>> will check for the latest version each time the command is executed.
+
+[source,powershell]
+----
+stacks-cli version
+----
+
+.Display version number
+image::images/stackscli-version.png[]
+
+NOTE: The image displayed shows a version number of `100.98.99` which denotes that this is a workstation build of the application.

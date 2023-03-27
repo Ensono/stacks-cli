@@ -1,0 +1,8 @@
+===== Export Options
+
+.Export Options
+[options="header"]
+|===
+| Option | Environment Variable | Description | Default | Options 
+| `-d`, `--directory` | AMIDOSTACKS_DIRECTORY_EXPORT | The directory into which the files will be exported to | Current directory | |
+|===

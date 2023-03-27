@@ -1,10 +1,10 @@
+//go:build integration
 // +build integration
 
 package integration
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -101,7 +101,7 @@ func (suite *ConfigFileSuite) TestProject1() {
 
 		// get the contents of the configuration file
 		gitConfig := filepath.Join(suite.ProjectPath1, ".git", "config")
-		config, err := ioutil.ReadFile(gitConfig)
+		config, err := os.ReadFile(gitConfig)
 
 		if err != nil {
 			t.Errorf("Unable to read git config file: %s", err.Error())

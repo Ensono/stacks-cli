@@ -1,0 +1,12 @@
+==== Interactive Command
+
+The interactive command will ask several questions about the required projects, what platform it is being run on and cloud configuration. It will then save the output of these details to a configuration file that can then be read in by the `scaffold` command. This file can also be reused if the projects need to be recreated from scratch again.
+
+[source,bash]
+----
+stacks-cli interactive
+----
+
+Please see the <<.NET WebApi project using the interactive mode>> section for an example of how this command can be used.
+
+The CLI allows properties to be set that influence the way that the project is scaffolded. Up to five of these properties can be set. However the interactive command only asks once if properties are required. To set more than property, please separate the values using a comma.

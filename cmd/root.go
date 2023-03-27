@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/config/static"
+	"github.com/amido/stacks-cli/internal/config/staticFiles"
 	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/amido/stacks-cli/internal/models"
 	"github.com/amido/stacks-cli/internal/util"
@@ -62,8 +62,11 @@ func init() {
 
 	var noBanner bool
 	var noCLIVersionCheck bool
+	var dryrun bool
 
 	var githubToken string
+
+	var override_internal_config string
 
 	cobra.OnInitialize(initConfig)
 
@@ -81,33 +84,40 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&workingDir, "workingdir", "w", defaultWorkingDir, "Directory to be used to create the new projects in")
 	rootCmd.PersistentFlags().StringVar(&tmpDir, "tempdir", defaultTempDir, "Temporary directory to be used by the CLI")
 
+	rootCmd.PersistentFlags().BoolVar(&dryrun, "dryrun", false, "Shows what actions would be taken but does not perform them")
 	rootCmd.PersistentFlags().BoolVar(&noBanner, "nobanner", false, "Do not display the Stacks banner when running the command")
 	rootCmd.PersistentFlags().BoolVar(&noCLIVersionCheck, "nocliversion", false, "Do not check for latest version of the CLI")
 	rootCmd.PersistentFlags().BoolVarP(&onlineHelp, "onlinehelp", "H", false, "Open web browser with help for the command")
 
 	rootCmd.PersistentFlags().StringVar(&githubToken, "token", "", "GitHub token to perform authenticated requests against the GitHub API")
 
+	rootCmd.PersistentFlags().StringVar(&override_internal_config, "internalconfig", "", "Path to the configuration override file")
+
 	// Bind command line arguments
 	viper.BindPFlags(rootCmd.Flags())
 
 	// Configure the logging options
-	viper.BindPFlag("log.format", rootCmd.PersistentFlags().Lookup("logformat"))
-	viper.BindPFlag("log.colour", rootCmd.PersistentFlags().Lookup("logcolour"))
-	viper.BindPFlag("log.level", rootCmd.PersistentFlags().Lookup("loglevel"))
-	viper.BindPFlag("log.file", rootCmd.PersistentFlags().Lookup("logfile"))
+	viper.BindPFlag("input.log.format", rootCmd.PersistentFlags().Lookup("logformat"))
+	viper.BindPFlag("input.log.colour", rootCmd.PersistentFlags().Lookup("logcolour"))
+	viper.BindPFlag("input.log.level", rootCmd.PersistentFlags().Lookup("loglevel"))
+	viper.BindPFlag("input.log.file", rootCmd.PersistentFlags().Lookup("logfile"))
 
-	viper.BindPFlag("directory.working", rootCmd.PersistentFlags().Lookup("workingdir"))
-	viper.BindPFlag("directory.temp", rootCmd.PersistentFlags().Lookup("tempdir"))
+	viper.BindPFlag("input.directory.working", rootCmd.PersistentFlags().Lookup("workingdir"))
+	viper.BindPFlag("input.directory.temp", rootCmd.PersistentFlags().Lookup("tempdir"))
 
-	viper.BindPFlag("options.nobanner", rootCmd.PersistentFlags().Lookup("nobanner"))
-	viper.BindPFlag("options.nocliversion", rootCmd.PersistentFlags().Lookup("nocliversion"))
-	viper.BindPFlag("options.onlinehelp", rootCmd.PersistentFlags().Lookup("onlinehelp"))
+	viper.BindPFlag("input.options.nobanner", rootCmd.PersistentFlags().Lookup("nobanner"))
+	viper.BindPFlag("input.options.nocliversion", rootCmd.PersistentFlags().Lookup("nocliversion"))
+	viper.BindPFlag("input.options.onlinehelp", rootCmd.PersistentFlags().Lookup("onlinehelp"))
+	viper.BindPFlag("input.options.dryrun", rootCmd.PersistentFlags().Lookup("dryrun"))
 
+	viper.BindPFlag("input.overrides.internal_config", rootCmd.PersistentFlags().Lookup("internalconfig"))
 }
 
 // initConfig reads in a config file and ENV vars if set
 // Sets up logging with the specified log level
 func initConfig() {
+
+	Config.Init()
 
 	if cfgFile != "" {
 		// Use the config file from the cobra flag
@@ -125,10 +135,8 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// Read  in the static configuration
-	stacks_frameworks := string(static.Config("stacks_frameworks"))
-	stacks_config := strings.NewReader(stacks_frameworks)
-	viper.SetConfigType("yaml")
-	viper.MergeConfig(stacks_config)
+	// viper.SetConfigType("yaml")
+	// viper.MergeConfig(strings.NewReader(Config.Internal.GetFileContentString("stacks_frameworks")))
 
 	err := viper.MergeInConfig()
 	if err != nil && viper.ConfigFileUsed() != "" {
@@ -139,23 +147,53 @@ func initConfig() {
 
 func preRun(ccmd *cobra.Command, args []string) {
 
-	err := viper.Unmarshal(&Config.Input)
+	// Unmarshal the data from the static config file into the config object
+	err := yaml.Unmarshal(Config.Internal.GetFileContent("config"), &Config)
 	if err != nil {
-		log.Fatalf("Unable to read configuration into models: %v", err)
+		log.Fatalf("Unable to read internal configuration: %v", err)
 		App.Logger.Exit(1)
 	}
+
+	// Determine if the internal configuration has been overridden
+	override_internal := viper.GetString("input.overrides.internal_config")
+	if override_internal != "" {
+		data, err := os.ReadFile(override_internal)
+		if err != nil {
+			log.Fatalf("Unable to read in specific override file (%s): %s", err.Error(), override_internal)
+			App.Logger.Exit(2)
+		}
+
+		viper.MergeConfig(strings.NewReader(string(data)))
+
+	}
+
+	ScaffoldOverrides()
+
+	// Unmarshal the configuration into the models in the application
+	err = viper.Unmarshal(&Config)
+	if err != nil {
+		log.Fatalf("Unable to read configuration into models: %v", err)
+		App.Logger.Exit(4)
+	}
+
+	// ensure that the components are checked for uniqueness
+	// Config.Stacks.SetUniqueComponents()
 
 	// Configure application logging
 	// This is done after unmarshalling of the configuration so that the
 	// model values can be used rather than the strings from viper
 	App.ConfigureLogging(Config.Input.Log)
 
+	if Config.Input.Overrides.InternalConfigPath != "" {
+		App.Logger.Infof("Using config override file: %s", Config.Input.Overrides.InternalConfigPath)
+	}
+
 	// Set the version of the app in the configuration
 	Config.Input.Version = version
 
 	// output the banner, unless it has been disabled or the parent command is completion
 	if !Config.NoBanner() && ccmd.Parent().Use != "completion" && !Config.OnlineHelp() {
-		fmt.Println(static.Banner)
+		fmt.Println(staticFiles.IntFile_Banner)
 	}
 
 	// Check that the CLI is online
@@ -170,11 +208,10 @@ func preRun(ccmd *cobra.Command, args []string) {
 	}
 
 	// set the urls to use to open the web based help for a command
-	help_urls := static.Config("help_urls")
-	err = yaml.Unmarshal(help_urls, &Config.Help)
-	if err != nil {
-		App.Logger.Fatalf("Unable to parse help URL data: %s", err.Error())
-	}
+	// err = yaml.Unmarshal(Config.Internal.GetFileContent("help_urls"), &Config.Help)
+	// if err != nil {
+	//	App.Logger.Fatalf("Unable to parse help URL data: %s", err.Error())
+	//}
 
 	// Determine if the online help option has been specified, it is has
 	// open up the webpage for the specified command and then exit
@@ -202,11 +239,10 @@ func preRun(ccmd *cobra.Command, args []string) {
 	}
 
 	// set the framework definitions on the config object
-	framework_defs := static.Config("framework_defs")
-	err = yaml.Unmarshal(framework_defs, &Config.FrameworkDefs)
-	if err != nil {
-		App.Logger.Fatalf("Unable to parse framework definition data: %s", err.Error())
-	}
+	//err = yaml.Unmarshal(Config.Internal.GetFileContent("framework_defs"), &Config.FrameworkDefs)
+	//if err != nil {
+	//	App.Logger.Fatalf("Unable to parse framework definition data: %s", err.Error())
+	//}
 }
 
 func checkCLIVersion() {

@@ -1,0 +1,14 @@
+=== Export Static Configuration
+
+The CLI allows the internal configuration of the command to be overridden using the `--internalconfig` option when running the `scaffold` command. The easiest way to create such a file is to edit an existing one. This can be done using the `export` command.
+
+[source,bash]
+----
+stacks-cli export -d exported/
+----
+
+This will then export all of the internal configuration files into the specified directory.
+
+.Exporting interna configuration files
+image::images/stackscli-export.png[]
+

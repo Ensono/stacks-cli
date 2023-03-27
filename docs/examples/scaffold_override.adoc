@@ -1,0 +1,29 @@
+==== Using a modified internal configuration
+
+The following YML snippet can be used to override settings in the CLI.
+
+[source,yml]
+----
+stacks:
+  components:
+    dotnet_webapi:
+      group: dotnet
+      name: webapi
+      package:
+        url: https://github.com/ensonodigital/stacks-dotnet-v2
+        type: git
+
+    infra_data:
+      group: infra
+      name: data
+      package:
+        url: https://github.com/ensonodigital/stacks-infra-data
+        type: git
+----
+
+If the above code is saved to the file `internal_config.yml` the following command can be executed.
+
+[source,powershell]
+----
+stacks-cli scaffold -c ./stacks.yml --internalconfig ./internal_config.yml
+----

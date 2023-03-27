@@ -1,0 +1,7 @@
+== Migrations
+
+From time to time there will be changes that are made to the CLI that will require some changes to your local configuration. This section shows how to migrate from one version to another.
+
+NOTE: To determine the version of the CLI that is being used please run the command `stacks-cli version`
+
+include::migrations/0.1.x_to_0.2.x.adoc[]

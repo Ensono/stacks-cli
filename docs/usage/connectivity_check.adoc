@@ -1,0 +1,6 @@
+=== Connectivity Check
+
+As the CLI relies heavily on being able to contact GitHub, it checks to see if the `github.com` domain can be resolved. It does this as one of the first checks it performs. If it cannot resolve the address then it will terminate execution with an error similar to the following.
+
+.Stacks CLI failed connectivity check
+image::images/stackscli-connectivity-check.png[]

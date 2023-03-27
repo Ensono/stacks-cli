@@ -8,62 +8,63 @@ A number of items are embedded using this technique.
 
 The following listing shows the built in template that is used for the variable template if one is not set in the project settings file.
 
-Location: `internal/config/static/azdo_veriable_template.yml`
+Location: `internal/config/staticFiles/ado_veriable_template.yml`
 
 .Azure DevOps Variable Template
 [[azdo_variable_template,{listing-caption} {counter:refnum}]]
 [source,yaml,subs="attributes"]
 ----
-include::../internal/config/static/azdo_variable_template.yml[]
+include::../internal/config/staticFiles/ado_variable_template.yml[]
 ----
+
+NOTE: This can be overriden on the command line, when using the `scaffold` command, with the `--adovariables` option to specify the path to the variables file to us.
 
 ==== Banner Text
 
 The banner that is seen when the CLI runs is configured as a text file
 
-Location: `internal/config/static/banner.txt`
+Location: `internal/config/staticFiles/banner.txt`
 
 .Banner text
 [[banner_text,{listing-caption} {counter:refnum}]]
 [source,txt,subs="attributes"]
 ----
-include::../internal/config/static/banner.txt[]
+include::../internal/config/staticFiles/banner.txt[]
 ----
 
-==== Framework Definitions
+==== Internal Configuration
 
-Each framework has a number of commands that are associated, which are run as part of the scaffolding process. This files contains a list of those applications, which is used to ensure that the programs exist on the machine before any scaffolding is performed.
+There are a number of settings that are hard hardcoded into the CLI. These include:
 
-Additionally the project settings file can specify version constraints on any approved application. The file contains the arguments that should be run to get the version of that particular command. It also has the regular expression pattern to extract that version number from the output.
+* Framework Definitions
+** Each framework has a number of commands that need to exist on the machine in order to work. This is used to ensure that these programs are present.
+** Version constraints on the tool being used
+* Stacks Components
+** Defines where the CLI can find the components for each of the different types of projects
+** Allows different branches to be used for testing purposes
+* Online Help
+* Commands
 
-This data is read into the config object and has functions that allow the list of commands and versions to be returned.
+All of these are defined in one file which is included at build time. However all of the values can be overridden at run time using the `--internalconfig` argument.
 
-Location: `internal/config/static/framework_def.yml`
+Location: `internal/config/staticFiles/config.yml`
 
-.Framework Definitions
-[[framework_definitions,{listing-caption} {counter:refnum}]]
-....
-include::../internal/config/static/framework_def.yml[]
-....
-
-==== Stacks Frameworks
-
-The CLI needs to know which repositories are associated with each of the different combination of frameworks and projects.
-
-To do this the CLI reads in the following data into the `framework` object.
-
-Location: `internal/config/static/stacks_frameworks.yml`
-
-.Stacks Frameworks
-[[stacks_frameworks,{listing-caption} {counter:refnum}]]
+.Internal configuration
+[[internal_config,{listing-caption} {counter:refnum}]]
 [source,yaml,subs="attributes"]
-....
-include::../internal/config/static/stacks_frameworks.yml[]
-....
+----
+include::../internal/config/staticFiles/config.yml[]
+----
 
-To get the correct URL, the CLI will use the configuration that has been set for the project, e.g.
+=== Exit Codes
 
-- framework, e.g. `dotnet`
-- frameworkoption, e.g. `webapi`
+The following table shows the exit codes that the CLI will emit on an error.
 
-As this is read into the configuration, it is possible to override the data at runtime using a configuration file.
+[options="header",cols="1,5"]
+|===
+| Exit Code | Description
+| 1 | Unable to read in the internal configuration. If this occurs then there is an issue with the published CLI
+| 2 | Occurs when the CLI is not able to read in the override file for the internal configuration
+| 3 | When using the `scaffold` command and the Azure DevOps file has been specified and it cannot be read in
+| 4 | After all the parsing of the command line options and arguments, it cannot be read properly
+|===

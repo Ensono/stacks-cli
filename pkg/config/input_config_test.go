@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/util"
 	yaml "github.com/goccy/go-yaml"
 	"github.com/stretchr/testify/assert"
@@ -69,10 +68,10 @@ func TestNonExistentFrameworkBinary(t *testing.T) {
 		Input: InputConfig{},
 	}
 	config.Input.Project = append(config.Input.Project, project)
+	config.Init()
 
 	// get the static data and unmarshal into a config object
-	framework_defs := static.Config("framework_defs")
-	err = yaml.Unmarshal(framework_defs, &config.FrameworkDefs)
+	err = yaml.Unmarshal(config.Internal.GetFileContent("config"), &config)
 	if err != nil {
 		t.Errorf("Error parsing the framework definitions: %s", err.Error())
 	}
@@ -143,10 +142,10 @@ func TestMultipleFrameworks(t *testing.T) {
 		Input: InputConfig{},
 	}
 	config.Input.Project = projects
+	config.Init()
 
 	// get the static data and unmarshal into a config object
-	framework_defs := static.Config("framework_defs")
-	err = yaml.Unmarshal(framework_defs, &config.FrameworkDefs)
+	err = yaml.Unmarshal(config.Internal.GetFileContent("config"), &config)
 	if err != nil {
 		t.Errorf("Error parsing the framework definitions: %s", err.Error())
 	}

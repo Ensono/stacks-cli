@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"strings"
 
@@ -157,6 +158,20 @@ func preRun(ccmd *cobra.Command, args []string) {
 	// Determine if the internal configuration has been overridden
 	override_internal := viper.GetString("input.overrides.internal_config")
 	if override_internal != "" {
+
+		// determine if the string is a URL or not. If it is then download the file to the local filesystem
+		// and read it in
+		urlInfo, err := url.ParseRequestURI(override_internal)
+		if err == nil {
+			util.CreateIfNotExists(viper.GetString("input.directory.temp"), os.ModePerm)
+
+			override_internal, err = util.DownloadFile(urlInfo, viper.GetString("input.directory.temp"))
+
+			if err != nil {
+				log.Fatalf("unable to download file: %s", err.Error())
+			}
+		}
+
 		data, err := os.ReadFile(override_internal)
 		if err != nil {
 			log.Fatalf("Unable to read in specific override file (%s): %s", err.Error(), override_internal)

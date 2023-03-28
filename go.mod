@@ -9,6 +9,7 @@ require (
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/goccy/go-yaml v1.9.4
+	github.com/jarcoal/httpmock v1.3.0 // indirect
 	github.com/mattn/go-colorable v0.1.11
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1

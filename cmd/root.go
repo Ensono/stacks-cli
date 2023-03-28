@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/amido/stacks-cli/internal/config/staticFiles"
@@ -28,6 +29,9 @@ var (
 
 	// Set a variable to hold the version number of the application
 	version string
+
+	DefaultTempDir    string
+	DefaultWorkingDir string
 )
 
 var rootCmd = &cobra.Command{
@@ -42,6 +46,7 @@ var rootCmd = &cobra.Command{
 
 // Execute is the entry point for the application
 func Execute() {
+
 	// Determine if there was an error in the application
 	err := rootCmd.Execute()
 
@@ -69,11 +74,10 @@ func init() {
 
 	var override_internal_config string
 
-	cobra.OnInitialize(initConfig)
+	DefaultTempDir = util.GetDefaultTempDir()
+	DefaultWorkingDir = util.GetDefaultWorkingDir()
 
-	// get the default directories
-	defaultTempDir := util.GetDefaultTempDir()
-	defaultWorkingDir := util.GetDefaultWorkingDir()
+	cobra.OnInitialize(initConfig)
 
 	// Add flags that are to be used in every command
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "Path to the configuration file")
@@ -82,8 +86,8 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&logColour, "logcolour", "", true, "State if colours should be used in the text output")
 	rootCmd.PersistentFlags().StringVar(&logFile, "logfile", "", "File to write logs to")
 
-	rootCmd.PersistentFlags().StringVarP(&workingDir, "workingdir", "w", defaultWorkingDir, "Directory to be used to create the new projects in")
-	rootCmd.PersistentFlags().StringVar(&tmpDir, "tempdir", defaultTempDir, "Temporary directory to be used by the CLI")
+	rootCmd.PersistentFlags().StringVarP(&workingDir, "workingdir", "w", DefaultWorkingDir, "Directory to be used to create the new projects in")
+	rootCmd.PersistentFlags().StringVar(&tmpDir, "tempdir", DefaultTempDir, "Temporary directory to be used by the CLI")
 
 	rootCmd.PersistentFlags().BoolVar(&dryrun, "dryrun", false, "Shows what actions would be taken but does not perform them")
 	rootCmd.PersistentFlags().BoolVar(&noBanner, "nobanner", false, "Do not display the Stacks banner when running the command")
@@ -135,10 +139,6 @@ func initConfig() {
 
 	viper.AutomaticEnv() // read in environment variables that match
 
-	// Read  in the static configuration
-	// viper.SetConfigType("yaml")
-	// viper.MergeConfig(strings.NewReader(Config.Internal.GetFileContentString("stacks_frameworks")))
-
 	err := viper.MergeInConfig()
 	if err != nil && viper.ConfigFileUsed() != "" {
 		fmt.Printf("Unable to read in configuration file: %s", err.Error())
@@ -153,6 +153,27 @@ func preRun(ccmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("Unable to read internal configuration: %v", err)
 		App.Logger.Exit(1)
+	}
+
+	//  if a configuration file can be found in the user directory, merge this in
+	// It is not done using Viper as it can only use one configuration file at once
+	userConfig := filepath.Join(util.GetStacksUserDir(), "config.yml")
+	if util.Exists(userConfig) {
+		data, err := os.ReadFile(userConfig)
+		if err != nil {
+			log.Fatalf("Unable to read user configuration file '%s': %s", userConfig, err.Error())
+		}
+
+		err = yaml.Unmarshal(data, &Config)
+		if err != nil {
+			log.Fatalf("Unable to merge user config into configuration: %s", err.Error())
+		}
+
+		viper.SetDefault("input.overrides.internal_config", Config.Input.Overrides.InternalConfigPath)
+
+		if viper.GetString("input.directory.temp") == "" {
+			viper.SetDefault("input.directory.temp", DefaultTempDir)
+		}
 	}
 
 	// Determine if the internal configuration has been overridden
@@ -190,9 +211,6 @@ func preRun(ccmd *cobra.Command, args []string) {
 		log.Fatalf("Unable to read configuration into models: %v", err)
 		App.Logger.Exit(4)
 	}
-
-	// ensure that the components are checked for uniqueness
-	// Config.Stacks.SetUniqueComponents()
 
 	// Configure application logging
 	// This is done after unmarshalling of the configuration so that the

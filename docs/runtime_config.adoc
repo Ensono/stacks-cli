@@ -5,6 +5,7 @@ Configuration for the CLI can be performed in several ways:
   - On the command line
   - Using environment variables
   - Using a configuration file (YAML or JSON)
+  - User configuration file in home directory
 
 When using a configuration file it is possible to setup more than one project.
 
@@ -99,3 +100,19 @@ If this file was called `conf.yml` the command to run to consume the file would 
 ----
 .\stacks-cli.exe scaffold -c .\local\conf.yml
 ----
+
+=== User Configuration file
+
+To allow overrides and other settings to be set permanently, so that they do not need to be set everytime the command is run, a user configuration file can be set.
+
+The location of the file must be `<USERDIR>/.stackscli/config.yml`. If file exists, the CLI will use this to set specific values. For example if this file were to contain the following:
+
+[source,yaml]
+----
+input:
+  overrides:
+    internal_config: http://localhost:8080/files/config.yml
+----
+
+The the CLI would always attempt to pull the internal config override from the specified URL without it being set on the command line.
+

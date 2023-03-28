@@ -67,13 +67,13 @@ func (s *Scaffold) Run() error {
 	// create the temporary directory if it does not exist
 	err = util.CreateIfNotExists(s.Config.Input.Directory.TempDir, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("unable to create temporary directory: %s", s.Config.Input.Directory.TempDir)
+		return fmt.Errorf("unable to create temporary directory '%s': %s", s.Config.Input.Directory.TempDir, err.Error())
 	}
 
 	// Create the cache directory if it does not exist
 	err = util.CreateIfNotExists(s.Config.Input.Directory.CacheDir, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("unable to create cache directory: %s", s.Config.Input.Directory.CacheDir)
+		return fmt.Errorf("unable to create cache directory '%s': %s", s.Config.Input.Directory.CacheDir, err.Error())
 	}
 
 	// Cleanup the temporary dir after all the projects have been processed

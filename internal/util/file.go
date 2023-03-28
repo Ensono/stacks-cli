@@ -251,16 +251,26 @@ func GetDefaultCacheDir() string {
 
 	var path string
 
+	// get the cacheDir path
+	path = filepath.Join(GetStacksUserDir(), "cache")
+
+	return path
+}
+
+func GetStacksUserDir() string {
+	usr := getCurrentUser()
+
+	return filepath.Join(usr.HomeDir, ".stackscli")
+}
+
+func getCurrentUser() *user.User {
 	// get details about the user
 	usr, err := user.Current()
 	if err != nil {
 		log.Fatalf("Unable to determine current user")
 	}
 
-	// get the cacheDir path
-	path = filepath.Join(usr.HomeDir, ".stackscli", "cache")
-
-	return path
+	return usr
 }
 
 // IsEmpty states if the specified directory is empty or not

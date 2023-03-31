@@ -5,7 +5,6 @@ package integration
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -56,7 +55,7 @@ func (suite *CLIAlertSuite) SetupSuite() {
 	// create the badConfigFile to check that the CLI throws the correct error
 	malformed := fmt.Sprintf(`directory:\n\tworking:%s`, suite.ProjectDir)
 	suite.BadConfigFile = filepath.Join(suite.ProjectDir, "malformed-stacks.yml")
-	err = ioutil.WriteFile(suite.BadConfigFile, []byte(malformed), os.ModePerm)
+	err = os.WriteFile(suite.BadConfigFile, []byte(malformed), os.ModePerm)
 	if err != nil {
 		suite.T().Fatalf("unable to create malformed configuration file: %s", err.Error())
 	}

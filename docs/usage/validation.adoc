@@ -1,0 +1,9 @@
+=== Validation
+
+The CLI will validate certain inputs to make sure that they are valid for use with the scaffolding commands as defined by the project settings.
+
+In some cases the CLI will modify the inputs, for example if a space is present in the company name it will be replaced with an underscore:
+
+ - "My Company" icon:arrow-right[fw] "My_Company"
+ - "My Fantastic Company" icon:arrow-right[fw] "My_Fantastic_Company"
+ - "My  Company" icon:arrow-right[fw] "My_Company"

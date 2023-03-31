@@ -1,0 +1,64 @@
+=== 0.1.x to 0.2.x
+
+To enable certain elements of the command to be overwritten a change to the input scaffold configuration file is required, if an existing files needs to be reused.
+
+NOTE: The following steps only need to be performed if using an existing file. When a file is created using the `interactive` command with a new version of the CLI, the resultant file will have the correct structure.
+
+==== Input elements
+
+All elements in the file now need to be under the `input:` key in the configuration file. The following table shows a snippet of the file before and after and how most of the elements are now children of `input:`.
+
+[cols="1a,1a",options=header]
+|===
+| 0.1.x Version | 0.2.x Version
+|
+[source,yaml]
+----
+log:
+  level: info
+  format: text
+  colour: true
+directory:
+  working: local/cli-testing
+  export: local/cli-testing
+business:
+  company: sauldigitial
+  domain: ecom
+  component: frontend
+cloud:
+  platform: azure
+options:
+  cmdlog: true
+  dryrun: false
+----
+|
+[source,yaml]
+----
+input:
+  log:
+    level: info
+    format: text
+    colour: true
+  directory:
+    working: local/cli-testing
+    export: local/cli-testing
+  business:
+    company: sauldigitial
+    domain: ecom
+    component: frontend
+  cloud:
+    platform: azure
+  options:
+    cmdlog: true
+options:
+  dryrun: false
+----
+|===
+
+The `dryrun` option is now a top level item because other commands can use this functionality.
+
+=== Remove frameworks section
+
+When the configuration file was generated in the past it would export the Stacks components information. This is no longer held in the `input` section of the file.
+
+If an existing file has a section called `stacks:` please remove it.

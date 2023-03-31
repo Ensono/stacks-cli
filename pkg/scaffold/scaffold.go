@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/config/static"
 	"github.com/amido/stacks-cli/internal/models"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
@@ -206,43 +205,43 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	// Get the URL for the repository to download
 	key := project.Framework.GetMapKey()
-	repoInfo := s.Config.Input.Stacks.GetSrcURL(key)
+	packageInfo := s.Config.Stacks.GetComponentPackage(key)
 
 	// if the URL is empty, emit error message and state why this might be the case
-	if repoInfo == (config.RepoInfo{}) {
+	if packageInfo == (config.Package{}) {
 		s.Logger.Errorf(`The URL for the specified framework option, %s, is empty. Have you specified the correct framework option?`, project.Framework.Option)
 		return
 	}
 
 	// ensure that the RepoInfo object is correctly configured
-	msg := repoInfo.Normalize()
+	msg := packageInfo.Normalize()
 	if msg != "" {
 		s.Logger.Warn(msg)
 	}
 
 	// download the template using the appropriate action
 	var downloader interfaces.Downloader
-	switch repoInfo.Type {
-	case "github":
+	switch packageInfo.Type {
+	case "git":
 
 		// check that the URL is valid, if not skip this project and move onto the next one
-		_, err = url.ParseRequestURI(repoInfo.Name)
+		_, err = url.ParseRequestURI(packageInfo.URL)
 		if err != nil {
 			s.Logger.Errorf("Unable to download framework option as URL is invalid: %s", err.Error())
 			return
 		}
 
 		downloader = downloaders.NewGitDownloader(
-			repoInfo.Name,
-			repoInfo.Version,
+			packageInfo.URL,
+			packageInfo.Version,
 			project.Framework.Version,
 			s.Config.Input.Directory.TempDir,
 			s.Config.Input.Options.Token,
 		)
 	case "nuget":
 		downloader = downloaders.NewNugetDownloader(
-			repoInfo.Name,
-			repoInfo.ID,
+			packageInfo.Name,
+			packageInfo.ID,
 			project.Framework.Version,
 			s.Config.Input.Directory.CacheDir,
 			s.Config.Input.Directory.TempDir,
@@ -277,7 +276,7 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	// check to see if any framework commands have been set and check the
 	// version if they have
-	incorrect := project.Settings.CheckCommandVersions(s.Config, s.Logger, project.Directory.WorkingDir, project.Directory.TempDir)
+	incorrect, info := project.Settings.CheckCommandVersions(s.Config, s.Logger, project.Directory.WorkingDir, project.Directory.TempDir)
 	if len(incorrect) > 0 {
 
 		var parts []string
@@ -287,6 +286,10 @@ func (s *Scaffold) processProject(project config.Project) {
 			parts = append(parts,
 				fmt.Sprintf("\tVersion constraint for '%s' is '%s', but found '%s'", wrong.Binary, wrong.VersionRequired, wrong.VersionFound),
 			)
+
+			if info != "" {
+				parts = append(parts, info)
+			}
 		}
 
 		s.Logger.Errorf("Unable to process project as framework versions are incorrect.\n\n%s", strings.Join(parts, "\n"))
@@ -307,12 +310,18 @@ func (s *Scaffold) processProject(project config.Project) {
 			// output information about the operation being performed
 			s.Logger.Info(op.Description)
 
-			// perform the operation
-			err = s.PerformOperation(op, &project, phase.Directory, dir)
+			// determine if this operation should be run by checking the tags
+			if s.shouldRun(op.Tags, project.Framework.Option) {
+				// perform the operation
+				err = s.PerformOperation(op, &project, phase.Directory, dir)
 
-			if err != nil {
-				s.Logger.Errorf("issue encountered performing '%s' operation: %s", phase.Name, err.Error())
-				break
+				if err != nil {
+					s.Logger.Errorf("issue encountered performing '%s' operation: %s", phase.Name, err.Error())
+					break
+				}
+
+			} else {
+				s.Logger.Warnf("Operation not permitted to run for this framework: %s", project.Framework.Option)
 			}
 		}
 	}
@@ -418,7 +427,7 @@ func (s *Scaffold) configureGitRepository(project *config.Project) {
 	}
 
 	// iterate around the static git commands
-	for _, command := range static.GitCmds {
+	for _, command := range s.Config.Commands.Git {
 
 		// split the command string into a cmd and args so that the operation model
 		// can be configured and the PerformOperation method used
@@ -467,4 +476,17 @@ func (s *Scaffold) cleanup() {
 			s.Logger.Fatalf("Unable to remove temporary directory: %s", err.Error())
 		}
 	}
+}
+
+// shouldRun determines if the operation should be run given the tags and the keyword to look for
+func (s *Scaffold) shouldRun(tags []string, keyword string) bool {
+	var result bool
+
+	if len(tags) == 0 {
+		result = true
+	} else if len(tags) > 0 && util.SliceContains(tags, keyword) {
+		result = true
+	}
+
+	return result
 }

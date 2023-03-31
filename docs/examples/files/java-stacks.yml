@@ -1,0 +1,44 @@
+input:
+  log:
+    level: info
+    format: text
+    colour: true
+  directory:
+    working: projects
+    export: "C:\\Users\\rseymour\\scratch"
+  business:
+    company: Ensono Digital
+    domain: core
+    component: backend
+  cloud:
+    platform: azure
+  network:
+    base:
+      domain:
+        external: example-stacks.com
+  pipeline: azdo
+  project:
+  - name: my-webapi
+    framework:
+      type: java
+      option: cqrs
+      version: latest
+    sourcecontrol:
+      type: github
+      url: https://github.com/ensonodigital/my-webapi
+    cloud:
+      region: westeurope
+      group: mywebapi-resources
+  terraform:
+    backend:
+      storage: kjh56sdfnjnkjn
+      group: stacks_ancillary-ressources
+      container: tfstate
+  options:
+    cmdlog: true
+    dryrun: false
+    nobanner: false
+    nocliversion: false
+  overrides:
+    internal_config: ""
+    ado_variables_path: ""

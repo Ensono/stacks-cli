@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 )
@@ -69,7 +68,7 @@ func (ac *APICall) Do(method string) (error, int) {
 		}
 
 	} else {
-		ac.raw, _ = ioutil.ReadAll(resp.Body)
+		ac.raw, _ = io.ReadAll(resp.Body)
 	}
 
 	if err != nil {

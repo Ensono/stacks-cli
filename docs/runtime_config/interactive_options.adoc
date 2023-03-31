@@ -1,0 +1,7 @@
+==== Interactive Options
+
+As the configuration file for the CLI can seem a bit daunting it has an interactive mode which will prompt for answers to questions about how projects are to be configured.
+
+After the command has been run the resultant configuration file can be run with the `scaffold` command.
+
+There are no additional options to be specified for the interactive command over and above the global options.

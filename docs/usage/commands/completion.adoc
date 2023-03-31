@@ -1,0 +1,22 @@
+==== Completion
+
+The completion command adds completion scripts to any of the following shells:
+
+ - bash
+ - fish
+ - powershell
+ - zsh
+
+By adding the completion to the shell, it allows the [TAB] key to be used to cycle through the options of any command, making discovery of options easier and increase efficiency.
+
+The following command shows the help for configuring auto-completion for PowerShell.
+
+[source,bash]
+----
+stacks-cli completion powershell -h
+----
+
+.Help page for `completion` command
+image::images/stackscli-completion-help.png[]
+
+As can be seen from the output, the command required to load the completion script into the current shell is displayed.

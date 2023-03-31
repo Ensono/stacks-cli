@@ -2,82 +2,99 @@ package config
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/amido/stacks-cli/internal/util"
 )
 
 type Stacks struct {
-	Dotnet Dotnet `mapstructure:"dotnet" yaml:"dotnet"`
-	Java   Java   `mapstructure:"java" yaml:"java"`
-	Nx     Nx     `mapstructure:"nx" yaml:"nx"`
-	Infra  Infra  `mapstructure:"infra" yaml:"infra"`
+	Components map[string]StacksComponent `mapstructure:"components" yaml:"components"`
 }
 
-type Dotnet struct {
-	Webapi RepoInfo `mapstructure:"webapi" yaml:"webapi"`
-	CQRS   RepoInfo `mapstructure:"cqrs" yaml:"cqrs"`
+func (s *Stacks) GetComponentCount() int {
+	return len(s.Components)
 }
 
-type Java struct {
-	Webapi RepoInfo `mapstructure:"webapi"  yaml:"webapi"`
-	CQRS   RepoInfo `mapstructure:"cqrs"  yaml:"cqrs"`
-	Events RepoInfo `mapstructure:"events" yaml:"events"`
+func (s *Stacks) GetComponentPackage(name string) Package {
+	// component, _ := s.GetComponent(name)
+	component := s.Components[name]
+	return component.Package
+
 }
 
-type Nx struct {
-	NextJs RepoInfo `mapstructure:"next" yaml:"next"`
-	Apps   RepoInfo `mapstructure:"apps" yaml:"apps"`
-}
+func (s *Stacks) GetComponentPackageRef(name string) string {
+	var result string
+	pkg := s.GetComponentPackage(name)
 
-type Infra struct {
-	AKS RepoInfo `mapstructure:"aks" yaml:"aks"`
-}
-
-type RepoInfo struct {
-	Options string `mapstructure:"options" yaml:"options,omitempty"`
-	Version string `mapstructure:"version" yaml:"version,omitempty"`
-	Type    string `mapstructure:"type" yaml:"type,omitempty"`
-	Name    string `mapstructure:"name" yaml:"name,omitempty"`
-	ID      string `mapstructure:"id" yaml:"id,omitempty"`
-}
-
-// GetSrcURLMap returns a map of the source control repositores
-func (stacks *Stacks) GetSrcURLMap() map[string]RepoInfo {
-
-	srcUrls := map[string]RepoInfo{
-		"dotnet_webapi": stacks.Dotnet.Webapi,
-		"dotnet_cqrs":   stacks.Dotnet.CQRS,
-		"java_webapi":   stacks.Java.Webapi,
-		"java_cqrs":     stacks.Java.CQRS,
-		"java_events":   stacks.Java.Events,
-		"nx_next":       stacks.Nx.NextJs,
-		"nx_apps":       stacks.Nx.Apps,
-		"infra_aks":     stacks.Infra.AKS,
+	switch pkg.Type {
+	case "git":
+		result = pkg.URL
+	case "nuget":
+		result = pkg.Name
 	}
 
-	return srcUrls
+	return result
 }
 
-func (stacks *Stacks) GetSrcURL(key string) RepoInfo {
-	srcUrls := stacks.GetSrcURLMap()
-	return srcUrls[key]
+// GetComponentNames returns a sorted slice of the components that are defined
+// and removes any duplicates
+func (s *Stacks) GetComponentNames() []string {
+
+	// create a map to state if the name has already been encountered
+	var exists map[string]bool = make(map[string]bool)
+
+	// create the return slice
+	var result []string
+
+	for _, component := range s.Components {
+		if _, ok := exists[component.Group]; !ok {
+			// item has not been found in slice so add to the result and update the exists map
+			exists[component.Group] = true
+			result = append(result, component.Group)
+		}
+	}
+
+	// sort the array
+	sort.Strings(result)
+
+	// return the result
+	return result
+}
+
+// GetComponentOptions analyses the StacksComponent slice and returns all of the options that
+// are associated with the specified framework
+func (s *Stacks) GetComponentOptions(framework string) []string {
+
+	var options []string
+
+	// iterate around the component slice looking for the framework and append each option to the options slice
+	for _, component := range s.Components {
+		if component.Group == framework {
+			options = append(options, component.Name)
+		}
+	}
+
+	// sort the options
+	sort.Strings(options)
+
+	return options
 }
 
 // Normalize checks to see if the older API is being used and will take
 // the values from that and populate the new structure
 // It will return an error object to be used as a warning for people to update their structure
-func (r *RepoInfo) Normalize() string {
+func (p *Package) Normalize() string {
 	var msg string
 
 	// if the type is empty, default to github
-	if r.Type == "" {
-		r.Type = "github"
+	if p.Type == "" {
+		p.Type = "github"
 	}
 
 	// ensure that the type of the repo is correct
-	validTypes := []string{"github", "nuget"}
-	if !util.SliceContains(validTypes, r.Type) {
-		msg = fmt.Sprintf("Specified type of '%s' is invalid, please check your configuration", r.Type)
+	validTypes := []string{"git", "nuget"}
+	if !util.SliceContains(validTypes, p.Type) {
+		msg = fmt.Sprintf("Specified type of '%s' is invalid, please check your configuration", p.Type)
 	}
 
 	return msg

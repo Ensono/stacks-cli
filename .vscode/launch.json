@@ -16,7 +16,7 @@
             "cwd": "${workspaceFolder}/local/inttests"
         },
         {
-            "name": "test cmd",
+            "name": "Scaffold",
             "type": "go",
             "request": "launch",
             // "logOutput": "debugger",
@@ -31,8 +31,24 @@
                 // "AMIDOSTACKS_CONFIG": "_examples/test.yml"
             },
             "args": [
-                "scaffold", "-c", "${workspaceFolder}/local/stacks_dotnet.yml",
+                "scaffold", "-c", "${workspaceFolder}/local/stacks_config.yml"
                 // "scaffold", "--onlinehelp"
+            ]
+        },
+        {
+            "name": "Export",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/stacks-cli.go",
+            "debugAdapter": "dlv-dap",
+            "env": {
+                // "AMIDOSTACKS_LOG": "TRACE"
+                // "AMIDOSTACKS_CONFIG": "_examples/test.yml"
+            },
+            "args": [
+                "export", "-d", "local/exported",
             ]
         },
         {

@@ -98,6 +98,14 @@ stacks:
         version: master
         type: git
 
+    infra_data:
+      group: infra
+      name: data
+      package:
+        url: https://github.com/amido/stacks-azure-data-ingest
+        version: master
+        type: git
+
 help:
   root: "https://stacks.amido.com/docs/stackscli/usage"
   scaffold: "https://stacks.amido.com/docs/stackscli/runtime_config#scaffold-options"

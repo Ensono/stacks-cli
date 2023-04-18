@@ -282,6 +282,17 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				Validate: survey.Required,
 			},
 		}
+	case "data":
+		questions = []*survey.Question{
+			{
+				Name: "framework_option",
+				Prompt: &survey.Select{
+					Message: "Which option of the framework do you require?",
+					Options: config.Stacks.GetComponentOptions(qType),
+					Default: "data",
+				},
+			},
+		}
 	}
 
 	return questions

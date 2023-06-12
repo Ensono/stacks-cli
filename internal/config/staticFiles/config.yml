@@ -102,9 +102,10 @@ stacks:
       group: infra
       name: data
       package:
-        url: https://github.com/amido/stacks-azure-data-ingest
+        url: https://github.com/amido/stacks-azure-data
         version: master
         type: git
+    
 
 help:
   root: "https://stacks.amido.com/docs/stackscli/usage"

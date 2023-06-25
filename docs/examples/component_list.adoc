@@ -7,7 +7,33 @@ The `component` command can be used to display the components that are known to 
 stacks-cli component list
 ----
 
-This command will display the built in internal configuration, however if the `--internalconfig` argument has been specified, it will reflect any overrides that have been made.
+This will display the builtin configuration for the components, as shown below.
 
 .Displaying the known components
-image::images/stacks-cli-component-list.png[]
+image::images/stackscli-component-list.png[]
+
+This command also respects the `--internalconfig` parameter that allows the internal configuration to be overridden. The override configuration is shown below:
+
+.Override internal configuration file
+[source,yaml]
+----
+stacks:
+  components:
+    infra_data:
+      group: infra
+      name: data
+      package:
+        url: https://github.com/amido/stacks-azure-data
+        version: russellseymour/scaffold-test
+        type: git
+----
+
+The command to use this file to list out the components, with the accompanying overrides is as follows.
+
+[source,bash]
+----
+stacks-cli component list --internalconfig ..\..\local\override.yml
+----
+
+.Displaying internal and overridden config
+image::images/stackscli-component-list-w-override.png[]

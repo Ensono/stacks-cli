@@ -111,7 +111,13 @@ include::examples/nx_config_file.adoc[]
 
 include::examples/export.adoc[]
 
-include::examples/scaffold_ioverride.adoc[]
+include::examples/scaffold_override.adoc[]
+
+=== Using the component subcommand
+
+include::examples/component_list.adoc[]
+
+include::examples/component_folders.adoc[]
 
 === Running scaffold command again
 

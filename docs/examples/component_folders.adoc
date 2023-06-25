@@ -1,0 +1,15 @@
+==== Get configured folders for components
+
+In addition to displaying the components that are known to the application, the folders that can be managed through the Stacks ecosystem, can be retrieved and displayed. This is valuable when putting together a configuration file that will be used to scaffold multiple projects.
+
+NOTE: When this command is run, it will retrieve the `stackscli.yml` file from the specified repository. This requires an internet connection.
+
+In the following example the folders for three projects are retrieved. One of them is invalid, one does not have any folders configured and the final one does.
+
+[source,bash]
+----
+stacks-cli --internalconfig ..\..\local\override.yml component folders myproject infra_aks infra_data
+----
+
+.List of configured folders
+image::images/stackscli-component-folders.png[]

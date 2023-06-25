@@ -19,6 +19,7 @@ type Settings struct {
 	Pipeline  []Pipeline        `mapstructure:"pipeline"`
 	Init      Init              `mapstructure:"init"`
 	Setup     Setup             `mapstructure:"setup"`
+	Folders   []string          `mapstructure:"folders"`
 }
 
 // Init holds the operations that should be performed before any work

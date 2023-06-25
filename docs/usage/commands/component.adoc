@@ -1,0 +1,22 @@
+==== Component
+
+The `component` command provides information about the components that can be used with the Stacks CLI. These components are embedded into the application at build time, but can be overridden at runtime using an internal configuration file.
+
+This command contains two sub-commands which are designed to help when using Stacks and scaffolding new projects, for example displaying a list of the known components.
+
+* `list` - list all the known components
+* `folders` - display the optional folders that are associated with the project
+
+The `folders` command is designed to be used with a mono-repo that contains multiple projects, some of which may not be required. By displaying the folders, scaffolders are able to determine which ones are required and put it in the configuration. When the project is created the unspecified folders will be deleted.
+
+NOTE: When the command executes the `folders` command it will retrieve the configuration file from the remote repository and analyse the file, this may take a few seconds to complete.
+
+[source,bash]
+----
+stacks-cli scaffold -h
+----
+
+.Help page for `component` command
+image::images/stackscli-component-help.png[]
+
+There are a number of examples that show how this command can be used in the <<Examples>> section.

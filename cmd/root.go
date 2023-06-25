@@ -163,7 +163,13 @@ func preRun(ccmd *cobra.Command, args []string) {
 			App.Logger.Exit(2)
 		}
 
-		viper.MergeConfig(strings.NewReader(string(data)))
+		err = viper.MergeConfig(strings.NewReader(string(data)))
+		if err != nil {
+			log.Fatalf("Unable to merge in override configuration")
+			App.Logger.Exit(5)
+		}
+
+		fmt.Println(viper.GetString("stacks.components.nx_next.package.version"))
 
 	}
 

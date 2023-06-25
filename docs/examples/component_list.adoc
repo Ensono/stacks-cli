@@ -1,0 +1,13 @@
+==== List the known components
+
+The `component` command can be used to display the components that are known to the system. This is useful to be able to look at the internal configuration and be able to see where things are downloaded from as well as determine the desired configuration.
+
+[source,bash]
+----
+stacks-cli component list
+----
+
+This command will display the built in internal configuration, however if the `--internalconfig` argument has been specified, it will reflect any overrides that have been made.
+
+.Displaying the known components
+image::images/stacks-cli-component-list.png[]

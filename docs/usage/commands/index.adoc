@@ -11,6 +11,8 @@ include::usage/commands/completion.adoc[]
 
 include::usage/commands/interactive.adoc[]
 
+include::usage/commands/component.adoc[]
+
 include::usage/commands/scaffold.adoc[]
 
 include::usage/commands/export.adoc[]

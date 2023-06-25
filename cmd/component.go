@@ -1,10 +1,18 @@
 package cmd
 
 import (
+	"bytes"
+	"fmt"
+	"net/url"
 	"os"
+	"strings"
 
+	"github.com/amido/stacks-cli/internal/constants"
+	"github.com/amido/stacks-cli/internal/util"
+	"github.com/amido/stacks-cli/pkg/config"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -15,10 +23,11 @@ var (
 	}
 
 	foldersCmd = &cobra.Command{
-		Use:   "folders",
+		Use:   "folders [list of projects]",
 		Short: "Display the folders for a command, usually used with a mono-repo",
 		Long:  "",
 		Run:   executeComponentFolders,
+		Args:  cobra.MinimumNArgs(1),
 	}
 
 	listCmd = &cobra.Command{
@@ -31,11 +40,13 @@ var (
 )
 
 func init() {
+
 	// Add the command to the rootCmd
 	rootCmd.AddCommand(componentCmd)
 
 	// Add the subcommands for the component command
 	componentCmd.AddCommand(foldersCmd, listCmd)
+
 }
 
 // executeComponentList outputs the list of stacks.components
@@ -85,6 +96,97 @@ func executeComponentList(ccmd *cobra.Command, args []string) {
 	t.Render()
 }
 
+// execute Component folders retrieves the stackscli.yml file from the remote
+// repository and analyses it to display a list of folders that are supported
 func executeComponentFolders(ccmd *cobra.Command, args []string) {
 
+	// define a slice to hold the valid entries
+	var valid []string
+
+	// Iterate around each of the args and ensure that they ar valid
+	// this is done so that all the errors about any invalid projects are shown in one place
+	for _, name := range args {
+		_, ok := Config.Stacks.Components[name]
+		if ok {
+			valid = append(valid, name)
+		} else {
+			App.Logger.Warnf("Invalid component: %s", name)
+		}
+	}
+
+	// Create a new table writer to display the output
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"Component", "Folders"})
+
+	// iterate around the valid projects and get the settings for the project
+	for _, name := range valid {
+
+		projectSettings := config.Settings{}
+
+		// get the component details to work with
+		component := Config.Stacks.Components[name]
+
+		// select the download method based on the type
+		switch component.Package.Type {
+		case "git":
+
+			// Not using the downloader here as only getting one file, will use the raw endpoint
+			// Parse the URL to get the component parts
+			fileURL, err := url.Parse(component.Package.URL)
+			if err != nil {
+				App.Logger.Errorf("Unable to parse package URL: %s", component.Package.URL)
+				continue
+			}
+
+			App.Logger.Infof("[%s] Retrieving project settings", name)
+
+			// Create the URL to the raw file
+			downloadUrl := fmt.Sprintf("https://raw.githubusercontent.com%s/%s/%s", fileURL.Path, component.Package.Version, constants.SettingsFile)
+
+			App.Logger.Debugf("Download URL: %s", downloadUrl)
+
+			data, err := util.DownloadFile(downloadUrl)
+			if err != nil {
+				App.Logger.Errorf("Error downloading settings file: %s", err.Error())
+				continue
+			}
+
+			v := viper.New()
+			v.SetConfigType("yaml")
+			err = v.ReadConfig(bytes.NewBuffer(data))
+			if err != nil {
+				App.Logger.Errorf("Error reading settings file: %s", err.Error())
+				continue
+			}
+
+			// unmarshal the data into an object
+			err = v.Unmarshal(&projectSettings)
+			if err != nil {
+				App.Logger.Errorf("Error in settings file: %s", err.Error())
+				continue
+			}
+		}
+
+		// specify the cell info for the folders
+		cellText := ""
+		if len(projectSettings.Folders) > 0 {
+			cellText = strings.Join(projectSettings.Folders, "\n")
+		} else {
+			cellText = "<NONE_CONFIGURED>"
+		}
+
+		t.AppendRow(
+			table.Row{
+				name, cellText,
+			},
+		)
+
+		t.AppendSeparator()
+	}
+
+	// Output the table
+	t.SetStyle(table.StyleLight)
+
+	t.Render()
 }

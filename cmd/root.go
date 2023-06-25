@@ -135,7 +135,7 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// Read  in the static configuration
-	// viper.SetConfigType("yaml")
+	viper.SetConfigType("yaml")
 	// viper.MergeConfig(strings.NewReader(Config.Internal.GetFileContentString("stacks_frameworks")))
 
 	err := viper.MergeInConfig()

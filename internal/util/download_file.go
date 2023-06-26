@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+// DownloadFile provides a wrapper function to download a file into memory
+// and return the []byte array of the downloaded item
 func DownloadFile(url string) ([]byte, error) {
 	response, err := http.Get(url)
 

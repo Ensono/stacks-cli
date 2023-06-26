@@ -92,7 +92,7 @@ func (s *Scaffold) Run() error {
 // PerformOperation performs the operation as specified by the settings file for the project
 // It is responsible for performing any template replacements using GoTemplate
 //
-// The method reads in the Action and determines what is requied
+// The method reads in the Action and determines what is required
 // The currently supported actions are
 //
 //	copy - copies data from the temporary dir to the working dir
@@ -102,14 +102,46 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 
 	var command string
 
-	switch operation.Action {
-	case "cmd":
+	// define a replacements object so that all can be passed to the render function
+	// the project is passed in as a seperate object as it is part of a slice
+	replacements := config.Replacements{}
+	replacements.Input = s.Config.Input
+	replacements.Project = *project
 
-		// define a replacements object so that all can be passed to the render function
-		// the project is passed in as a seperate object as it is part of a slice
-		replacements := config.Replacements{}
-		replacements.Input = s.Config.Input
-		replacements.Project = *project
+	switch operation.Action {
+	case "folders":
+
+		// run the arguments that have been specified through the template engine
+		args, err := s.Config.RenderTemplate("arguments", operation.Arguments, replacements)
+		if err != nil {
+			s.Logger.Errorf("Error resolving template: %s", err.Error())
+			return err
+		}
+
+		// iterate around the specified folders in the settings and remove any that have not been
+		// specified in configuration
+		specified_folders := strings.Split(args, ",")
+		for _, folder := range project.Settings.Folders {
+			if !util.SliceContains(specified_folders, folder) {
+
+				// build up the path to the folder to remove
+				folder_path := filepath.Join(path, folder)
+
+				s.Logger.Infof("Removing folder: %s", folder_path)
+
+				if !s.Config.IsDryRun() {
+					err := os.RemoveAll(folder_path)
+					if err != nil {
+						s.Logger.Error("Problem removing folder")
+					}
+				} else {
+					s.Logger.Warn("Not removing folder as in dryrun mode")
+				}
+
+			}
+		}
+
+	case "cmd":
 
 		// create a string builder
 		arguments := strings.Builder{}

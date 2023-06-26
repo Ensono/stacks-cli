@@ -37,6 +37,7 @@ func init() {
 	var project_vcs_type string
 	var project_vcs_url string
 	var project_settings_file string
+	var project_folders []string
 
 	// - framework settings
 	var framework_type string
@@ -85,6 +86,7 @@ func init() {
 	scaffoldCmd.Flags().StringVar(&project_vcs_type, "sourcecontrol", "github", "Type of source control being used")
 	scaffoldCmd.Flags().StringVarP(&project_vcs_url, "sourcecontrolurl", "u", "", "Url of the remote for source control")
 	scaffoldCmd.Flags().StringVar(&project_settings_file, "projectsettingsfile", "", "Path to a settings file to use for the project")
+	scaffoldCmd.Flags().StringSliceVar(&project_folders, "projectfolders", []string{}, "List of folders to keep in the the project")
 
 	scaffoldCmd.Flags().StringVarP(&framework_type, "framework", "F", "", "Framework for the project")
 	scaffoldCmd.Flags().StringVarP(&framework_option, "frameworkoption", "O", "", "Option of the chosen framework to use")
@@ -137,6 +139,8 @@ func init() {
 	viper.BindPFlag("input.project.framework.type", scaffoldCmd.Flags().Lookup("framework"))
 	viper.BindPFlag("input.project.framework.option", scaffoldCmd.Flags().Lookup("frameworkoption"))
 	viper.BindPFlag("input.project.framework.version", scaffoldCmd.Flags().Lookup("frameworkversion"))
+
+	viper.BindPFlag("input.project.folders", scaffoldCmd.Flags().Lookup("projectfolders"))
 
 	// -- bind the framework properties to the project framework
 	viper.BindPFlag("input.project.framework.properties", scaffoldCmd.Flags().Lookup("frameworkprops"))

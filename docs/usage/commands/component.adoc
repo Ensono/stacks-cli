@@ -9,7 +9,7 @@ This command contains two sub-commands which are designed to help when using Sta
 
 The `folders` command is designed to be used with a mono-repo that contains multiple projects, some of which may not be required. By displaying the folders, scaffolders are able to determine which ones are required and put it in the configuration. When the project is created the unspecified folders will be deleted.
 
-NOTE: When the command executes the `folders` command it will retrieve the configuration file from the remote repository and analyse the file, this may take a few seconds to complete.
+NOTE: When the command executes the `folders` command it will retrieve the configuration file from the remote repository and analyse the file, this may take time to complete.
 
 [source,bash]
 ----

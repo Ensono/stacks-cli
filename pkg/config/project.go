@@ -22,6 +22,8 @@ type Project struct {
 	Settings Settings `yaml:"-"` // Hold the settings for the current project
 
 	Phases []Phase `yaml:"-"` // Holds the phases for the operations
+
+	Folders []string `mapstructure:"folders"` // Folders that should remain in the project after deployment
 }
 
 // GetId returns a consistent identifier for the name of the project

@@ -201,9 +201,14 @@ func (config *Config) RenderTemplate(name string, tmpl string, input Replacement
 	// declare var to hold the rendered string
 	var rendered bytes.Buffer
 
+	// create function map
+	funcMap := template.FuncMap{
+		"StringsJoin": strings.Join,
+	}
+
 	// create an object of the template
 	// if it fails then return with an error
-	t, err := template.New(name).Parse(tmpl)
+	t, err := template.New(name).Funcs(funcMap).Parse(tmpl)
 
 	if err != nil {
 		return "", err

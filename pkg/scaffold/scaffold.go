@@ -120,24 +120,26 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 
 		// iterate around the specified folders in the settings and remove any that have not been
 		// specified in configuration
-		specified_folders := strings.Split(args, ",")
-		for _, folder := range project.Settings.Folders {
-			if !util.SliceContains(specified_folders, folder) {
+		if args != "" {
+			specified_folders := strings.Split(args, ",")
+			for _, folder := range project.Settings.Folders {
+				if !util.SliceContains(specified_folders, folder) {
 
-				// build up the path to the folder to remove
-				folder_path := filepath.Join(path, folder)
+					// build up the path to the folder to remove
+					folder_path := filepath.Join(path, folder)
 
-				s.Logger.Infof("Removing folder: %s", folder_path)
+					s.Logger.Infof("Removing folder: %s", folder_path)
 
-				if !s.Config.IsDryRun() {
-					err := os.RemoveAll(folder_path)
-					if err != nil {
-						s.Logger.Error("Problem removing folder")
+					if !s.Config.IsDryRun() {
+						err := os.RemoveAll(folder_path)
+						if err != nil {
+							s.Logger.Error("Problem removing folder")
+						}
+					} else {
+						s.Logger.Warn("Not removing folder as in dryrun mode")
 					}
-				} else {
-					s.Logger.Warn("Not removing folder as in dryrun mode")
-				}
 
+				}
 			}
 		}
 

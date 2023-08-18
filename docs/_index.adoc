@@ -1,0 +1,9 @@
+---
+id: stacks-cli
+title: Stacks CLI
+description: To aid in the scaffolding of Stacks related projects there is a Command Line Interface (CLI) that will set up the projects according to the configuration. This section details how to use.
+tags:
+  - cli
+categotries:
+  - DevOps
+---

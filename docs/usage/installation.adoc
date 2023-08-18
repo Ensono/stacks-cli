@@ -1,3 +1,12 @@
+---
+id: stacks-cli-install
+title: Installation
+weight: 20
+tags:
+  - cli
+  - install
+---
+
 === Installation
 
 As the CLI is a single binary the quickest way to install it is to download it and put it somewhere in your PATH. The following code snippets show how this can be achieved using Bash and PowerShell.

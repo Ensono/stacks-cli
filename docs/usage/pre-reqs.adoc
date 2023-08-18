@@ -1,3 +1,11 @@
+---
+id: stacks-cli-prereqs
+title: Pre-requisites
+weight: 10
+tags:
+  - cli
+---
+
 === Pre-Requisites
 
 In order to download and use the Stacks CLI tool, there are some programs that are required. The following table shows what is required and in what circumstance.

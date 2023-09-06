@@ -6,5 +6,5 @@ type Environment struct {
 	ShortName  string `mapstructure:"shortname" yaml:",omitempty"`
 	IsProduction bool `mapstructure:"isproduction" yaml:",omitempty"`
 	TriggerFromMainBranch bool `mapstructure:"triggerfrommainbranch" yaml:",omitempty"`
-	DependsOn []string `mapstructure:"depends_on" yaml:",omitempty"`
+	DependsOn []string `mapstructure:"dependson" yaml:",omitempty"`
 }

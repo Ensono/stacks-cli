@@ -48,6 +48,7 @@ type EnvironmentAnswers struct {
 	ShortName			string `survey:"shortname"`
 	IsProduction 		bool  `survey:"isproduction"`
 	TriggerFromMainBranch bool `survey:"triggerfrommainbranch"`
+	DependsOn			string `survey:"dependson"`
 }
 
 // getCoreQuestions returns the list of questions that need to be answered in interactive
@@ -315,7 +316,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 	return questions
 }
 
-func (a *Answers) getEnvironmentQuestions(qType string, config *Config) []*survey.Question {
+func (a *Answers) getEnvironmentQuestions(qType string, config *Config, previousEnvironmentName string) []*survey.Question {
 
 	var questions []*survey.Question
 
@@ -357,6 +358,13 @@ func (a *Answers) getEnvironmentQuestions(qType string, config *Config) []*surve
 				},
 				Validate: survey.Required,
 			},
+			{
+				Name: "dependson",
+				Prompt: &survey.Input{
+					Message: "What environment does this environment depend on?",
+					Default: previousEnvironmentName,
+				},
+			},
 		}
 	}
 	return questions
@@ -395,6 +403,7 @@ func (a *Answers) RunInteractive(config *Config) error {
 	}
 
 	environmentList := []Environment{}
+	previousEnvironmentName := "Build"
 	// as a number of environments can be configured, the environments questions need
 	// to be asked environments_count times
 	for i := 0; i < a.EnvironmentCount; i++ {
@@ -407,11 +416,11 @@ func (a *Answers) RunInteractive(config *Config) error {
 		pa := EnvironmentAnswers{}
 
 		// - pre questions
-		err = survey.Ask(a.getEnvironmentQuestions("pre", config), &pa)
+		err = survey.Ask(a.getEnvironmentQuestions("pre", config, previousEnvironmentName), &pa)
 		if err != nil {
 			continue
 		}
-
+		
 		// create a struct for the environment
 		environment := Environment{
 			Name: pa.Name,
@@ -419,7 +428,10 @@ func (a *Answers) RunInteractive(config *Config) error {
 			ShortName: pa.ShortName,
 			IsProduction: pa.IsProduction,
 			TriggerFromMainBranch: pa.TriggerFromMainBranch,
+			DependsOn: strings.Split(pa.DependsOn, ","),
 		}
+
+		previousEnvironmentName = environment.StageName;
 
 		// append this to the project list on the config object
 		environmentList = append(environmentList, environment)

@@ -5,6 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Interactive",
+            "type": "go",
+            "request": "launch",
+            "program": "${workspaceFolder}/stacks-cli.go",
+            "args": [
+                "interactive"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Integration Tests",
             "type": "go",
             "request": "launch",
@@ -15,6 +25,7 @@
             "buildFlags": "-tags integration",
             "cwd": "${workspaceFolder}/local/inttests"
         },
+        
         {
             "name": "Scaffold",
             "type": "go",

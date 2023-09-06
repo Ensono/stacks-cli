@@ -29,6 +29,7 @@ type InputConfig struct {
 	SettingsFile string    `mapstructure:"settingsfile" json:",omitempty"`
 	Options      Options   `mapstructure:"options"`
 	Overrides    Overrides `mapstructure:"overrides"`
+	Environment	 []Environment `mapstructure:"environment"`
 }
 
 // CheckFrameworks iterates around each of the projects and builds up a list of the frameworks

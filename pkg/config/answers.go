@@ -160,7 +160,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "environment_count",
 			Prompt: &survey.Input{
 				Message: "How many environments would you like to configure?",
-				Default: "1",
+				Default: "0",
 			},
 			Validate: survey.Required,
 		},
@@ -346,15 +346,15 @@ func (a *Answers) getEnvironmentQuestions(qType string, config *Config, previous
 			},
 			{
 				Name: "isproduction",
-				Prompt: &survey.Input{
-					Message: "Should this environment be configured the same as production? (true/false)",
+				Prompt: &survey.Confirm{
+					Message: "Should this environment be configured the same as production?",
 				},
 				Validate: survey.Required,
 			},
 			{
 				Name: "triggerfrommainbranch",
-				Prompt: &survey.Input{
-					Message: "Should this environment be deployed from the main branch only? (true/false)",
+				Prompt: &survey.Confirm{
+					Message: "Should this environment be deployed from the main branch only?",
 				},
 				Validate: survey.Required,
 			},

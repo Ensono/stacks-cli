@@ -93,7 +93,7 @@ func setupTestCase(t *testing.T, configuration []byte) (func(t *testing.T), stri
 
 func TestStacksComponents(t *testing.T) {
 
-	var expected int = 8
+	var expected int = 9
 
 	config := Config{}
 	config.Init()
@@ -128,7 +128,7 @@ func TestStacksComponents(t *testing.T) {
 }
 
 func TestOverriddenStacksComponents(t *testing.T) {
-	var expected int = 10
+	var expected int = 11
 
 	config := Config{}
 	config.Init()
@@ -281,12 +281,12 @@ func TestGetComponentOptionsDefault(t *testing.T) {
 		},
 		{
 			"infra",
-			[]string{"aks"},
+			[]string{"aks","data"},
 			false,
 		},
 		{
 			"infra",
-			[]string{"aks", "keyvault"},
+			[]string{"aks", "data", "keyvault"},
 			true,
 		},
 		{

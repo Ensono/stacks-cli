@@ -103,7 +103,7 @@ stacks:
       name: data
       package:
         url: https://github.com/amido/stacks-azure-data-ingest
-        version: feat/6814-stack-cli-changes
+        version: master
         type: git
 
 help:

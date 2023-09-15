@@ -43,7 +43,7 @@ func TestPipelineExists(t *testing.T) {
 	// get the settings from the setup
 	settings := setupPipelines(t)
 
-	assert.NotEqual(t, Pipeline{}, settings.GetPipeline("azdo"))
+	assert.NotEqual(t, []Pipeline{}, settings.GetPipelines("azdo"))
 }
 
 func TestPipelineDoesNotExist(t *testing.T) {
@@ -51,7 +51,17 @@ func TestPipelineDoesNotExist(t *testing.T) {
 	// get the settings from the setup
 	settings := setupPipelines(t)
 
-	assert.Equal(t, Pipeline{}, settings.GetPipeline("jenkins"))
+	assert.Equal(t, []Pipeline{}, settings.GetPipelines("jenkins"))
+}
+
+func TestPipelineReturnCount(t *testing.T) {
+
+	// get the settings from the setup
+	settings := setupPipelines(t)
+
+	pipelineCount := len(settings.GetPipelines("azdo"))
+
+	assert.Equal(t, 1, pipelineCount)
 }
 
 func TestFrameworkCommandVersions(t *testing.T) {

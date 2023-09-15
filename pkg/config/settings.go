@@ -52,7 +52,7 @@ type SettingsFrameworkCommands struct {
 	Version string `mapstructure:"version"`
 }
 
-// GetPipelines attempts to return the pipeline settings for the named pipeline
+// GetPipelines attempts to return all pipelines settings for the named pipeline
 func (s *Settings) GetPipelines(name string) []Pipeline {
 	pipeline := []Pipeline{}
 

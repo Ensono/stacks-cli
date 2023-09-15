@@ -24,6 +24,7 @@ type Answers struct {
 	Options               []string `survey:"options"`
 	WorkingDir            string   `survey:"working_dir"`
 	ProjectCount          int      `survey:"project_count"`
+	EnvironmentCount      int      `survey:"environment_count"`
 }
 
 // ProjectAnswers are the list of answers that are provided for each project defined
@@ -39,6 +40,15 @@ type ProjectAnswers struct {
 	SourceControlUrl    string `survey:"source_control_url"`
 	CloudRegion         string `survey:"cloud_region"`
 	CloudGroup          string `survey:"cloud_group"`
+}
+
+type EnvironmentAnswers struct {
+	Name                string `survey:"name"`
+	StageName			string `survey:"stagename"`
+	ShortName			string `survey:"shortname"`
+	IsProduction 		bool  `survey:"isproduction"`
+	TriggerFromMainBranch bool `survey:"triggerfrommainbranch"`
+	DependsOn			string `survey:"dependson"`
 }
 
 // getCoreQuestions returns the list of questions that need to be answered in interactive
@@ -143,6 +153,14 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Prompt: &survey.Input{
 				Message: "How many projects would you like to configure?",
 				Default: "1",
+			},
+			Validate: survey.Required,
+		},
+		{
+			Name: "environment_count",
+			Prompt: &survey.Input{
+				Message: "How many environments would you like to configure?",
+				Default: "0",
 			},
 			Validate: survey.Required,
 		},
@@ -298,6 +316,60 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 	return questions
 }
 
+func (a *Answers) getEnvironmentQuestions(qType string, config *Config, previousEnvironmentName string) []*survey.Question {
+
+	var questions []*survey.Question
+
+	// use the qType to determine which questions need to be asked
+	switch qType {
+	case "pre":
+		questions = []*survey.Question{
+			{
+				Name: "name",
+				Prompt: &survey.Input{
+					Message: "What is the environment name?",
+				},
+				Validate: survey.Required,
+			},
+			{
+				Name: "stagename",
+				Prompt: &survey.Input{
+					Message: "What is the environment pipeline stage name?",
+				},
+				Validate: survey.Required,
+			},
+			{
+				Name: "shortname",
+				Prompt: &survey.Input{
+					Message: "What is the environment short name?",
+				},
+			},
+			{
+				Name: "isproduction",
+				Prompt: &survey.Confirm{
+					Message: "Should this environment be configured the same as production?",
+				},
+				Validate: survey.Required,
+			},
+			{
+				Name: "triggerfrommainbranch",
+				Prompt: &survey.Confirm{
+					Message: "Should this environment be deployed from the main branch only?",
+				},
+				Validate: survey.Required,
+			},
+			{
+				Name: "dependson",
+				Prompt: &survey.Input{
+					Message: "What environment does this environment depend on?",
+					Default: previousEnvironmentName,
+				},
+			},
+		}
+	}
+	return questions
+}
+
 func (a *Answers) RunInteractive(config *Config) error {
 
 	var err error
@@ -329,6 +401,43 @@ func (a *Answers) RunInteractive(config *Config) error {
 	if util.SliceContains(a.Options, "Dry Run") {
 		config.Input.Options.DryRun = true
 	}
+
+	environmentList := []Environment{}
+	previousEnvironmentName := "Build"
+	// as a number of environments can be configured, the environments questions need
+	// to be asked environments_count times
+	for i := 0; i < a.EnvironmentCount; i++ {
+
+		fmt.Printf("\nConfiguring environments: %d\n", i+1)
+
+		// ask the environment questions
+		// this is done in 3 stages so that the different options of the framework can be
+		// modified based on the main framework that has been specified
+		pa := EnvironmentAnswers{}
+
+		// - pre questions
+		err = survey.Ask(a.getEnvironmentQuestions("pre", config, previousEnvironmentName), &pa)
+		if err != nil {
+			continue
+		}
+		
+		// create a struct for the environment
+		environment := Environment{
+			Name: pa.Name,
+			StageName: pa.StageName,
+			ShortName: pa.ShortName,
+			IsProduction: pa.IsProduction,
+			TriggerFromMainBranch: pa.TriggerFromMainBranch,
+			DependsOn: strings.Split(pa.DependsOn, ","),
+		}
+
+		previousEnvironmentName = environment.StageName;
+
+		// append this to the project list on the config object
+		environmentList = append(environmentList, environment)
+	}
+
+	config.Input.Environment = environmentList
 
 	projectList := []Project{}
 

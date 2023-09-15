@@ -379,36 +379,39 @@ func (s *Scaffold) configurePipeline(project *config.Project) {
 	}
 
 	// get the pipeline settings
-	pipelineSettings := project.Settings.GetPipeline(s.Config.Input.Pipeline)
+	pipelineSettingsList := project.Settings.GetPipelines(s.Config.Input.Pipeline)
 
-	// define the replacements object so that all can be passed to the render function
-	// the project is passed in a separate project as it is part of a slice
-	replacements := config.Replacements{}
-	replacements.Input = s.Config.Input
-	replacements.Project = *project
+	for _, pipelineSettings := range pipelineSettingsList {
 
-	// attempt to write out the configuration file, unless in DryRun mode
-	if s.Config.Input.Options.DryRun {
-		s.Logger.Warn("Not creating variables template as in DRYRUN mode")
-	} else {
-		msg, err := s.Config.WriteVariablesFile(project, pipelineSettings, replacements)
+		// define the replacements object so that all can be passed to the render function
+		// the project is passed in a separate project as it is part of a slice
+		replacements := config.Replacements{}
+		replacements.Input = s.Config.Input
+		replacements.Project = *project
 
-		if err == nil {
-			if msg == "" {
-				s.Logger.Info("Created pipeline variable file")
-			} else {
-				s.Logger.Warn(msg)
-			}
+		// attempt to write out the configuration file, unless in DryRun mode
+		if s.Config.Input.Options.DryRun {
+			s.Logger.Warn("Not creating variables template as in DRYRUN mode")
 		} else {
-			s.Logger.Error(msg)
-		}
-	}
+			msg, err := s.Config.WriteVariablesFile(project, pipelineSettings, replacements)
 
-	// perform any addition regex replacements
-	errs := pipelineSettings.ReplacePatterns(project.Directory.WorkingDir)
-	if len(errs) > 0 {
-		for _, err := range errs {
-			s.Logger.Error(err.Error())
+			if err == nil {
+				if msg == "" {
+					s.Logger.Info("Created pipeline variable file")
+				} else {
+					s.Logger.Warn(msg)
+				}
+			} else {
+				s.Logger.Error(msg)
+			}
+		}
+
+		// perform any addition regex replacements
+		errs := pipelineSettings.ReplacePatterns(project.Directory.WorkingDir)
+		if len(errs) > 0 {
+			for _, err := range errs {
+				s.Logger.Error(err.Error())
+			}
 		}
 	}
 }

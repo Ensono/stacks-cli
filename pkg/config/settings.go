@@ -52,16 +52,15 @@ type SettingsFrameworkCommands struct {
 	Version string `mapstructure:"version"`
 }
 
-// GetPipeline attempts to return the pipeline settings for the named pipeline
-func (s *Settings) GetPipeline(name string) Pipeline {
-	pipeline := Pipeline{}
+// GetPipelines attempts to return all pipelines settings for the named pipeline
+func (s *Settings) GetPipelines(name string) []Pipeline {
+	pipeline := []Pipeline{}
 
-	// iterate around the pipeline slice and find the one with the type that matches
-	// the specified name
+	// iterate around the pipeline slice and find the ones with the type that matches
+	// the specified name.
 	for _, p := range s.Pipeline {
 		if p.Type == name {
-			pipeline = p
-			break
+			pipeline = append(pipeline, p)
 		}
 	}
 

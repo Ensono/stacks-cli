@@ -39,7 +39,7 @@ There are a number of settings that are hard hardcoded into the CLI. These inclu
 * Framework Definitions
 ** Each framework has a number of commands that need to exist on the machine in order to work. This is used to ensure that these programs are present.
 ** Version constraints on the tool being used
-* Stacks Components
+* Ensono Stacks Components
 ** Defines where the CLI can find the components for each of the different types of projects
 ** Allows different branches to be used for testing purposes
 * Online Help

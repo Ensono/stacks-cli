@@ -1,6 +1,6 @@
 === CLI Version Check
 
-The Stacks CLI is constantly evolving and as such there are new versions being released frequently. To help ensure that you are running the most up to date version, it will check the releases for the CLI and compare that version against the one that you are running. If there is a mismatch then the CLI will inform you of the newer version.
+The Ensono Stacks CLI is constantly evolving and as such there are new versions being released frequently. To help ensure that you are running the most up to date version, it will check the releases for the CLI and compare that version against the one that you are running. If there is a mismatch then the CLI will inform you of the newer version.
 
 NOTE: This check does not prevent normal operation if you have an older version. However you _may_ find that some things do not work as you intend.
 

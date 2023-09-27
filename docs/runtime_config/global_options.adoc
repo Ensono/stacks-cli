@@ -1,6 +1,6 @@
 ==== Global Options
 
-The following options can be applied to any command within the Stacks CLI.
+The following options can be applied to any command within the Ensono Stacks CLI.
 
 .Global Options
 [options="header"]
@@ -13,11 +13,11 @@ The following options can be applied to any command within the Stacks CLI.
 | `--logcolur` | AMIDOSTACKS_LOG_COLOUR | State if logging should include colour | | 
 | `--logfile` | AMIDOSTACKS_LOG_FILE | Write all logs to the specified file | | 
 | `-w`, `--workingdirectory` | AMIDOSTACKS_DIRECTORY_WORKINGDIR | Directory that the projects should be created in | `${PWD}` | 
-| `--tempdir` | AMIDOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Stacks for its temp files | System temp directory | 
-| `--nobanner` | AMIDOSTACKS_OPTIONS_NOBANNER | Do not display the Stacks banner when running the command | `false` |
-| `--nocliversion` | AMIDOSTACKS_OPTIONS_NOCLIVERSION | Do not perform a version check for the latest version of the Ensono Digital Stacks CLI | `false` |
+| `--tempdir` | AMIDOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Ensono Stacks for its temp files | System temp directory | 
+| `--nobanner` | AMIDOSTACKS_OPTIONS_NOBANNER | Do not display the Ensono Stacks banner when running the command | `false` |
+| `--nocliversion` | AMIDOSTACKS_OPTIONS_NOCLIVERSION | Do not perform a version check for the latest version of the Ensono Stacks CLI | `false` |
 | `--dryrun` | AMIDOSTACKS_DRYRUN | Perform a dryrun of all the CLI. Particularly useful when used with `--cmdlog` | `false` |
-| `--token` | AMIDOSTACKS_OPTIONS_TOKEN | The Stacks CLI can use the GitHub API to retrieve latest version infomration for the CLI as well as use it to ascertain Zip archive URLs without having to build up the URL to the asset manually.
+| `--token` | AMIDOSTACKS_OPTIONS_TOKEN | The Ensono Stacks CLI can use the GitHub API to retrieve latest version infomration for the CLI as well as use it to ascertain Zip archive URLs without having to build up the URL to the asset manually.
 
 By default the GitHub API rate limits unauthenticated API requests to 60 requests per hour, however authenticated requests can get 5,000 per hour.
 

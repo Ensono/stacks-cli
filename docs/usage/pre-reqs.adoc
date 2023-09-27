@@ -1,6 +1,6 @@
 === Pre-Requisites
 
-In order to download and use the Stacks CLI tool, there are some programs that are required. The following table shows what is required and in what circumstance.
+In order to download and use the Ensono Stacks CLI tool, there are some programs that are required. The following table shows what is required and in what circumstance.
 
 [cols="1,2,4,1a"]
 |===

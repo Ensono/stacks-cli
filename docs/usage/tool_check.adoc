@@ -4,7 +4,7 @@ Each framework has a list of commands associated with it. This denotes the list 
 
 When the application runs, it will determine the frameworks that have been selected in the projects and perform a check to see if those commands are available on the machine. It does this by checking the PATH variable for the command. This check is performed very early on in the process so it does not cause an issue when iterating around the projects that need to be setup.
 
-NOTE: It is not possible for the Stacks project to specify the full path to the command because it can be different on each and every machine that the Stacks CLI will run on.
+NOTE: It is not possible for the Ensono Stacks project to specify the full path to the command because it can be different on each and every machine that the Ensono Stacks CLI will run on.
 
 The commands for each of the supported frameworks are as follows:
 
@@ -17,7 +17,7 @@ The commands for each of the supported frameworks are as follows:
 | nx | `git`, `node`, `npx`
 |===
 
-If a command cannot be located, the CLI will be terminated. This does not mean the command does not exist on the machine, rather that it is not accessble using the PATH environment variable. The Stacks CLI is not a package manager and as such will not attempt to install the missing commands.
+If a command cannot be located, the CLI will be terminated. This does not mean the command does not exist on the machine, rather that it is not accessble using the PATH environment variable. The Ensono Stacks CLI is not a package manager and as such will not attempt to install the missing commands.
 
 The following screenshot shows the output of a scaffolding run where the "dotnet" framework has been specified and the `dotnet` command cannot be found:
 

@@ -2,7 +2,7 @@
 
 == Building
 
-The Stacks CLI can be built locally on a development workstation or in a CI/CD pipeline. It has been configured to use Azure DevOps, but can easily be configured to work with other CI/CD runners, such as GitLab CI and GitHub Actions.
+The Ensono Stacks CLI can be built locally on a development workstation or in a CI/CD pipeline. It has been configured to use Azure DevOps, but can easily be configured to work with other CI/CD runners, such as GitLab CI and GitHub Actions.
 
 The chapter illustrates how to get a development environment up and running and also how the CI/CD is configured.
 
@@ -53,7 +53,7 @@ git clone git@github.com:amido/stacks-cli.git
 
 ==== Build the CLI
 
-Building the Stacks CLI is as simple as running the default tasks using Taskctl. The default task is set to perform the following operations:
+Building the Ensono Stacks CLI is as simple as running the default tasks using Taskctl. The default task is set to perform the following operations:
 
 . Execute Tests
 .. Run tests
@@ -70,7 +70,7 @@ taskctl build
 
 The output of the command will be similar to the following.
 
-.Test and compile Stacks CLI
+.Test and compile Ensono Stacks CLI
 image::images/taskctl-compile.png[]
 
 ==== Release

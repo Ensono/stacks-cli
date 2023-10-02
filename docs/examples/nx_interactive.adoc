@@ -1,6 +1,6 @@
 ==== Nx Next.js project using the interactive command
 
-To create a Stacks Nx Project with the Next.js App pre-configured, start by running the interactive command.
+To create a Ensono Stacks Nx Project with the Next.js App pre-configured, start by running the interactive command.
 
 [source,zsh]
 ----

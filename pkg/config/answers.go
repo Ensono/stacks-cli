@@ -53,6 +53,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "company_name",
 			Prompt: &survey.Input{
 				Message: "What is the name of your company?",
+				Help:    "The name of your company that is used to help name resources in the chosen cloud platform",
 			},
 			Validate: survey.Required,
 		},
@@ -60,6 +61,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "company_domain",
 			Prompt: &survey.Input{
 				Message: "What is the scope or area of the company?",
+				Help:    "As there can be many different projects being created within a team, this value is designed to be used to categorise the project",
 			},
 			Validate: survey.Required,
 		},
@@ -67,6 +69,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "company_component",
 			Prompt: &survey.Input{
 				Message: "What component is being worked on?",
+				Help:    "When using Ensono Stacks the scaffolded project is usually being created as part of a larger solution. This value is used to help name the project",
 			},
 			Validate: survey.Required,
 		},
@@ -76,6 +79,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 				Message: "What pipeline is being targeted?",
 				Options: []string{"azdo", "gha"},
 				Default: "azdo",
+				Help:    "A number of different pipelines can be configured to work with Ensono Stacks. Select the pipeline that this project will use.",
 			},
 			Validate: survey.Required,
 		},
@@ -85,6 +89,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 				Message: "Which cloud is Stacks being setup in?",
 				Options: []string{"aws", "azure"},
 				Default: "azure",
+				Help:    "Ensono Stacks supports being deployed into different cloud platforms. Select the cloud that will be used.",
 			},
 			Validate: survey.Required,
 		},
@@ -92,6 +97,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "terraform_group",
 			Prompt: &survey.Input{
 				Message: "Which group is the Terraform state being saved in?",
+				Help:    "This is the group that contains the storage account for the Terraform state.",
 			},
 			Validate: survey.Required,
 		},
@@ -99,13 +105,15 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "terraform_storage",
 			Prompt: &survey.Input{
 				Message: "What is the name of the Terraform storage?",
+				Help:    "The name of the Azure Storage account or S3 bucket being used to store the Terraform state",
 			},
 			Validate: survey.Required,
 		},
 		{
 			Name: "terraform_container",
 			Prompt: &survey.Input{
-				Message: "What is the name of the Terraform storage container?",
+				Message: "What is the name of the folder or container for Terraform state storage?",
+				Help:    "For Azure storage accounts this is the name of the container to be used for the workspace. For AWS S3 Buckets this is the name of the folder to use.",
 			},
 			Validate: survey.Required,
 		},
@@ -113,6 +121,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "network_domain_external",
 			Prompt: &survey.Input{
 				Message: "What is the external domain of the solution?",
+				Help:    "The domain that the projects will be accessible on. This needs to be a domain that is already registered and can be used.",
 			},
 			Validate: survey.Required,
 		},
@@ -120,7 +129,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "network_domain_internal",
 			Prompt: &survey.Input{
 				Message: "What is the internal domain of the solution?",
-				Help:    "If the internal domain is not set it will be derived from the specified external domain",
+				Help:    "The internal domain of the application. If not specified this will be derived from the external domain. So if stacks.ensono.com is used then the internal will be stacks.ensono.internal",
 			},
 		},
 		{
@@ -128,6 +137,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Prompt: &survey.MultiSelect{
 				Message: "What options would you like to enable, if any?",
 				Options: []string{"Command Log", "Dry Run"},
+				Help:    "A selection of options to apply to the CLI. Command Log - save all of the commands that are run to a log file; DryRun - run the command without performing any of the tasks.",
 			},
 		},
 		{
@@ -143,6 +153,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Prompt: &survey.Input{
 				Message: "How many projects would you like to configure?",
 				Default: "1",
+				Help:    "The CLI is designed to be able to scaffold multiple projects at once. By providing the number of projects, you will be asked a series of questions for each project",
 			},
 			Validate: survey.Required,
 		},
@@ -171,6 +182,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				Prompt: &survey.Select{
 					Message: "What framework should be used for the project?",
 					Options: config.Stacks.GetComponentNames(), // []string{"dotnet", "java", "nx", "infra"},
+					Help:    "Ensono Stacks supports a number of different frameworks. Select the framework that you would like to use. ",
 				},
 				Validate: survey.Required,
 			},
@@ -189,6 +201,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				Prompt: &survey.Select{
 					Message: "Which option of the framework do you require?",
 					Options: config.Stacks.GetComponentOptions(qType),
+					Help:    "Ensono Stacks has a number of options that are available for specific frameworks. Select the one that is appropriate for the desired workload.",
 				},
 				Validate: survey.Required,
 			},
@@ -197,6 +210,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				Prompt: &survey.Input{
 					Message: "Specify any additional framework properties. (Use a comma to separate each one).",
 					Default: "",
+					Help:    "Additional properties that need to applied to the project when it is built. This is dependent on the framework that has been chosen. Multiple options can be specified by separating the options with a comma",
 				},
 			},
 		}
@@ -237,6 +251,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 					Message: "Which type of infrastructure is required?",
 					Options: config.Stacks.GetComponentOptions(qType),
 					Default: "aks",
+					Help:    "A number of projects support different infrastructure. By answering this question, the CLI will prepare the project, if applicable, to the chosen cloud.",
 				},
 				Validate: survey.Required,
 			},
@@ -248,6 +263,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				Prompt: &survey.Input{
 					Message: "Which version of the framework option do you require?",
 					Default: "latest",
+					Help:    "There are a number of different versions of the frameworks that can be used. Specify the one that is required",
 				},
 				Validate: survey.Required,
 			},
@@ -257,6 +273,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 					Message: "Please select the source control system being used",
 					Options: []string{"github"},
 					Default: "github",
+					Help:    "This is the centralised source control that should be used",
 				},
 				Validate: survey.Required,
 			},
@@ -264,6 +281,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				Name: "source_control_url",
 				Prompt: &survey.Input{
 					Message: "What is the URL of the remote repository?",
+					Help:    "When the project is scaffolded and configured as a Git repo, it will add in the origin to this URL.",
 				},
 				Validate: survey.Required,
 			},
@@ -271,6 +289,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				Name: "cloud_region",
 				Prompt: &survey.Input{
 					Message: "Which cloud region should be used?",
+					Help:    "The region, of the chosen cloud, that the resources will be deployed to.",
 				},
 				Validate: survey.Required,
 			},
@@ -278,6 +297,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				Name: "cloud_group",
 				Prompt: &survey.Input{
 					Message: "What is the name of the group for all the resources?",
+					Help:    "The name of the group into which all the resources for this project will be deployed into",
 				},
 				Validate: survey.Required,
 			},

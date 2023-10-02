@@ -6,7 +6,7 @@
 
 :stackscli_version: 100.98.99
 
-= Stacks CLI Manual
+= Ensono Stacks CLI Manual
 
 include::usage.adoc[]
 

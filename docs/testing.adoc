@@ -1,6 +1,6 @@
 == Testing
 
-Testing is an integral part of building and running the Stacks CLI. There are many unit tests that are run before the CLI is compiled, and then once compilation has been completed a number of integration tests are performed.
+Testing is an integral part of building and running the Ensono Stacks CLI. There are many unit tests that are run before the CLI is compiled, and then once compilation has been completed a number of integration tests are performed.
 
 The integration tests are built as a separate binary, for each supported platform, and run the CLI with a number of scenarios. All of the commands of the CLI are tested:
 

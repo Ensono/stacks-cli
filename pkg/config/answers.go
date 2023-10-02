@@ -53,7 +53,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Name: "company_name",
 			Prompt: &survey.Input{
 				Message: "What is the name of your company?",
-				Help:    "This is used to help name resources in the chosen cloud platform",
+				Help:    "The name of your company that is used to help name resources in the chosen cloud platform",
 			},
 			Validate: survey.Required,
 		},
@@ -112,8 +112,8 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 		{
 			Name: "terraform_container",
 			Prompt: &survey.Input{
-				Message: "What is the name of the Terraform storage container?",
-				Help:    "This is the container within the storage that the Terraform state is saved to",
+				Message: "What is the name of the folder or container for Terraform state storage?",
+				Help:    "For Azure storage accounts this is the name of the container to be used for the workspace. For AWS S3 Buckets this is the name of the folder to use.",
 			},
 			Validate: survey.Required,
 		},

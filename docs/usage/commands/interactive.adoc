@@ -42,7 +42,7 @@ Which cloud is Ensono Stacks being setup in?
 
 | 
 Which group is the Terraform state being saved in?
-| This is the group that contains the storage account for the Terraform state.
+| This is the resource group that contains the storage account for the Terraform state.
 | `stacks-ancillary-resources` | `input.terraform.backend.group`
 
 |

@@ -7,12 +7,12 @@ NOTE: The operation of the Ensono Stacks CLI is identical on every platform
 .Stacks CLI Help
 image::images/stackscli-global-help.png[]
 
-include::usage/commands/completion.adoc[]
+include::completion.adoc[]
 
-include::usage/commands/interactive.adoc[]
+include::interactive.adoc[]
 
-include::usage/commands/scaffold.adoc[]
+include::scaffold.adoc[]
 
-include::usage/commands/export.adoc[]
+include::export.adoc[]
 
-include::usage/commands/version.adoc[]
+include::version.adoc[]

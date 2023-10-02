@@ -59,6 +59,6 @@ The `dryrun` option is now a top level item because other commands can use this 
 
 === Remove frameworks section
 
-When the configuration file was generated in the past it would export the Stacks components information. This is no longer held in the `input` section of the file.
+When the configuration file was generated in the past it would export the Ensono Stacks components information. This is no longer held in the `input` section of the file.
 
 If an existing file has a section called `stacks:` please remove it.

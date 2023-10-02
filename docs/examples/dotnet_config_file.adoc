@@ -1,6 +1,6 @@
 ==== .NET WebApi project using a configuration file
 
-The CLI can be used with a configuration file to generate the Ensono Digital Stacks based projects.
+The CLI can be used with a configuration file to generate the Ensono Stacks based projects.
 
 NOTE: The configuration file that is used in the following example is from the previous example. However, any valid configuration file can be used.
 

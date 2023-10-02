@@ -23,9 +23,9 @@
 
 == Examples
 
-This section provides some examples on how to run the CLI to setup a project from the Ensono Digital Stacks projects.
+This section provides some examples on how to run the CLI to setup a project from the Ensono Stacks projects.
 
-NOTE: It is assumed that the Stacks CLI command has been installed and is in the path to be called using the `stacks-cli` name.
+NOTE: It is assumed that the Ensono Stacks CLI command has been installed and is in the path to be called using the `stacks-cli` name.
 
 The following table shows the settings that are being used in each of the examples.
 
@@ -191,7 +191,7 @@ image::images/stacks-scaffold-command-version-check-force.png[]
 
 [IMPORTANT]
 ====
-There are two different version checks that are performed by the Stacks CLI when using a .NET project.
+There are two different version checks that are performed by the Ensono Stacks CLI when using a .NET project.
 
 If a `global.json` file is present in the the project, it provides and absolute version of .NET that is required. It _is_ possible to force the setup of a project but the results may vary, as shown in <<Dotnet command version check>>.
 

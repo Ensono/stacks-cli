@@ -1,6 +1,6 @@
 == Using the CLI
 
-The Stacks CLI is built using Go, which means that it is a single binary which can be downloaded and run without the need to run an installer. It is currently built for the following platforms
+The Ensono Stacks CLI is built using Go, which means that it is a single binary which can be downloaded and run without the need to run an installer. It is currently built for the following platforms
 
  - icon:windows[fw] Windows
  - icon:apple[fw] Mac OS

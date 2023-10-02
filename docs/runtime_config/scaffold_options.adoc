@@ -12,7 +12,7 @@
 | `-O`, `--frameworkoption` | AMIDOSTACKS_PROJECT_FRAMEWORK_OPTION | The sort of project to be created | | For `dotnet` or `java`: webapi`, `cqrs`, `events` 
 
 For `nx`: `next`, `apps`
-| `-V`, `--frameworkversion` | AMIDOSTACKS_PROJECT_FRAMEWORK_VERSION | The version of the Ensono Digital Stacks project to use.
+| `-V`, `--frameworkversion` | AMIDOSTACKS_PROJECT_FRAMEWORK_VERSION | The version of the Ensono Stacks project to use.
 
 This can be a version, a tag, a SHA ref or a branch. | `latest` | 
 | `--frameworkprops` | AMIDOSTACKS_PROJECT_FRAMEWORK_PROPERTIES 3+| Properties that need to be set to allow the scaffolding to run the correct command

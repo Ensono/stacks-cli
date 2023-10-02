@@ -1,6 +1,6 @@
 === Bad Format
 
-The Stacks CLI is built for specific platform combinations. The following table shows the combinations that are currently supported.
+The Ensono Stacks CLI is built for specific platform combinations. The following table shows the combinations that are currently supported.
 
 .Stacks CLI supported architectures
 [options="header",cols="1a,1,1",stripes=even]

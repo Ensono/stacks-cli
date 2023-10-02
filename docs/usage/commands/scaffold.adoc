@@ -10,7 +10,7 @@ stacks-cli scaffold -h
 .Help page for `scaffold` command
 image::images/stackscli-scaffold-help.png[]
 
-The <<Examples>> section has a lot of examples showing how to run the Stacks CLI.
+The <<Examples>> section has a lot of examples showing how to run the Ensono Stacks CLI.
 
 ===== Overriding internal configuration
 

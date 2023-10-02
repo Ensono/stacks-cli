@@ -1,6 +1,6 @@
 ==== Nx Next.js project using a configuration file
 
-Thew CLI can be used with a configuration file to generate the Ensono Digital Stacks based projects.
+Thew CLI can be used with a configuration file to generate the Ensono Stacks based projects.
 
 NOTE: The configuration file that is used in the following example is from the <<Nx Next.js project using the interactive command>> example, however any valid configuration file can be used.
 

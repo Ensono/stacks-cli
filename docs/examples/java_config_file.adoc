@@ -1,6 +1,6 @@
 ==== Java WebApi project using a configuration file
 
-The Ensono Digital Stacks CLI can be used with a configuration file to setup multiple projects in one go.
+The Ensono Stacks CLI can be used with a configuration file to setup multiple projects in one go.
 
 NOTE: The configuration file used in this example is the one that was generated from the `interactive` command in the previous example.
 

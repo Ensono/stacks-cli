@@ -130,7 +130,7 @@ What is the URL of the remote repository?
 
 |
 Which cloud region should be used?
-| The region, of the chosen cloud, that the resources will be deployed to. | post | westeurope
+| The region, of the chosen cloud, that the resources will be deployed to. Must be a valid Azure or AWS region name. | post | westeurope
 
 |
 What is the name of the group for all the resources?

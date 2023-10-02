@@ -134,7 +134,7 @@ Which cloud region should be used?
 
 |
 What is the name of the group for all the resources?
-| The name of the group into which all the resources for this project will be deployed into | post | dotnet-webapi
+| The name of the resource group into which all the resources for this project will be deployed | post | dotnet-webapi
 
 
 |===

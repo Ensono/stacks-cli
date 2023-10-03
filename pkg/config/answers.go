@@ -156,7 +156,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 		{
 			Name: "environment_count",
 			Prompt: &survey.Input{
-				Message: "How many environments would you like to configure? (Only for data projects)",
+				Message: "How many environments would you like to configure?",
 				Default: "0",
 			},
 			Validate: survey.Required,
@@ -492,7 +492,7 @@ func (a *Answers) RunInteractive(config *Config) error {
 			DependsOn: dependsOn,
 		}
 
-		// append this to the project list on the config object
+		// append this to the environment list on the config object
 		environmentList = append(environmentList, environment)
 	}
 

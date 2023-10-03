@@ -44,8 +44,8 @@ type ProjectAnswers struct {
 
 type EnvironmentAnswers struct {
 	Name                string `survey:"name"`
-	Type 				string  `survey:"type"`
-	DependsOn			string `survey:"dependson"`
+	Type                string `survey:"type"`
+	DependsOn           string `survey:"dependson"`
 }
 
 // getCoreQuestions returns the list of questions that need to be answered in interactive
@@ -460,7 +460,7 @@ func (a *Answers) RunInteractive(config *Config) error {
 	}
 
 	config.Input.Project = projectList
-	
+
 	environmentList := []Environment{}
 
 	// as a number of environments can be configured, the environments questions need

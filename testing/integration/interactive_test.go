@@ -98,6 +98,8 @@ func (suite *InteractiveSuite) TestInteractiveMode() {
 	cp.SendLine(suite.ProjectDir)
 	cp.Expect("How many projects would you like to configure?")
 	cp.SendLine("1")
+	cp.Expect("How many environments would you like to configure?")
+	cp.SendLine("1")
 
 	cp.Expect("What is the project name?")
 	cp.SendLine(suite.Project)
@@ -117,6 +119,13 @@ func (suite *InteractiveSuite) TestInteractiveMode() {
 	cp.SendLine(cloud_region)
 	cp.Expect("What is the name of the group for all the resources?")
 	cp.SendLine(cloud_group)
+
+	cp.Expect("What is the environment name?")
+	cp.SendLine("Dev")
+	cp.Expect("What is the type of environment?")
+	cp.SendLine("Development")
+	cp.Expect("What environment does this environment depend on?")
+	cp.SendLine("")
 
 	cp.ExpectExitCode(0)
 
@@ -180,6 +189,8 @@ func (suite *InteractiveSuite) TestInteractiveModeInfra() {
 	cp.SendLine(suite.ProjectDir)
 	cp.Expect("How many projects would you like to configure?")
 	cp.SendLine("1")
+	cp.Expect("How many environments would you like to configure?")
+	cp.SendLine("1")
 
 	cp.Expect("What is the project name?")
 	cp.SendLine(suite.Project)
@@ -197,6 +208,13 @@ func (suite *InteractiveSuite) TestInteractiveModeInfra() {
 	cp.SendLine(cloud_region)
 	cp.Expect("What is the name of the group for all the resources?")
 	cp.SendLine(cloud_group)
+
+	cp.Expect("What is the environment name?")
+	cp.SendLine("Dev")
+	cp.Expect("What is the type of environment?")
+	cp.SendLine("Development")
+	cp.Expect("What environment does this environment depend on?")
+	cp.SendLine("")
 
 	cp.ExpectExitCode(0)
 

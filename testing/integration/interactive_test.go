@@ -121,9 +121,9 @@ func (suite *InteractiveSuite) TestInteractiveMode() {
 	cp.SendLine(cloud_group)
 
 	cp.Expect("What is the environment name?")
-	cp.SendLine("Dev")
+	cp.SendLine(environment)
 	cp.Expect("What is the type of environment?")
-	cp.SendLine("Development")
+	cp.SendLine(environmentType)
 	cp.Expect("What environment does this environment depend on?")
 	cp.SendLine("")
 
@@ -210,9 +210,9 @@ func (suite *InteractiveSuite) TestInteractiveModeInfra() {
 	cp.SendLine(cloud_group)
 
 	cp.Expect("What is the environment name?")
-	cp.SendLine("Dev")
+	cp.SendLine(environment)
 	cp.Expect("What is the type of environment?")
-	cp.SendLine("Development")
+	cp.SendLine(environmentType)
 	cp.Expect("What environment does this environment depend on?")
 	cp.SendLine("")
 

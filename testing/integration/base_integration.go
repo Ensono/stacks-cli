@@ -43,6 +43,8 @@ var platform = "aks"
 var tf_container = "mywebapi"
 var tf_group = "supporting_group"
 var tf_storage = "kjh56sdfnjnkjn"
+var environment = "dev"
+var environmentType = "Development"
 
 // BaseIntegration declares the base struct that all integration tests will use
 type BaseIntegration struct {

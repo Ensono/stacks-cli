@@ -24,6 +24,7 @@ type Answers struct {
 	Options               []string `survey:"options"`
 	WorkingDir            string   `survey:"working_dir"`
 	ProjectCount          int      `survey:"project_count"`
+	EnvironmentCount      int      `survey:"environment_count"`
 }
 
 // ProjectAnswers are the list of answers that are provided for each project defined
@@ -39,6 +40,12 @@ type ProjectAnswers struct {
 	SourceControlUrl    string `survey:"source_control_url"`
 	CloudRegion         string `survey:"cloud_region"`
 	CloudGroup          string `survey:"cloud_group"`
+}
+
+type EnvironmentAnswers struct {
+	Name                string `survey:"name"`
+	Type                string `survey:"type"`
+	DependsOn           string `survey:"dependson"`
 }
 
 // getCoreQuestions returns the list of questions that need to be answered in interactive
@@ -154,6 +161,14 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 				Message: "How many projects would you like to configure?",
 				Default: "1",
 				Help:    "The CLI is designed to be able to scaffold multiple projects at once. By providing the number of projects, you will be asked a series of questions for each project",
+			},
+			Validate: survey.Required,
+		},
+		{
+			Name: "environment_count",
+			Prompt: &survey.Input{
+				Message: "How many environments would you like to configure?",
+				Default: "0",
 			},
 			Validate: survey.Required,
 		},
@@ -318,6 +333,44 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 	return questions
 }
 
+func (a *Answers) getEnvironmentQuestions(qType string, config *Config) []*survey.Question {
+
+	var questions []*survey.Question
+
+	// use the qType to determine which questions need to be asked
+	switch qType {
+	case "pre":
+		questions = []*survey.Question{
+			{
+				Name: "name",
+				Prompt: &survey.Input{
+					Message: "What is the environment name?",
+				},
+				Validate: survey.Required,
+			},
+			{
+				Name: "type",
+				Prompt: &survey.Select{
+					Message: "What is the type of environment?",
+					Options: []string {"Development","Testing","Production"},
+					Help: "Development: Deployed from a feature branch and is the first environment we deploy to.\n" +
+					"Testing: Deployed from the main/master branch. \n" +
+					"Production: Deployed from the main/master branch after it has been deployed to the 'Testing' environment(s)",
+				},
+				Validate: survey.Required,
+			},
+			{
+				Name: "dependson",
+				Prompt: &survey.Input{
+					Message: "What environment does this environment depend on?",
+					Help:    "This will determine the deployment order of the environments. You can provide multiple environments by seperating each environment with a comma e.g. Dev,Test",
+				},
+			},
+		}
+	}
+	return questions
+}
+
 func (a *Answers) RunInteractive(config *Config) error {
 
 	var err error
@@ -427,6 +480,43 @@ func (a *Answers) RunInteractive(config *Config) error {
 	}
 
 	config.Input.Project = projectList
+
+	environmentList := []Environment{}
+
+	// as a number of environments can be configured, the environments questions need
+	// to be asked environments_count times
+	for i := 0; i < a.EnvironmentCount; i++ {
+
+		fmt.Printf("\nConfiguring environments: %d\n", i+1)
+
+		// ask the environment questions
+		// this is done in 3 stages so that the different options of the framework can be
+		// modified based on the main framework that has been specified
+		pa := EnvironmentAnswers{}
+
+		// - pre questions
+		err = survey.Ask(a.getEnvironmentQuestions("pre", config), &pa)
+		if err != nil {
+			continue
+		}
+		
+		dependsOn := []string{}
+		if len(pa.DependsOn) > 0 {
+			dependsOn = strings.Split(pa.DependsOn, ",")
+		}
+
+		// create a struct for the environment
+		environment := Environment{
+			Name: pa.Name,
+			Type: pa.Type,
+			DependsOn: dependsOn,
+		}
+
+		// append this to the environment list on the config object
+		environmentList = append(environmentList, environment)
+	}
+
+	config.Input.Environment = environmentList
 
 	return err
 }

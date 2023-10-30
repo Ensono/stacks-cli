@@ -59,6 +59,7 @@ func init() {
 
 	var workingDir string
 	var tmpDir string
+	var homeDir string
 
 	var noBanner bool
 	var noCLIVersionCheck bool
@@ -73,6 +74,7 @@ func init() {
 	// get the default directories
 	defaultTempDir := util.GetDefaultTempDir()
 	defaultWorkingDir := util.GetDefaultWorkingDir()
+	defaultUserHomeDir := util.GetUserHomeDir()
 
 	// Add flags that are to be used in every command
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "Path to the configuration file")
@@ -83,6 +85,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVarP(&workingDir, "workingdir", "w", defaultWorkingDir, "Directory to be used to create the new projects in")
 	rootCmd.PersistentFlags().StringVar(&tmpDir, "tempdir", defaultTempDir, "Temporary directory to be used by the CLI")
+	rootCmd.PersistentFlags().StringVar(&homeDir, "homedir", defaultUserHomeDir, "Users home directory")
 
 	rootCmd.PersistentFlags().BoolVar(&dryrun, "dryrun", false, "Shows what actions would be taken but does not perform them")
 	rootCmd.PersistentFlags().BoolVar(&noBanner, "nobanner", false, "Do not display the Stacks banner when running the command")
@@ -104,6 +107,7 @@ func init() {
 
 	viper.BindPFlag("input.directory.working", rootCmd.PersistentFlags().Lookup("workingdir"))
 	viper.BindPFlag("input.directory.temp", rootCmd.PersistentFlags().Lookup("tempdir"))
+	viper.BindPFlag("input.directory.home", rootCmd.PersistentFlags().Lookup("homedir"))
 
 	viper.BindPFlag("input.options.nobanner", rootCmd.PersistentFlags().Lookup("nobanner"))
 	viper.BindPFlag("input.options.nocliversion", rootCmd.PersistentFlags().Lookup("nocliversion"))
@@ -118,6 +122,12 @@ func init() {
 func initConfig() {
 
 	Config.Init()
+
+	// set multiple paths that a configuration file can be read from
+	// - home directory file
+	// - all folders from the current directory to the root
+	// - any additional paths that have been specified on the command line
+	viper.SetConfigName("config")
 
 	if cfgFile != "" {
 		// Use the config file from the cobra flag

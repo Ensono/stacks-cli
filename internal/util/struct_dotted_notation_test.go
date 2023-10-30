@@ -36,11 +36,16 @@ func TestGetFieldBYDottedPath(t *testing.T) {
 			"Smith",
 			"Last name should be Smith: %s",
 		},
+		{
+			"person.firstname",
+			"John",
+			"Last name should be John: %s",
+		},
 	}
 
 	// iterate around the table of tests
 	for _, table := range tables {
-		value, _ := GetFieldByDottedPath(testStruct, table.path)
+		value, _ := GetValueByDottedPath(testStruct, table.path)
 
 		if value != table.test {
 			t.Errorf(table.msg, value)

@@ -9,7 +9,7 @@ const (
 
 	// Set the prefix that needs to be used when setting the configuration
 	// using environment variables
-	EnvVarPrefix = "amidostacks"
+	EnvVarPrefix = "ensonostacks"
 
 	// DefaultErrorMessage defines the default error message if one has not been set
 	DefaultErrorMessage = "An error occurred in the application"
@@ -25,5 +25,5 @@ const (
 
 	// GitHubRef is the org/name of the stacks-cli
 	// This is used as on github api calls
-	GitHubRef = "amido/stacks-cli"
+	GitHubRef = "ensono/stacks-cli"
 )

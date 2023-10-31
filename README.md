@@ -1,6 +1,6 @@
 # Stacks CLI
 
-The new home of the Stacks CLI for [Amido Stacks](https://stacks.amido.com).
+The new home of the Stacks CLI for [Ensono  Stacks](https://stacks.ensono.com).
 
 ## Documentation
 

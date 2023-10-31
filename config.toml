@@ -1,6 +1,6 @@
 baseURL = "http://example.org/"
 languageCode = "en-us"
-title = "Amido Stacks CLI"
+title = "Ensno Stacks CLI"
 
 theme = "book"
 

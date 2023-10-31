@@ -38,7 +38,7 @@ var (
 
 var rootCmd = &cobra.Command{
 	Use:     "stacks-cli",
-	Short:   "Build up a new project based on the Amido Stacks system",
+	Short:   "Build up a new project based on the Ensono Stacks system",
 	Long:    "",
 	Version: version,
 

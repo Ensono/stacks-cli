@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
+	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/amido/stacks-cli/internal/config/staticFiles"
@@ -18,12 +21,16 @@ import (
 
 var (
 	cfgFile string
+	tmpDir  string
 
 	// App holds the configured objects, such as the logger
 	App models.App
 
 	// Config variable to hold the model after parsing
 	Config config.Config
+
+	// define a slice to hold a list of all the configuration files that have been read in
+	ConfigFiles []string
 
 	// Set a variable to hold the version number of the application
 	version string
@@ -58,7 +65,7 @@ func init() {
 	var onlineHelp bool
 
 	var workingDir string
-	var tmpDir string
+	// var tmpDir string
 	var homeDir string
 
 	var noBanner bool
@@ -123,15 +130,68 @@ func initConfig() {
 
 	Config.Init()
 
+	// determine the root path based on the operating system
+	root_path := "/"
+	if runtime.GOOS == "windows" {
+		root_path = fmt.Sprintf("%s\\", os.Getenv("SystemDrive"))
+	}
+
+	// get a list of the paths from the cwd
+	var directories []string
+	for _path := util.GetDefaultWorkingDir(); _path != root_path; _path = filepath.Dir(_path) {
+		directories = append(directories, util.NormalisePath(_path, string(os.PathSeparator)))
+	}
+
 	// set multiple paths that a configuration file can be read from
 	// - home directory file
-	// - all folders from the current directory to the root
+	// - all folders from the root to the current directory, this is so that the closest configuration
+	//   is the one that is read in last
 	// - any additional paths that have been specified on the command line
-	viper.SetConfigName("config")
+	homeDirConfigfile := fmt.Sprintf("%s.yml", path.Join(util.GetUserHomeDir(), constants.ConfigFileDir, constants.ConfigName))
+	if util.Exists(homeDirConfigfile) {
+		ConfigFiles = append(ConfigFiles, util.NormalisePath(homeDirConfigfile, string(os.PathSeparator)))
+		viper.SetConfigName(constants.ConfigName)
+		viper.AddConfigPath(path.Join(util.GetUserHomeDir(), constants.ConfigFileDir))
+		viper.MergeInConfig()
+	}
 
+	// reverse the order of the directories so that the closest one is read in last
+	for i := len(directories) - 1; i >= 0; i-- {
+
+		// build up the path to a possible configuration file and check if it exists
+		configfile := util.NormalisePath(fmt.Sprintf("%s.yml", path.Join(directories[i], constants.ConfigFileDir, constants.ConfigName)), string(os.PathSeparator))
+		if util.Exists(configfile) {
+
+			if !util.SliceContains(ConfigFiles, configfile) {
+				ConfigFiles = append(ConfigFiles, configfile)
+			}
+
+			// add the config path to the viper instance
+			viper.AddConfigPath(path.Join(directories[i], constants.ConfigFileDir))
+
+			// merge the configuration file into the viper instance
+			viper.MergeInConfig()
+		}
+	}
+
+	// if a configuation file has been specified on the command line, copy it to the tempdir and
+	// add to the viper instance. This is so that it can be named correctly
 	if cfgFile != "" {
-		// Use the config file from the cobra flag
-		viper.SetConfigFile(cfgFile)
+		cfgFile = util.NormalisePath(cfgFile, string(os.PathSeparator))
+		// if the cfgfile can be found, copy it to the tempdir
+		if util.Exists(cfgFile) {
+
+			ConfigFiles = append(ConfigFiles, cfgFile)
+
+			// get the name of the configuration file and add it to the configuration path
+			filename := filepath.Base(cfgFile)
+			viper.SetConfigName(strings.TrimSuffix(filename, filepath.Ext(filename)))
+			viper.AddConfigPath(filepath.Dir(cfgFile))
+			viper.MergeInConfig()
+
+			// reset the name of the configuration file
+			viper.SetConfigName(constants.ConfigName)
+		}
 	}
 
 	// Allow configuration options to be set using Environment variables
@@ -242,11 +302,8 @@ func preRun(ccmd *cobra.Command, args []string) {
 	// Call method to determine if this version of the CLI is the latest one
 	checkCLIVersion()
 
-	// output the configuration file that is being used
-	configFileUsed := viper.ConfigFileUsed()
-	if configFileUsed != "" {
-		App.Logger.Infof("Using configuration file: %s", configFileUsed)
-	}
+	// output a list of the configuration files that have been read in
+	App.Logger.Infof("Configuration files read:\n\t%s", strings.Join(ConfigFiles, "\n\t"))
 
 	// set the framework definitions on the config object
 	//err = yaml.Unmarshal(Config.Internal.GetFileContent("framework_defs"), &Config.FrameworkDefs)

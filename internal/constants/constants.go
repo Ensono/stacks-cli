@@ -26,4 +26,12 @@ const (
 	// GitHubRef is the org/name of the stacks-cli
 	// This is used as on github api calls
 	GitHubRef = "ensono/stacks-cli"
+
+	// ConfigFileDir set the name of the directory in which configuration files would be saved
+	// in at different locations
+	ConfigFileDir = ".stackscli"
+
+	// ConfigName is the name of the configuration file for the CLI itself
+	// This is used when traversing the filesystem to find the configuration files
+	ConfigName = "config"
 )

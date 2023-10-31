@@ -14,7 +14,7 @@ import (
 var (
 	scaffoldCmd = &cobra.Command{
 		Use:   "scaffold",
-		Short: "Create a new project using Amido Stacks",
+		Short: "Create a new project using Ensono Stacks",
 		Long:  "",
 		Run:   executeScaffoldRun,
 	}

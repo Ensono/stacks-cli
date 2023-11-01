@@ -7,6 +7,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 
 	"github.com/amido/stacks-cli/internal/config/staticFiles"
@@ -76,6 +77,8 @@ func init() {
 
 	var override_internal_config string
 
+	var folders []string
+
 	cobra.OnInitialize(initConfig)
 
 	// get the default directories
@@ -103,6 +106,8 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&override_internal_config, "internalconfig", "", "Path to the configuration override file")
 
+	rootCmd.PersistentFlags().StringSliceVar(&folders, "folders", []string{}, "List of additional folders to be used when running setup")
+
 	// Bind command line arguments
 	viper.BindPFlags(rootCmd.Flags())
 
@@ -122,6 +127,7 @@ func init() {
 	viper.BindPFlag("input.options.dryrun", rootCmd.PersistentFlags().Lookup("dryrun"))
 
 	viper.BindPFlag("input.overrides.internal_config", rootCmd.PersistentFlags().Lookup("internalconfig"))
+	viper.BindPFlag("input.folders", rootCmd.PersistentFlags().Lookup("folders"))
 }
 
 // initConfig reads in a config file and ENV vars if set
@@ -141,6 +147,13 @@ func initConfig() {
 	for _path := util.GetDefaultWorkingDir(); _path != root_path; _path = filepath.Dir(_path) {
 		directories = append(directories, util.NormalisePath(_path, string(os.PathSeparator)))
 	}
+	slices.Reverse(directories)
+
+	// if additional folders have been specified on the commandline add them to the list
+	folders := viper.GetStringSlice("input.folders")
+	if len(folders) > 0 {
+		directories = append(directories, folders...)
+	}
 
 	// set multiple paths that a configuration file can be read from
 	// - home directory file
@@ -158,6 +171,8 @@ func initConfig() {
 	// reverse the order of the directories so that the closest one is read in last
 	for i := len(directories) - 1; i >= 0; i-- {
 
+		// App.Logger.Debugf("Aanlysing directory: %s", directories[i])
+
 		// build up the path to a possible configuration file and check if it exists
 		configfile := util.NormalisePath(fmt.Sprintf("%s.yml", path.Join(directories[i], constants.ConfigFileDir, constants.ConfigName)), string(os.PathSeparator))
 		if util.Exists(configfile) {
@@ -173,6 +188,9 @@ func initConfig() {
 			viper.MergeInConfig()
 		}
 	}
+
+	// if a list of folders have been speccified on the command line, check each one to see if
+	// a configuation file exists, if it does add it
 
 	// if a configuation file has been specified on the command line, copy it to the tempdir and
 	// add to the viper instance. This is so that it can be named correctly

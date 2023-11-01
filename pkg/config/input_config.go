@@ -32,7 +32,8 @@ type InputConfig struct {
 	Environment  []Environment `mapstructure:"environment"`
 
 	// Set values to accept from the command line when running setup
-	Global bool `mapstructure:"global" yaml:"-"`
+	Global  bool     `mapstructure:"global" yaml:"-"`
+	Folders []string `mapstructure:"folders" yaml:"-"`
 }
 
 // CheckFrameworks iterates around each of the projects and builds up a list of the frameworks

@@ -1,9 +1,11 @@
 package setup
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
 
+	"github.com/amido/stacks-cli/internal/constants"
 	"github.com/amido/stacks-cli/internal/util"
 	"github.com/amido/stacks-cli/pkg/config"
 	"github.com/amido/stacks-cli/pkg/filter"
@@ -22,14 +24,14 @@ func New(conf *config.Config, logger *logrus.Logger) *Setup {
 	}
 }
 
-func (s *Setup) Run() error {
+func (s *Setup) Upsert() error {
 
 	var err error
 	var path string
 	var perm uint32
 
 	// configure variable to hold the path to the file after the basedir has been determined
-	var slug []string = []string{".stackscli", "config.yml"}
+	var slug []string = []string{constants.ConfigFileDir, fmt.Sprintf("%s.yml", constants.ConfigName)}
 
 	// create a slice of dotted notation to see which values have been set that are not advised to be set globally
 	dotted := []string{
@@ -86,4 +88,11 @@ func (s *Setup) Run() error {
 
 	return err
 
+}
+
+func (s *Setup) List() error {
+
+	var err error
+
+	return err
 }

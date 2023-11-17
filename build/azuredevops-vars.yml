@@ -6,6 +6,6 @@ variables:
   - name: StacksEnvfileVersion
     value: 0.0.16    
   - name: RepoOwner
-    value: amido
+    value: Ensono
   - name: RepoName
     value: stacks-cli

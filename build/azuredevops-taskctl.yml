@@ -3,7 +3,7 @@
 # on a local machine as well as in the CLI
 
 # Set the name which will define the build number
-name: 0.2$(Rev:.r)
+name: 0.3$(Rev:.r)
 
 # Set the agent pool that is going to be used for the build
 pool:
@@ -28,15 +28,6 @@ stages:
           script: |
             wget https://github.com/taskctl/taskctl/releases/download/${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
             tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl 
-
-      # Install Stacks Envfile to generate the envfile to be used by docker
-      - task: Bash@3
-        displayName: Install Envfile
-        inputs:
-          targetType: inline
-          script: |
-            wget https://github.com/amido/stacks-envfile/releases/download/v${{ variables.StacksEnvfileVersion }}/stacks-envfile-linux-amd64-${{ variables.StacksEnvfileVersion }} -O /usr/local/bin/envfile
-            chmod +x /usr/local/bin/envfile
 
       # Run the tasks to build the application
       - task: Bash@3

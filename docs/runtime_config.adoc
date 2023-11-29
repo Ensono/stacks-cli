@@ -18,6 +18,8 @@ include::runtime_config/completion_options.adoc[]
 
 include::runtime_config/interactive_options.adoc[]
 
+include::runtime_config/setup_options.adoc[]
+
 include::runtime_config/scaffold_options.adoc[]
 
 include::runtime_config/export_options.adoc[]

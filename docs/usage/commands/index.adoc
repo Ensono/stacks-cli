@@ -13,6 +13,8 @@ include::interactive.adoc[]
 
 include::scaffold.adoc[]
 
+include::setup.adoc[]
+
 include::export.adoc[]
 
 include::version.adoc[]

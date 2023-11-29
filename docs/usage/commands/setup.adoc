@@ -1,0 +1,12 @@
+==== Setup
+
+The `setup` command can be used to set values to be used as defaults when running other commands. This is to help reduce the amount of times repetitive values need to be manually entered.
+
+Such values are the `company` name, which can be set globally, and then the `project` name which can be set per project folder. To achieve this the command will write portions of the configuration file out to different locations. These locations are then read in when the command is run to pull in and merge the configuration.
+
+The following command sets the `company` name globally:
+
+[source,bash]
+----
+stackscli setup update 
+----

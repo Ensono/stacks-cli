@@ -9,4 +9,4 @@ image::images/stackscli-version-check.png[]
 
 This is a simple version check, it does not update the CLI for you, but does provide a link to the latest version for download and information purposes.
 
-The version check can be turned off using the `--nocliversion` option or the `options.nocliversion` in a configuration file or using the `AMIDOSTACKS_OPTIONS_NOCLIVERSION` environment variable.
+The version check can be turned off using the `--nocliversion` option or the `options.nocliversion` in a configuration file or using the `ENSONOSTACKS_OPTIONS_NOCLIVERSION` environment variable.

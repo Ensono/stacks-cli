@@ -224,6 +224,8 @@ func (suite *BaseIntegration) RunCommand(command string, arguments string, ignor
 	// use the util function to split the arguments
 	cmd, args := util.BuildCommand(command, arguments)
 
+	suite.T().Logf("Command: %s %s", cmd, args)
+
 	// write out the command thst ius being run
 	cmdlogFile := filepath.Join(suite.ProjectDir, "cmdlog.txt")
 

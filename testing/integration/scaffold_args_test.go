@@ -148,7 +148,7 @@ func (suite *ArgsSuite) TestProject() {
 		re := regexp.MustCompile(pattern)
 		matched := re.MatchString(firstDir)
 
-		suite.Assert.Equal(true, matched, "Project files should be namespaced with the company name")
+		suite.Assert.Equal(true, matched, fmt.Sprintf("Project files should be namespaced with the company nam. [%s !match %s]", firstDir, pattern))
 	})
 }
 

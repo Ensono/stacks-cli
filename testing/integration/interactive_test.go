@@ -177,7 +177,7 @@ func (suite *InteractiveSuite) TestInteractiveModeInfra() {
 	cp.SendLine(tf_group)
 	cp.Expect("What is the name of the Terraform storage?")
 	cp.SendLine(tf_storage)
-	cp.Expect("What is the name of the Terraform storage container?")
+	cp.Expect("What is the name of the folder or container for Terraform state storage?")
 	cp.SendLine(tf_container)
 	cp.Expect("What is the external domain of the solution?")
 	cp.SendLine(domain)

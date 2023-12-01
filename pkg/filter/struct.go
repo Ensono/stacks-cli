@@ -74,7 +74,8 @@ func (y *yamlSubset) WriteFile(path string, perm uint32) error {
 		return err
 	}
 
-	err = os.WriteFile(path, y.Buffer(), 0666)
+	buf := y.Buffer()
+	err = os.WriteFile(path, buf, 0666)
 
 	return err
 }

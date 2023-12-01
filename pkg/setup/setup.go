@@ -66,7 +66,7 @@ func (s *Setup) Upsert() error {
 
 		// if the setvalues is not empty, display a warning
 		if len(setvalues) > 0 {
-			s.Logger.Warnf("It is not recommended to set the following values globally, these have been removed from the config: %s", strings.Join(setvalues, ", "))
+			s.Logger.Warnf("It is not recommended to set the following values globally: %s", strings.Join(setvalues, ", "))
 		}
 
 		slug = append([]string{s.Config.Input.Directory.HomeDir}, slug...)

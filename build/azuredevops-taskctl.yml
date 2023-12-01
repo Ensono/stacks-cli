@@ -26,7 +26,7 @@ stages:
         inputs:
           targetType: inline
           script: |
-            wget https://github.com/Ensono/taskctl/releases/download/${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
+            wget https://github.com/Ensono/taskctl/releases/download/v${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
             tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl 
 
       # Run the tasks to build the application

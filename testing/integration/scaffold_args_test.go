@@ -129,6 +129,8 @@ func (suite *ArgsSuite) TestProject() {
 		basedir := filepath.Join(suite.ProjectPath, "src", "api")
 		files, _ := os.ReadDir(basedir)
 
+		t.Logf("Found %d files", len(files))
+
 		// iterate around the files and get the first directory
 		for _, file := range files {
 			filePath := filepath.Join(basedir, file.Name())
@@ -136,6 +138,8 @@ func (suite *ArgsSuite) TestProject() {
 			if err != nil {
 				suite.T().Fatalf("Problem analysing file: %v", err)
 			}
+
+			t.Logf(file.Name())
 
 			if info.IsDir() {
 				firstDir = file.Name()

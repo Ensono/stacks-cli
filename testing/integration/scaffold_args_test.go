@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package integration
@@ -121,7 +122,7 @@ func (suite *ArgsSuite) TestProject() {
 		suite.Assert.Equal(false, exists, "Directory should not have been configured as a git repository")
 	})
 
-	// check that the project files have been namespaced with the companu name properly
+	// check that the project files have been namespaced with the company name properly
 	suite.T().Run("Ensure project files have been named correctly", func(t *testing.T) {
 		var firstDir string
 

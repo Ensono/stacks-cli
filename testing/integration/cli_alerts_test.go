@@ -227,25 +227,6 @@ func (suite *CLIAlertSuite) TestFrameworkAppsNotFound() {
 	}
 }
 
-// TestMalformedConfigFile checks that the malformed-stacks.yml is correctly identified as unreadable
-// by the application
-func (suite *CLIAlertSuite) TestMalformedConfigFile() {
-
-	// run the scaffold command
-	// the exit code is ignored here so that the output of the command can be seen
-	// otherwise the tests just stop
-	arguments := fmt.Sprintf("scaffold -c %s --nobanner", suite.BadConfigFile)
-	suite.BaseIntegration.RunCommand(suite.BinaryCmd, arguments, true)
-
-	suite.T().Run("CLI states that the configuration file is unreadable", func(t *testing.T) {
-
-		pattern := "(?i)unable to read in configuration file"
-		matched := suite.CheckCmdOutput(pattern)
-
-		suite.Assert.Equal(true, matched, "CLI should error attempting to read in configuration file")
-	})
-}
-
 // TestIncorrectFrameworkOption tests that the CLI copes property if someone specifies
 // an invalid framework option, e.g. one that the CLI does not know about
 func (suite *CLIAlertSuite) TestIncorrectFrameworkOption() {

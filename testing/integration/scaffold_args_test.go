@@ -148,7 +148,7 @@ func (suite *ArgsSuite) TestProject() {
 			}
 		}
 
-		t.Logf("Files: %s", strings.Join(list, ", ")
+		t.Logf("Files: %s", strings.Join(list, ", "))
 
 		// Check that the dirname begins with %company%
 		pattern := fmt.Sprintf("^%s.*$", suite.Company)

@@ -53,7 +53,7 @@ func (suite *CLIAlertSuite) SetupSuite() {
 	file.Close()
 
 	// create the badConfigFile to check that the CLI throws the correct error
-	malformed := fmt.Sprintf(`directory:\n\tworking:%s`, suite.ProjectDir)
+	malformed := fmt.Sprintf(`directory:\n\tworkingDir:%s`, suite.ProjectDir)
 	suite.BadConfigFile = filepath.Join(suite.ProjectDir, "malformed-stacks.yml")
 	err = os.WriteFile(suite.BadConfigFile, []byte(malformed), os.ModePerm)
 	if err != nil {

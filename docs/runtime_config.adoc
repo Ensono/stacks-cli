@@ -89,7 +89,7 @@ options:
 stacks:
   dotnet:
     webapi: 
-      url: https://github.com/amido/stacks-dotnet
+      url: https://github.com/Ensono/stacks-dotnet
       trunk: master
 ----
 

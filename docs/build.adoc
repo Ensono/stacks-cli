@@ -48,7 +48,7 @@ Clone the repository to a location on disk, for example `C:\users\russell\worksp
 ----
 mkdir -p ~/workspaces/stacks
 cd ~/workspaces/stacks
-git clone git@github.com:amido/stacks-cli.git
+git clone git@github.com:Ensono/stacks-cli.git
 ----
 
 ==== Build the CLI
@@ -97,7 +97,7 @@ All of the necessary parameters can be set using environment variables, which ar
 | artifactsList | | List of files that need to be uploaded
 
 If this is not specified then all of the files in the `artifactsDir` will be uploaded | `docs.pdf`
-| owner | OWNER | Name of the owner of the repository | `amido`
+| owner | OWNER | Name of the owner of the repository | `ensono`
 | apiKey | API_KEY | Personal access token to be used to perform the release | `ghp_L9VNP06qbasd87adlTDtslQvJCFH30cig4ace2A`
 | repository | REPOSITORY | Name of the repository on which to create the release | `stacks-cli`
 | draft | DRAFT | Specify if a draft release should be created. Default: `false` | `true`

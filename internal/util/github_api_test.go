@@ -6,7 +6,7 @@ import (
 )
 
 // declare the repoUrl that will be used for all the tests
-var repoUrl string = "https://github.com/amido/stacks-dotnet"
+var repoUrl string = "https://github.com/Ensono/stacks-dotnet"
 var token string = "ghjkgjhgjhgj"
 
 func TestBuildGitHubAPIUrl(t *testing.T) {
@@ -23,7 +23,7 @@ func TestBuildGitHubAPIUrl(t *testing.T) {
 		{
 			"",
 			"master",
-			"https://api.github.com/repos/amido/stacks-dotnet/releases/latest",
+			"https://api.github.com/repos/Ensono/stacks-dotnet/releases/latest",
 			"An empty ref should return the latest release URL",
 			false,
 			token,
@@ -39,7 +39,7 @@ func TestBuildGitHubAPIUrl(t *testing.T) {
 		{
 			"latest",
 			"",
-			"https://api.github.com/repos/amido/stacks-dotnet/releases/latest",
+			"https://api.github.com/repos/Ensono/stacks-dotnet/releases/latest",
 			"Specifying latest ref should return the latest release URL",
 			false,
 			token,
@@ -55,7 +55,7 @@ func TestBuildGitHubAPIUrl(t *testing.T) {
 		{
 			"v3.0.232",
 			"",
-			"https://api.github.com/repos/amido/stacks-dotnet/releases/tags/v3.0.232",
+			"https://api.github.com/repos/Ensono/stacks-dotnet/releases/tags/v3.0.232",
 			"A specified tag should return the release for that tag",
 			false,
 			token,

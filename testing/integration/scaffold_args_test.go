@@ -124,7 +124,6 @@ func (suite *ArgsSuite) TestProject() {
 
 	// check that the project files have been namespaced with the company name properly
 	suite.T().Run("Ensure project files have been named correctly", func(t *testing.T) {
-		var firstDir string
 		var list []string
 
 		basedir := filepath.Join(suite.ProjectPath, "src", "api")

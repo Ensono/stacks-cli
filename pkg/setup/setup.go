@@ -83,7 +83,7 @@ func (s *Setup) Upsert() error {
 
 	// Filter the configuration object and write out to the file
 	filter := filter.New()
-	filter.Filter(s.Config.Input, dotted)
+	filter.Filter(s.Config.Input, append(dotted, "business.company"))
 	err = filter.WriteFile(path, perm)
 
 	return err

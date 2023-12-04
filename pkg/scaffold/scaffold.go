@@ -46,6 +46,12 @@ func (s *Scaffold) Run() error {
 	savedConfigFile, err := s.Config.Save(viper.ConfigFileUsed())
 	if savedConfigFile != "" {
 		s.Logger.Infof("Configuration saved to file: %s", savedConfigFile)
+
+		// check to see if norun has been set, if it has then return
+		if s.Config.Input.Options.NoRun {
+			s.Logger.Info("Only creating configuration file as NoRun option has been set")
+			return nil
+		}
 	}
 	if err != nil {
 		s.Logger.Warnf("Issue saving configuration: %s", err.Error())

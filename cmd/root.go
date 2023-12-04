@@ -35,6 +35,14 @@ var (
 
 	// Set a variable to hold the version number of the application
 	version string
+
+	// set shared variables that can be used as parameters across multiple commands
+	business_company            string
+	business_domain             string
+	terraform_backend_storage   string
+	terraform_backend_group     string
+	terraform_backend_container string
+	global                      bool
 )
 
 var rootCmd = &cobra.Command{
@@ -86,7 +94,7 @@ func init() {
 	defaultWorkingDir := util.GetDefaultWorkingDir()
 	defaultUserHomeDir := util.GetUserHomeDir()
 
-	// Add flags that are to be used in every command
+	// Add flags that can be used in every command
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "Path to the configuration file")
 	rootCmd.PersistentFlags().StringVarP(&logLevel, "loglevel", "l", "info", "Logging Level")
 	rootCmd.PersistentFlags().StringVarP(&logFormat, "logformat", "f", "text", "Logging format, text or json")
@@ -108,6 +116,13 @@ func init() {
 
 	rootCmd.PersistentFlags().StringSliceVar(&folders, "folders", []string{}, "List of additional folders to be used when running setup")
 
+	rootCmd.PersistentFlags().StringVar(&business_company, "company", "", "The name of the company")
+	rootCmd.PersistentFlags().StringVarP(&business_domain, "area", "A", "", "Area within the company that this project will belong to, e.g. core")
+	rootCmd.PersistentFlags().StringVar(&terraform_backend_storage, "tfstorage", "", "Name of the storage to be used for Terraform state")
+	rootCmd.PersistentFlags().StringVar(&terraform_backend_group, "tfgroup", "", "Name of the group that the storage account is in")
+	rootCmd.PersistentFlags().StringVar(&terraform_backend_container, "tfcontainer", "", "Name of the container within the storage to use")
+	rootCmd.PersistentFlags().BoolVarP(&global, "global", "g", false, "Set the values globally. These will be set in the user's home directory")
+
 	// Bind command line arguments
 	viper.BindPFlags(rootCmd.Flags())
 
@@ -128,6 +143,15 @@ func init() {
 
 	viper.BindPFlag("input.overrides.internal_config", rootCmd.PersistentFlags().Lookup("internalconfig"))
 	viper.BindPFlag("input.folders", rootCmd.PersistentFlags().Lookup("folders"))
+
+	viper.BindPFlag("input.business.company", rootCmd.PersistentFlags().Lookup("company"))
+	viper.BindPFlag("input.business.domain", rootCmd.PersistentFlags().Lookup("area"))
+
+	viper.BindPFlag("input.terraform.backend.storage", rootCmd.PersistentFlags().Lookup("tfstorage"))
+	viper.BindPFlag("input.terraform.backend.group", rootCmd.PersistentFlags().Lookup("tfgroup"))
+	viper.BindPFlag("input.terraform.backend.container", rootCmd.PersistentFlags().Lookup("tfcontainer"))
+
+	viper.BindPFlag("input.global", rootCmd.PersistentFlags().Lookup("global"))
 }
 
 // initConfig reads in a config file and ENV vars if set
@@ -231,6 +255,7 @@ func initConfig() {
 		fmt.Printf("Unable to read in configuration file: %s", err.Error())
 		return
 	}
+
 }
 
 func preRun(ccmd *cobra.Command, args []string) {

@@ -120,9 +120,11 @@ func (c *Config) Save(usedConfig string) (string, error) {
 		return savedConfigFile, fmt.Errorf("problem converting configuration to YAML syntax")
 	}
 
-	err = os.WriteFile(savedConfigFile, data, 0)
+	// write out the file with the correct permissions, this is so that on Linux the file can be read
+	fileMode := int(755)
+	err = os.WriteFile(savedConfigFile, data, os.FileMode(fileMode))
 	if err != nil {
-		return savedConfigFile, fmt.Errorf("problem writing configuration to file")
+		return savedConfigFile, fmt.Errorf("problem writing configuration to file: %s", err.Error())
 	}
 
 	return savedConfigFile, err

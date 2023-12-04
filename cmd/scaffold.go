@@ -28,6 +28,7 @@ func init() {
 	var saveConfig bool
 	var nocleanup bool
 	var force bool
+	var norun bool
 
 	// - scaffold directories
 	var cacheDir string
@@ -56,14 +57,14 @@ func init() {
 	var cloud_group string
 
 	// - business settings
-	var business_company string
-	var business_domain string
+	// var business_company string
+	// var business_domain string
 	var business_component string
 
 	// - terraform settings
-	var terraform_backend_storage string
-	var terraform_backend_group string
-	var terraform_backend_container string
+	// var terraform_backend_storage string
+	// var terraform_backend_group string
+	// var terraform_backend_container string
 
 	// - network settings
 	var network_base_domain_external string
@@ -101,13 +102,13 @@ func init() {
 	scaffoldCmd.Flags().StringVarP(&cloud_region, "cloudregion", "R", "", "Region that the resources should be deployed to")
 	scaffoldCmd.Flags().StringVarP(&cloud_group, "cloudgroup", "G", "", "Group that the resources should belong to")
 
-	scaffoldCmd.Flags().StringVar(&business_company, "company", "", "Name of your company")
-	scaffoldCmd.Flags().StringVarP(&business_domain, "area", "A", "", "Area within the company that this project will belong to, e.g. core")
+	// scaffoldCmd.Flags().StringVar(&business_company, "company", "", "Name of your company")
+	// scaffoldCmd.Flags().StringVarP(&business_domain, "area", "A", "", "Area within the company that this project will belong to, e.g. core")
 	scaffoldCmd.Flags().StringVar(&business_component, "component", "", "Business component, e.g. infrastructure")
 
-	scaffoldCmd.Flags().StringVar(&terraform_backend_storage, "tfstorage", "", "Name of the storage to be used for Terraform state")
-	scaffoldCmd.Flags().StringVar(&terraform_backend_group, "tfgroup", "", "Name of the group that the storage account is in")
-	scaffoldCmd.Flags().StringVar(&terraform_backend_container, "tfcontainer", "", "Name of the container within the storage to use")
+	// scaffoldCmd.Flags().StringVar(&terraform_backend_storage, "tfstorage", "", "Name of the storage to be used for Terraform state")
+	// scaffoldCmd.Flags().StringVar(&terraform_backend_group, "tfgroup", "", "Name of the group that the storage account is in")
+	// scaffoldCmd.Flags().StringVar(&terraform_backend_container, "tfcontainer", "", "Name of the container within the storage to use")
 
 	scaffoldCmd.Flags().StringVarP(&network_base_domain_external, "domain", "d", "", "External domain for the app")
 	scaffoldCmd.Flags().StringVar(&network_base_domain_internal, "internaldomain", "", "Internal domain for the app")
@@ -118,6 +119,7 @@ func init() {
 	scaffoldCmd.Flags().BoolVar(&saveConfig, "save", false, "Save the the configuration from interactive or command line settings. Has no effect when using a configuration file.")
 	scaffoldCmd.Flags().BoolVar(&nocleanup, "nocleanup", false, "If set, do not perform cleanup at the end of the scaffolding")
 	scaffoldCmd.Flags().BoolVar(&force, "force", false, "If set, remove existing project directories before attempting to create new ones")
+	scaffoldCmd.Flags().BoolVar(&norun, "norun", false, "When used in conjunction with --save, will not attempt to scaffold the projects but will just create config file")
 
 	// Bind the flags to the configuration
 
@@ -147,13 +149,13 @@ func init() {
 
 	viper.BindPFlag("input.cloud.platform", scaffoldCmd.Flags().Lookup("cloud"))
 
-	viper.BindPFlag("input.business.company", scaffoldCmd.Flags().Lookup("company"))
-	viper.BindPFlag("input.business.domain", scaffoldCmd.Flags().Lookup("area"))
+	// viper.BindPFlag("input.business.company", scaffoldCmd.Flags().Lookup("company"))
+	// viper.BindPFlag("input.business.domain", scaffoldCmd.Flags().Lookup("area"))
 	viper.BindPFlag("input.business.component", scaffoldCmd.Flags().Lookup("component"))
 
-	viper.BindPFlag("input.terraform.backend.storage", scaffoldCmd.Flags().Lookup("tfstorage"))
-	viper.BindPFlag("input.terraform.backend.group", scaffoldCmd.Flags().Lookup("tfgroup"))
-	viper.BindPFlag("input.terraform.backend.container", scaffoldCmd.Flags().Lookup("tfcontainer"))
+	// viper.BindPFlag("input.terraform.backend.storage", scaffoldCmd.Flags().Lookup("tfstorage"))
+	// viper.BindPFlag("input.terraform.backend.group", scaffoldCmd.Flags().Lookup("tfgroup"))
+	// viper.BindPFlag("input.terraform.backend.container", scaffoldCmd.Flags().Lookup("tfcontainer"))
 
 	viper.BindPFlag("input.network.base.domain.external", scaffoldCmd.Flags().Lookup("domain"))
 	viper.BindPFlag("input.network.base.domain.internal", scaffoldCmd.Flags().Lookup("internaldomain"))
@@ -166,6 +168,7 @@ func init() {
 	viper.BindPFlag("input.options.save", scaffoldCmd.Flags().Lookup("save"))
 	viper.BindPFlag("input.options.nocleanup", scaffoldCmd.Flags().Lookup("nocleanup"))
 	viper.BindPFlag("input.options.force", scaffoldCmd.Flags().Lookup("force"))
+	viper.BindPFlag("input.options.norun", scaffoldCmd.Flags().Lookup("norun"))
 }
 
 // ScaffoldOverrides updates the main configuration with any override files that have been specified on

@@ -34,7 +34,7 @@ func (suite *ArgsSuite) SetupSuite() {
 		"-A":            area,
 		"--company":     suite.Company,
 		"--component":   component,
-		"--domain":      area,
+		"--domain":      domain,
 		"-F":            framework,
 		"-n":            suite.Project,
 		"-p":            pipeline,

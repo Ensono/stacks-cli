@@ -122,7 +122,7 @@ func (c *Config) Save(usedConfig string) (string, error) {
 	}
 
 	// write out the file with the correct permissions, this is so that on Linux the file can be read
-	fileMode := int(0755)
+	fileMode := int(0644)
 	err = os.WriteFile(savedConfigFile, data, os.FileMode(fileMode))
 	if err != nil {
 		return savedConfigFile, fmt.Errorf("problem writing configuration to file: %s", err.Error())

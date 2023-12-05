@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/constants"
+	"github.com/Ensono/stacks-cli/internal/constants"
 	"github.com/spf13/viper"
 )
 

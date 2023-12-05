@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/amido/stacks-cli/internal/constants"
+	"github.com/Ensono/stacks-cli/internal/constants"
 	"github.com/stretchr/testify/assert"
 )
 

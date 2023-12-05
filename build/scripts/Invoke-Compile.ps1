@@ -76,14 +76,14 @@ foreach ($os in $targets) {
         Write-Output ("Building for '{0}' ({1})" -f $os, $_arch)
 
         # Build up the command to create the CLI binary
-        $cmd = 'go build -ldflags "-X github.com/amido/stacks-cli/cmd.version={0}" -o {1}' -f
+        $cmd = 'go build -ldflags "-X github.com/Ensono/stacks-cli/cmd.version={0}" -o {1}' -f
                     $BuildNumber,
                     $cli_filename
 
         Invoke-Expression -Command $cmd
 
         # Build up the command to build the test
-        $cmd = 'go test -ldflags "-X github.com/amido/stacks-cli/testing/integration.version={0}" -tags integration -o {1} -c github.com/amido/stacks-cli/testing/integration/...' -f
+        $cmd = 'go test -ldflags "-X github.com/Ensono/stacks-cli/testing/integration.version={0}" -tags integration -o {1} -c github.com/Ensono/stacks-cli/testing/integration/...' -f
                     $BuildNumber,
                     $inttest_filename
 

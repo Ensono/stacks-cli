@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/amido/stacks-cli/internal/interfaces"
+	"github.com/Ensono/stacks-cli/internal/interfaces"
 )
 
 // Mock the exec calls to the undelying system

@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/amido/stacks-cli/internal/config/staticFiles"
-	"github.com/amido/stacks-cli/internal/util"
-	"github.com/amido/stacks-cli/pkg/scaffold"
+	"github.com/Ensono/stacks-cli/internal/config/staticFiles"
+	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/pkg/scaffold"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

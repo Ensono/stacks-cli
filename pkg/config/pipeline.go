@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/config/staticFiles"
-	"github.com/amido/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/internal/config/staticFiles"
+	"github.com/Ensono/stacks-cli/internal/util"
 )
 
 type Pipeline struct {

@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/internal/util"
 	"gopkg.in/yaml.v2"
 )
 

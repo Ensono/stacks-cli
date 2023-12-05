@@ -1,4 +1,4 @@
-module github.com/amido/stacks-cli
+module github.com/Ensono/stacks-cli
 
 go 1.21
 

@@ -52,9 +52,9 @@ Location: `internal/config/staticFiles/config.yml`
 .Internal configuration
 [[internal_config,{listing-caption} {counter:refnum}]]
 [source,yaml,subs="attributes"]
-----
+++++
 include::../internal/config/staticFiles/config.yml[]
-----
+++++
 
 === Exit Codes
 

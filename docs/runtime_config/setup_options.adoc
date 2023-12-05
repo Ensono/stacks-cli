@@ -22,15 +22,7 @@ The following sections show the options for each sub command.
 [options=header]
 |===
 | Option | Environment Variable | Description 
-| `--company` | ENSONOSTACKS_COMPANY_NAME | The name of the company to use in the configuration  
 | `--project` | ENSONOSTACKS_PROJECT_NAME | Name of the project being worked on
-| `--area` | ENSONSOSTACKS_AREA | Area or department, for example, that is responsible for the project
-| `--storage` | ENSONOSTACKS_STORAGE | Name of the Azure storage account or S3 bucket that is being used for the Terraform state
-| `--group` | ENSONOSTACKS_GROUP | Name of the resource group that has the storage account resource for the Terraform state.
-
-NOTE: Not needed for state storage in an S3 bucket
-| `--container` | ENSONOSTACKS_CONTAINER | Name of the folder or container to put the state file in
-| `-g`, `--global"` | ENSONOSTACKS_GLOBAL | State if the configuration is global or not. If this is set the specified configuration is added to the users home directory as a global setting 
 |===
 
 ==== List options

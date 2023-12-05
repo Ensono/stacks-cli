@@ -140,7 +140,7 @@ This script iterates around the `.adoc` files in the `docs/` directory and perfo
 [[convert_adoc_to_md_docker,{listing-caption} {counter:refnum}]]
 [source,bash]
 ----
-docker run -v ${PWD}:/data russellseymour/pandoc-asciidoctor pwsh -command /data/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /data/docs/ -output_dir /data/outputs/docs/md
+docker run -v ${PWD}:/app amidostacks/runner-pwsh-asciidoc:0.4.60-stable pwsh -command /app/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /app/docs/ -output_dir /app/outputs/docs/md
 ----
 
 All of the markdown files are then uploaded as artefacts as part of the build.
@@ -160,7 +160,7 @@ The build consists of the following files:
 |===
 | Name | Description
 
-| `azuredevops-Taskctl.yml` | Main pipeline file that AzDo uses to run the build
+| `azuredevops-taskctl.yml` | Main pipeline file that AzDo uses to run the build
 | `azuredevops-vars.yml` | Variable template file containing variables for the build
 |===
 

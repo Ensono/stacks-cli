@@ -8,6 +8,29 @@ Configuration for the CLI can be performed in several ways:
 
 When using a configuration file it is possible to setup more than one project.
 
+=== Environment Variables
+
+Environment variables can be set to configure the values for most parameters in the Stacks CLI. By default this prefix is `ENSONOSTACKS`.
+
+However this was changed from `AMIDOSTACKS` in version 3.x of the tool, which may mean that some configurations break. To achieve the same behaviour as before another environment variable can be set, `STACKSCLI_ENVVARPREFIX`, for example:
+
+[cols="1a,1a",options=header]
+|===
+| PowerShell | Bash
+|
+[source,powershell]
+----
+$env:STACKSCLI_ENVVARPREFIX = "amidostacks"
+----
+|
+[source,bash]
+----
+export STACKSCLI_ENVVARPREFIX="amidostacks"
+----
+|===
+
+NOTE: Due to the way in which the parameters are evaluated the CLI needs to know the environment variable prefix before execution. By setting this variable outside of the parameters means it will change the prefix that is used.
+
 === Settings
 
 The following tables show the configuration options that are available at the root level and the command level.

@@ -7,7 +7,7 @@
 | `-n`, `--name` | ENSONOSTACKS_PROJECT_NAME | Name of the project to create | | 
 | `--sourcecontrol` | ENSONOSTACKS_PROJECT_SOURCECONTROL_TYPE | Source control system to be used | `github` | 
 | `-u`, `--sourcecontrolurl` | ENSONOSTACKS_PROJECT_SOURCECONTROL_URL | URL to the remote repository | | 
-| `--projectsettingsfile` | ENSONOSTACKS_PROJECT_SETTINGSFILE | Each project will have its own `stackscli.yml` file, however this can ber overridden with a path to a different file using this option | `null` |
+| `--projectsettingsfile` | ENSONOSTACKS_PROJECT_SETTINGSFILE | Each project will have its own `stackscli.yml` file, however this can be overridden with a path to a different file using this option | `null` |
 | `-F`, `--framework` | ENSONOSTACKS_PROJECT_FRAMEWORK_TYPE | The framework that is to be used | | `dotnet`, `java`, `nx` 
 | `-O`, `--frameworkoption` | ENSONOSTACKS_PROJECT_FRAMEWORK_OPTION | The sort of project to be created | | For `dotnet` or `java`: webapi`, `cqrs`, `events` 
 
@@ -42,7 +42,8 @@ The `cmdlog.txt` file is created in the directory that the CLI has been run in. 
 | `--save` | ENSONOSTACKS_SAVE | If using the interactive or command line mode for configuring the CLI, the given configuration can be saved to a file. This allows the configuration to be replayed again at a later date.
 
 The configuration is saved to `stacks.yml` in the specified working directory | `false` |
-| `--nocleanup` | ENSONOSTACKS_NOCLEANUP | Do not perform cleanup operations after the scaffoling has been completed | `false` |
+| `--nocleanup` | ENSONOSTACKS_OPTIONS_NOCLEANUP | Do not perform cleanup operations after the scaffolding has been completed | `false` |
+| `--noscaffold` | ENSONOSTACKS_OPTIONS_NOSCAFFOLD | When setting options on the command line, it is useful to be able to just generate a configuration file from it. This option will do just that and not run the scaffold option after generation. | `false` |
 |`--force` | ENSONOSTACKS_FORCE | *This is a destructive operation*
 
 By using `force` the CLI will delete any projects, of the same name, that already exist in the working directory and then create the new project in its place.

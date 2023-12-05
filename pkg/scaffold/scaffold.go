@@ -47,9 +47,9 @@ func (s *Scaffold) Run() error {
 	if savedConfigFile != "" {
 		s.Logger.Infof("Configuration saved to file: %s", savedConfigFile)
 
-		// check to see if norun has been set, if it has then return
-		if s.Config.Input.Options.NoRun {
-			s.Logger.Info("Only creating configuration file as NoRun option has been set")
+		// check to see if noscaffold has been set, if it has then return
+		if s.Config.Input.Options.NoScaffold {
+			s.Logger.Info("Only creating configuration file as NoScaffold option has been set")
 			return nil
 		}
 	}

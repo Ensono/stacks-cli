@@ -28,7 +28,7 @@ func init() {
 	var saveConfig bool
 	var nocleanup bool
 	var force bool
-	var norun bool
+	var noscaffold bool
 
 	// - scaffold directories
 	var cacheDir string
@@ -106,7 +106,7 @@ func init() {
 	scaffoldCmd.Flags().BoolVar(&saveConfig, "save", false, "Save the the configuration from interactive or command line settings. Has no effect when using a configuration file.")
 	scaffoldCmd.Flags().BoolVar(&nocleanup, "nocleanup", false, "If set, do not perform cleanup at the end of the scaffolding")
 	scaffoldCmd.Flags().BoolVar(&force, "force", false, "If set, remove existing project directories before attempting to create new ones")
-	scaffoldCmd.Flags().BoolVar(&norun, "norun", false, "When used in conjunction with --save, will not attempt to scaffold the projects but will just create config file")
+	scaffoldCmd.Flags().BoolVar(&noscaffold, "noscaffold", false, "When used in conjunction with --save, will not attempt to scaffold the projects but will just create config file")
 
 	// Bind the flags to the configuration
 
@@ -149,7 +149,7 @@ func init() {
 	viper.BindPFlag("input.options.save", scaffoldCmd.Flags().Lookup("save"))
 	viper.BindPFlag("input.options.nocleanup", scaffoldCmd.Flags().Lookup("nocleanup"))
 	viper.BindPFlag("input.options.force", scaffoldCmd.Flags().Lookup("force"))
-	viper.BindPFlag("input.options.norun", scaffoldCmd.Flags().Lookup("norun"))
+	viper.BindPFlag("input.options.noscaffold", scaffoldCmd.Flags().Lookup("noscaffold"))
 }
 
 // ScaffoldOverrides updates the main configuration with any override files that have been specified on

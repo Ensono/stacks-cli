@@ -33,7 +33,7 @@ brew install taskctl
 | Windows | Chocolatey | [source,bash,subs="attributes"]
 ----
 cd ~/Downloads
-Invoke-RestMethod -Uri https://github.com/taskctl/taskctl/releases/download/1.4.2/taskctl_1.4.2_windows_amd64.zip -OutFile taskctl.zip
+Invoke-RestMethod -Uri https://github.com/taskctl/taskctl/releases/download/v{taskctl_version}/taskctl_{taskctl_version}_windows_amd64.zip -OutFile taskctl.zip
 Expand-Archive -Path taskctl.zip
 ----
 |===

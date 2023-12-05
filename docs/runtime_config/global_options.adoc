@@ -6,24 +6,37 @@ The following options can be applied to any command within the Ensono Stacks CLI
 [options="header"]
 |===
 | Option | Environment Variable | Description | Default | Options 
-| `-c`, `--config` | ENSONOSTACKS_CONFIG | Path to the configuration file to use | | 
+| `-A`, `--area` | ENSONOSTACKS_AREA | Area within the company that this project will belong to, e.g. core | |
+| `--company` | ENSONOSTACKS_COMPANY | The name of the company | | 
+| `-c`, `--config` | ENSONOSTACKS_CONFIG | Path to the configuration file to use | |
+| `--dryrun` | ENSONOSTACKS_DRYRUN | Perform a dryrun of all the CLI. Particularly useful when used with `--cmdlog` | `false` |
+| `--folders` | ENSONOSTACKS_FOLDERS | A list of folders that should be added to the list of directories that need to be searched for input configuration files | | 
+| `-g`, `--global` | ENSONOSTACKS_GLOBAL | Set the values globally. These will be set in the user's home directory | |
+| `--homedir string` | ENSONOSTACKS_DIRECTORY_HOMEDIR | Users home directory (default "C:\\Users\\rseymour") | |
+| `--internalconfig` | ENSONOSTACKS_INTERNAL_CONFIG | Path to a configuration file that is used internally. This is not the input configuration, but it about how the CLI should behave | |
+| `--logcolour` | ENSONOSTACKS_LOG_COLOUR | State if colours should be used in the text output (default true) | |
+| `--logfile` | ENSONOSTACKS_LOG_FILE | File to write logs to | |
+|  -f, --logformat string        Logging format, text or json (default "text")
 | `-l`, `--loglevel` | ENSONOSTACKS_LOG_LEVEL | Level of logging to be used | `info` | `debug`, `info`, `warning`, `error`, `fatal` 
-| `-H`, `--onlinehelp` | ENSONOSTACKS_OPTIONS_ONLINEHELP | State if the command should open the webpage for the spcified command | `false` |
-| `-f`, `--logformat` | ENSONOSTACKS_LOG_FORMAT | Output type of the logging | `text` | `text`, `json` 
-| `--logcolur` | ENSONOSTACKS_LOG_COLOUR | State if logging should include colour | | 
-| `--logfile` | ENSONOSTACKS_LOG_FILE | Write all logs to the specified file | | 
-| `-w`, `--workingdirectory` | ENSONOSTACKS_DIRECTORY_WORKINGDIR | Directory that the projects should be created in | `${PWD}` | 
-| `--tempdir` | ENSONOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Ensono Stacks for its temp files | System temp directory | 
 | `--nobanner` | ENSONOSTACKS_OPTIONS_NOBANNER | Do not display the Ensono Stacks banner when running the command | `false` |
 | `--nocliversion` | ENSONOSTACKS_OPTIONS_NOCLIVERSION | Do not perform a version check for the latest version of the Ensono Stacks CLI | `false` |
-| `--dryrun` | ENSONOSTACKS_DRYRUN | Perform a dryrun of all the CLI. Particularly useful when used with `--cmdlog` | `false` |
+| `-H`, `--onlinehelp` | ENSONOSTACKS_OPTIONS_ONLINEHELP | State if the command should open the webpage for the spcified command | 
+`false` |
+| `--tempdir` | ENSONOSTACKS_DIRECTORY_TEMPDIR | Directory to be used by Ensono Stacks for its temp files | System temp directory | 
+| `--tfcontainer` | ENSONOSTACKS_TERRAFORM_BACKEND_CONTAINER | Name of the container within the storage to use | |
+| `--tfgroup` | ENSONOSTACKS_TERRAFORM_BACKEND_GROUP | Name of the group that the storage account is in | |
+| `--tfstorage` | ENSONOSTACKS_TERRAFORM_BACKEND_STORAGE | Name of the storage to be used for Terraform state | | 
 | `--token` | ENSONOSTACKS_OPTIONS_TOKEN | The Ensono Stacks CLI can use the GitHub API to retrieve latest version infomration for the CLI as well as use it to ascertain Zip archive URLs without having to build up the URL to the asset manually. 
 
 By default the GitHub API rate limits unauthenticated API requests to 60 requests per hour, however authenticated requests can get 5,000 per hour.
 
 The GitHub API will not be used if this value is not set. | |
-| `--internalconfig` | ENSONOSTACKS_INTERNAL_CONFIG | Path to a configuration file that is used internally. This is not the input configuration, but it about how the CLI should behave | |
-| `--folders` | ENSONOSTACKS_FOLDERS | A list of folders that should be added to the list of directories that need to be searched for input configuration files | | 
-
+| `-w`, `--workingdirectory` | ENSONOSTACKS_DIRECTORY_WORKINGDIR | Directory that the projects should be created in | `${PWD}` | 
 
 |===
+
+ [NOTE]
+ .Global Parameters
+ ====
+ A number of parameters, that are shared between commands, are set as global parameters. The reason for this is the way that values are read in when they have the same name. If they have the same name and are not global then the program is not able to determine which value is required and could end up with unpredictable results. By making them global these parameters are shared between the commands and they do not overwrite each other.
+ ====

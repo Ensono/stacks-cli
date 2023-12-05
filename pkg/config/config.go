@@ -10,8 +10,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/amido/stacks-cli/internal/constants"
-	"github.com/amido/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/internal/constants"
+	"github.com/Ensono/stacks-cli/internal/util"
 	"github.com/bobesa/go-domain-util/domainutil"
 	yaml "github.com/goccy/go-yaml"
 	"github.com/sirupsen/logrus"

@@ -5,8 +5,8 @@ import (
 	"os/exec"
 	"regexp"
 
-	"github.com/amido/stacks-cli/internal/models"
-	"github.com/amido/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/internal/models"
+	"github.com/Ensono/stacks-cli/internal/util"
 )
 
 // Config is used to map the configuration onto the application models

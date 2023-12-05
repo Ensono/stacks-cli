@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/amido/stacks-cli/internal/models"
-	"github.com/amido/stacks-cli/pkg/config"
+	"github.com/Ensono/stacks-cli/internal/models"
+	"github.com/Ensono/stacks-cli/pkg/config"
 
 	log "github.com/sirupsen/logrus"
 )

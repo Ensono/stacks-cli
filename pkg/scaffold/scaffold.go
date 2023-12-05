@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/models"
-	"github.com/amido/stacks-cli/internal/util"
-	"github.com/amido/stacks-cli/pkg/config"
-	"github.com/amido/stacks-cli/pkg/downloaders"
-	"github.com/amido/stacks-cli/pkg/interfaces"
+	"github.com/Ensono/stacks-cli/internal/models"
+	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/pkg/config"
+	"github.com/Ensono/stacks-cli/pkg/downloaders"
+	"github.com/Ensono/stacks-cli/pkg/interfaces"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )

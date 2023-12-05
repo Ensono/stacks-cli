@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/amido/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/internal/util"
 	yaml "github.com/goccy/go-yaml"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"

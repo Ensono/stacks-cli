@@ -74,7 +74,6 @@ func init() {
 	var onlineHelp bool
 
 	var workingDir string
-	// var tmpDir string
 	var homeDir string
 
 	var noBanner bool
@@ -236,8 +235,17 @@ func initConfig() {
 		}
 	}
 
+	// Determine if an environment variable has been set that states the string to be
+	// used as the environment variable prefix
+	// This has been done so that the it is possible for people to set a different value and be
+	// compatible with older version of the Stacks CLI
+	envvarprefix := constants.EnvVarPrefix
+	if os.Getenv("STACKSCLI_ENVVARPREFIX") != "" {
+		envvarprefix = os.Getenv("STACKSCLI_ENVVARPREFIX")
+	}
+
 	// Allow configuration options to be set using Environment variables
-	viper.SetEnvPrefix(constants.EnvVarPrefix)
+	viper.SetEnvPrefix(envvarprefix)
 
 	// The configuration settings are nested
 	// Change the `.` delimiter to a `_` when accessing from an Environment Variable

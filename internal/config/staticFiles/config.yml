@@ -103,7 +103,7 @@ stacks:
       name: data
       package:
         url: https://github.com/Ensono/stacks-azure-data
-        version: master
+        version: main
         type: git
 
 help:

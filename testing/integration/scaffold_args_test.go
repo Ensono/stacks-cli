@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package integration
@@ -10,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/amido/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/internal/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -121,12 +122,15 @@ func (suite *ArgsSuite) TestProject() {
 		suite.Assert.Equal(false, exists, "Directory should not have been configured as a git repository")
 	})
 
-	// check that the project files have been namespaced with the companu name properly
+	// check that the project files have been namespaced with the company name properly
 	suite.T().Run("Ensure project files have been named correctly", func(t *testing.T) {
-		var firstDir string
+		var list []string
 
 		basedir := filepath.Join(suite.ProjectPath, "src", "api")
 		files, _ := os.ReadDir(basedir)
+
+		t.Logf("Reading dir: %s", basedir)
+		t.Logf("Found %d files", len(files))
 
 		// iterate around the files and get the first directory
 		for _, file := range files {
@@ -136,18 +140,21 @@ func (suite *ArgsSuite) TestProject() {
 				suite.T().Fatalf("Problem analysing file: %v", err)
 			}
 
+			t.Logf(file.Name())
+
 			if info.IsDir() {
-				firstDir = file.Name()
-				break
+				list = append(list, file.Name())
 			}
 		}
+
+		t.Logf("Files: %s", strings.Join(list, ", "))
 
 		// Check that the dirname begins with %company%
 		pattern := fmt.Sprintf("^%s.*$", suite.Company)
 		re := regexp.MustCompile(pattern)
-		matched := re.MatchString(firstDir)
+		matched := re.MatchString(list[0])
 
-		suite.Assert.Equal(true, matched, "Project files should be namespaced with the company name")
+		suite.Assert.Equal(true, matched, fmt.Sprintf("Project files should be namespaced with the company name. [%s !match %s]", list[0], pattern))
 	})
 }
 

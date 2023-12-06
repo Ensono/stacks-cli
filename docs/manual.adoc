@@ -5,6 +5,7 @@
 :icons: font
 
 :stackscli_version: 100.98.99
+:taskctl_version: 1.5.1
 
 = Ensono Stacks CLI Manual
 

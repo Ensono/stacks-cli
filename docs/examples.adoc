@@ -111,7 +111,7 @@ include::examples/nx_config_file.adoc[]
 
 include::examples/export.adoc[]
 
-include::examples/scaffold_ioverride.adoc[]
+include::examples/scaffold_override.adoc[]
 
 === Running scaffold command again
 

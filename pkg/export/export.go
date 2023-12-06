@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/amido/stacks-cli/internal/util"
-	"github.com/amido/stacks-cli/pkg/config"
+	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/pkg/config"
 	"github.com/sirupsen/logrus"
 )
 

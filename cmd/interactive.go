@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/amido/stacks-cli/pkg/interactive"
+	"github.com/Ensono/stacks-cli/pkg/interactive"
 	"github.com/spf13/cobra"
 )
 

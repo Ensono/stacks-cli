@@ -1,7 +1,7 @@
 package downloaders
 
 import (
-	"github.com/amido/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/internal/util"
 	"github.com/sirupsen/logrus"
 )
 

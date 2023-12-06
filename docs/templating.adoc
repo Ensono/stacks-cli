@@ -19,7 +19,7 @@ The following table shows all of the tokens that can be used in a template strin
 | Token | Description | Example
 | `.Input.Pipeline` | The build pipeline that is being used | azdo
 | `.Input.Cloud.Platform` | Cloud platform being deployed to | azure
-| `.Input.Business.Company` | The name of the company as specified by the user | Amido
+| `.Input.Business.Company` | The name of the company as specified by the user | Ensono
 | `.Input.Business.Domain` | Domain of the project | website
 | `.Input.Business.Component` | Name of the component that is being configured | infra
 | `.Input.Terraform.Backend.Storage` | Storage to be used to store the terraform state | lkjlkjlkj

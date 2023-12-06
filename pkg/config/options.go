@@ -11,4 +11,5 @@ type Options struct {
 	NoCLIVersion bool   `mapstructure:"nocliversion"`
 	Token        string `mapstructure:"token" json:"-"`
 	OnlineHelp   bool   `mapstructure:"onlinehelp" json:"-"`
+	NoScaffold   bool   `mapstructure:"noscaffold" json:"-"`
 }

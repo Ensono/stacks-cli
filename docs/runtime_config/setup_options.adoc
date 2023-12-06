@@ -1,0 +1,30 @@
+=== Setup Options
+
+The setup command, and subsequent sub commands, are used to configure the CLI. The application has the ability to read in multiple files from the directory tree and and merge them into the configuration for that run. This means that it is possible to set the company name globally, and then have specific settings for a project, such as the Terraform state location.
+
+There are two sub commands for setup:
+
+.Subcommands for the setup command
+[cols="1,3",options=header]
+|===
+| Command Name | Description
+| `update` | Add or update a setting to the configuration file
+| `list` | List the locations of the configuration files that would be read in from the current location
+|===
+
+For examples of how this command can be used please refer to the <<Setup>> usage page.
+
+The following sections show the options for each sub command.
+
+==== Update options
+
+.Update Options
+[options=header]
+|===
+| Option | Environment Variable | Description 
+| `--project` | ENSONOSTACKS_PROJECT_NAME | Name of the project being worked on
+|===
+
+==== List options
+
+There are no options that can be set on the `list` command

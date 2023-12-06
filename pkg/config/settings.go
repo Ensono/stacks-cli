@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver"
-	"github.com/amido/stacks-cli/internal/models"
-	"github.com/amido/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/internal/models"
+	"github.com/Ensono/stacks-cli/internal/util"
 	"github.com/sirupsen/logrus"
 )
 
@@ -107,8 +107,8 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 		case "dotnet":
 
 			versionCmd = "dotnet"
-			versionArgs = "--info"
-			re = *regexp.MustCompile(`\.NET.*SDK.*:\r?\n\sVersion:\s+(?P<version>.*?)\r?\n`)
+			versionArgs = "--list-sdks"
+			re = *regexp.MustCompile(`(?P<version>(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*))`)
 
 			// check to see if a global.json file exists in the project dir, if it is read it in
 			// so that the version of dotnet can be matched against it as a more specific check

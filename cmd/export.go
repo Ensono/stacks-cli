@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/amido/stacks-cli/internal/util"
-	"github.com/amido/stacks-cli/pkg/export"
+	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/pkg/export"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

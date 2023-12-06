@@ -5,11 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"os"
 	"os/user"
 	"path/filepath"
 	"strings"
+
+	"gopkg.in/yaml.v2"
 )
 
 // using this as an inspiration https://github.com/moby/moby/blob/master/daemon/graphdriver/copy/copy.go
@@ -245,6 +248,16 @@ func GetDefaultWorkingDir() string {
 	return workingDir
 }
 
+// GetUserHomeDir returns the currenmt users home directory
+func GetUserHomeDir() string {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatalf("Unable to determine user home directory")
+	}
+
+	return homeDir
+}
+
 // GetDefaultCacheDir returns the directory that should be used for caching all downloads
 // that the CLI makes
 func GetDefaultCacheDir() string {
@@ -276,4 +289,27 @@ func IsEmpty(name string) (bool, error) {
 		return true, nil
 	}
 	return false, err // Either not empty or error, suits both cases
+}
+
+func WriteYAMLToFile(object interface{}, path string, perm uint32) error {
+
+	var err error
+
+	// Ensure that the directory for the fie already exists
+	basepath := filepath.Dir(path)
+	err = CreateIfNotExists(basepath, fs.FileMode(perm))
+	if err != nil {
+		return err
+	}
+
+	// write out the input for the configuration return any errors
+	data, err := yaml.Marshal(object)
+	if err != nil {
+		return err
+	}
+
+	// write out the data to the specified path
+	err = os.WriteFile(path, data, 0666)
+
+	return err
 }

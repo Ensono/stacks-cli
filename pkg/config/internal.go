@@ -3,7 +3,7 @@ package config
 import (
 	_ "embed"
 
-	"github.com/amido/stacks-cli/internal/config/staticFiles"
+	"github.com/Ensono/stacks-cli/internal/config/staticFiles"
 )
 
 type Internal struct {

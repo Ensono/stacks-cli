@@ -33,7 +33,7 @@ brew install taskctl
 | Windows | Chocolatey | [source,bash,subs="attributes"]
 ----
 cd ~/Downloads
-Invoke-RestMethod -Uri https://github.com/taskctl/taskctl/releases/download/1.4.2/taskctl_1.4.2_windows_amd64.zip -OutFile taskctl.zip
+Invoke-RestMethod -Uri https://github.com/taskctl/taskctl/releases/download/v{taskctl_version}/taskctl_{taskctl_version}_windows_amd64.zip -OutFile taskctl.zip
 Expand-Archive -Path taskctl.zip
 ----
 |===
@@ -48,7 +48,7 @@ Clone the repository to a location on disk, for example `C:\users\russell\worksp
 ----
 mkdir -p ~/workspaces/stacks
 cd ~/workspaces/stacks
-git clone git@github.com:amido/stacks-cli.git
+git clone git@github.com:Ensono/stacks-cli.git
 ----
 
 ==== Build the CLI
@@ -97,7 +97,7 @@ All of the necessary parameters can be set using environment variables, which ar
 | artifactsList | | List of files that need to be uploaded
 
 If this is not specified then all of the files in the `artifactsDir` will be uploaded | `docs.pdf`
-| owner | OWNER | Name of the owner of the repository | `amido`
+| owner | OWNER | Name of the owner of the repository | `ensono`
 | apiKey | API_KEY | Personal access token to be used to perform the release | `ghp_L9VNP06qbasd87adlTDtslQvJCFH30cig4ace2A`
 | repository | REPOSITORY | Name of the repository on which to create the release | `stacks-cli`
 | draft | DRAFT | Specify if a draft release should be created. Default: `false` | `true`
@@ -140,7 +140,7 @@ This script iterates around the `.adoc` files in the `docs/` directory and perfo
 [[convert_adoc_to_md_docker,{listing-caption} {counter:refnum}]]
 [source,bash]
 ----
-docker run -v ${PWD}:/data russellseymour/pandoc-asciidoctor pwsh -command /data/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /data/docs/ -output_dir /data/outputs/docs/md
+docker run -v ${PWD}:/app amidostacks/runner-pwsh-asciidoc:0.4.60-stable pwsh -command /app/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /app/docs/ -output_dir /app/outputs/docs/md
 ----
 
 All of the markdown files are then uploaded as artefacts as part of the build.
@@ -160,7 +160,7 @@ The build consists of the following files:
 |===
 | Name | Description
 
-| `azuredevops-Taskctl.yml` | Main pipeline file that AzDo uses to run the build
+| `azuredevops-taskctl.yml` | Main pipeline file that AzDo uses to run the build
 | `azuredevops-vars.yml` | Variable template file containing variables for the build
 |===
 

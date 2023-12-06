@@ -74,7 +74,7 @@ stacks:
       group: java
       name: webapi
       package:
-        url: https://github.com/amido/stacks-java
+        url: https://github.com/Ensono/stacks-java
         version: master
         type: git
 

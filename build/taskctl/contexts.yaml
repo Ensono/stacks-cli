@@ -10,10 +10,17 @@ contexts:
         - ${PWD}:/app
         - -w
         - /app
+        - --env-file
+        - envfile        
         - amidostacks/runner-pwsh-golang:0.4.60-stable
         - pwsh
         - -NoProfile
         - -Command
+    envfile:
+      generate: true
+      exclude:
+        - home
+        - path      
 
   inttestenv:
     executable:

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/amido/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/internal/util"
 )
 
 // Answers is the object that results from the command line, when run in interactive mode,
@@ -43,14 +43,14 @@ type ProjectAnswers struct {
 }
 
 type EnvironmentAnswers struct {
-	Name                string `survey:"name"`
-	Type                string `survey:"type"`
-	DependsOn           string `survey:"dependson"`
+	Name      string `survey:"name"`
+	Type      string `survey:"type"`
+	DependsOn string `survey:"dependson"`
 }
 
 // getCoreQuestions returns the list of questions that need to be answered in interactive
 // mode on the command line. This works in conjunction with the answers object
-func (a *Answers) getCoreQuestions() []*survey.Question {
+func (a *Answers) getCoreQuestions(config *Config) []*survey.Question {
 
 	// get the default working directory
 	workingDir := util.GetDefaultWorkingDir()
@@ -61,6 +61,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Prompt: &survey.Input{
 				Message: "What is the name of your company?",
 				Help:    "The name of your company that is used to help name resources in the chosen cloud platform",
+				Default: config.Input.Business.Company,
 			},
 			Validate: survey.Required,
 		},
@@ -69,6 +70,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Prompt: &survey.Input{
 				Message: "What is the scope or area of the company?",
 				Help:    "As there can be many different projects being created within a team, this value is designed to be used to categorise the project",
+				Default: config.Input.Business.Domain,
 			},
 			Validate: survey.Required,
 		},
@@ -105,6 +107,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Prompt: &survey.Input{
 				Message: "Which group is the Terraform state being saved in?",
 				Help:    "This is the group that contains the storage account for the Terraform state.",
+				Default: config.Input.Terraform.Backend.Group,
 			},
 			Validate: survey.Required,
 		},
@@ -113,6 +116,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Prompt: &survey.Input{
 				Message: "What is the name of the Terraform storage?",
 				Help:    "The name of the Azure Storage account or S3 bucket being used to store the Terraform state",
+				Default: config.Input.Terraform.Backend.Storage,
 			},
 			Validate: survey.Required,
 		},
@@ -121,6 +125,7 @@ func (a *Answers) getCoreQuestions() []*survey.Question {
 			Prompt: &survey.Input{
 				Message: "What is the name of the folder or container for Terraform state storage?",
 				Help:    "For Azure storage accounts this is the name of the container to be used for the workspace. For AWS S3 Buckets this is the name of the folder to use.",
+				Default: config.Input.Terraform.Backend.Container,
 			},
 			Validate: survey.Required,
 		},
@@ -352,10 +357,10 @@ func (a *Answers) getEnvironmentQuestions(qType string, config *Config) []*surve
 				Name: "type",
 				Prompt: &survey.Select{
 					Message: "What is the type of environment?",
-					Options: []string {"Development","Testing","Production"},
+					Options: []string{"Development", "Testing", "Production"},
 					Help: "Development: Deployed from a feature branch and is the first environment we deploy to.\n" +
-					"Testing: Deployed from the main/master branch. \n" +
-					"Production: Deployed from the main/master branch after it has been deployed to the 'Testing' environment(s)",
+						"Testing: Deployed from the main/master branch. \n" +
+						"Production: Deployed from the main/master branch after it has been deployed to the 'Testing' environment(s)",
 				},
 				Validate: survey.Required,
 			},
@@ -376,7 +381,7 @@ func (a *Answers) RunInteractive(config *Config) error {
 	var err error
 
 	// ask the questions
-	err = survey.Ask(a.getCoreQuestions(), a)
+	err = survey.Ask(a.getCoreQuestions(config), a)
 	if err != nil {
 		return err
 	}
@@ -499,7 +504,7 @@ func (a *Answers) RunInteractive(config *Config) error {
 		if err != nil {
 			continue
 		}
-		
+
 		dependsOn := []string{}
 		if len(pa.DependsOn) > 0 {
 			dependsOn = strings.Split(pa.DependsOn, ",")
@@ -507,8 +512,8 @@ func (a *Answers) RunInteractive(config *Config) error {
 
 		// create a struct for the environment
 		environment := Environment{
-			Name: pa.Name,
-			Type: pa.Type,
+			Name:      pa.Name,
+			Type:      pa.Type,
 			DependsOn: dependsOn,
 		}
 

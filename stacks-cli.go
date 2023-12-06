@@ -1,8 +1,8 @@
-// amidostacks scaffolding-cli command line tool
+// ensonostacks scaffolding-cli command line tool
 package main
 
 import (
-	"github.com/amido/stacks-cli/cmd"
+	"github.com/Ensono/stacks-cli/cmd"
 )
 
 func main() {

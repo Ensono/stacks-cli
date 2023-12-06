@@ -1,7 +1,7 @@
 package util
 
 import (
-	"github.com/amido/stacks-cli/internal/interfaces"
+	"github.com/Ensono/stacks-cli/internal/interfaces"
 )
 
 // IsUnixShell determines if the program is running in a Unix

@@ -3,7 +3,7 @@ package models
 import (
 	"os"
 
-	"github.com/amido/stacks-cli/internal/constants"
+	"github.com/Ensono/stacks-cli/internal/constants"
 	"github.com/mattn/go-colorable"
 	log "github.com/sirupsen/logrus"
 )

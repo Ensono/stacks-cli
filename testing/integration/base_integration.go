@@ -12,8 +12,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/util"
-	"github.com/amido/stacks-cli/pkg/config"
+	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/pkg/config"
 	yaml "github.com/goccy/go-yaml"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -223,6 +223,8 @@ func (suite *BaseIntegration) RunCommand(command string, arguments string, ignor
 
 	// use the util function to split the arguments
 	cmd, args := util.BuildCommand(command, arguments)
+
+	suite.T().Logf("Command: %s %s", cmd, args)
 
 	// write out the command thst ius being run
 	cmdlogFile := filepath.Join(suite.ProjectDir, "cmdlog.txt")

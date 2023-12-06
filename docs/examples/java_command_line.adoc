@@ -1,6 +1,6 @@
 ==== Java WebApi project from command line
 
-Run the following command to scaffold a new Java project based on the Amido WebApi Java project. The project will be created in the working directory, which in this case will be the directory that the command has is being run under.
+Run the following command to scaffold a new Java project based on the Ensono WebApi Java project. The project will be created in the working directory, which in this case will be the directory that the command has is being run under.
 
 [options="header"]
 [cols="a,a"]

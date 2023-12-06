@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/amido/stacks-cli/internal/constants"
+	"github.com/Ensono/stacks-cli/internal/constants"
 	"github.com/sirupsen/logrus"
 	"github.com/sirupsen/logrus/hooks/test"
 	"github.com/stretchr/testify/assert"

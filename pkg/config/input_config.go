@@ -5,8 +5,8 @@ import (
 	"os/exec"
 	"regexp"
 
-	"github.com/amido/stacks-cli/internal/models"
-	"github.com/amido/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/internal/models"
+	"github.com/Ensono/stacks-cli/internal/util"
 )
 
 // Config is used to map the configuration onto the application models
@@ -20,16 +20,20 @@ type InputConfig struct {
 
 	Directory Directory `mapstructure:"directory"`
 
-	Business     Business  `mapstructure:"business"`
-	Cloud        Cloud     `mapstructure:"cloud"`
-	Network      Network   `mapstructure:"network"`
-	Pipeline     string    `mapstructure:"pipeline"`
-	Project      []Project `mapstructure:"project"`
-	Terraform    Terraform `mapstructure:"terraform"`
-	SettingsFile string    `mapstructure:"settingsfile" json:",omitempty"`
-	Options      Options   `mapstructure:"options"`
-	Overrides    Overrides `mapstructure:"overrides"`
+	Business     Business      `mapstructure:"business"`
+	Cloud        Cloud         `mapstructure:"cloud"`
+	Network      Network       `mapstructure:"network"`
+	Pipeline     string        `mapstructure:"pipeline"`
+	Project      []Project     `mapstructure:"project"`
+	Terraform    Terraform     `mapstructure:"terraform"`
+	SettingsFile string        `mapstructure:"settingsfile" json:",omitempty"`
+	Options      Options       `mapstructure:"options"`
+	Overrides    Overrides     `mapstructure:"overrides"`
 	Environment  []Environment `mapstructure:"environment"`
+
+	// Set values to accept from the command line when running setup
+	Global  bool     `mapstructure:"global" yaml:"-"`
+	Folders []string `mapstructure:"folders" yaml:"-"`
 }
 
 // CheckFrameworks iterates around each of the projects and builds up a list of the frameworks

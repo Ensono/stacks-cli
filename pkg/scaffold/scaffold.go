@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/models"
-	"github.com/amido/stacks-cli/internal/util"
-	"github.com/amido/stacks-cli/pkg/config"
-	"github.com/amido/stacks-cli/pkg/downloaders"
-	"github.com/amido/stacks-cli/pkg/interfaces"
+	"github.com/Ensono/stacks-cli/internal/models"
+	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/pkg/config"
+	"github.com/Ensono/stacks-cli/pkg/downloaders"
+	"github.com/Ensono/stacks-cli/pkg/interfaces"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -46,6 +46,12 @@ func (s *Scaffold) Run() error {
 	savedConfigFile, err := s.Config.Save(viper.ConfigFileUsed())
 	if savedConfigFile != "" {
 		s.Logger.Infof("Configuration saved to file: %s", savedConfigFile)
+
+		// check to see if noscaffold has been set, if it has then return
+		if s.Config.Input.Options.NoScaffold {
+			s.Logger.Info("Only creating configuration file as NoScaffold option has been set")
+			return nil
+		}
 	}
 	if err != nil {
 		s.Logger.Warnf("Issue saving configuration: %s", err.Error())

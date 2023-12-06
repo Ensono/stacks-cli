@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
+	"path/filepath"
+	"runtime"
+	"slices"
 	"strings"
 
-	"github.com/amido/stacks-cli/internal/config/staticFiles"
-	"github.com/amido/stacks-cli/internal/constants"
-	"github.com/amido/stacks-cli/internal/models"
-	"github.com/amido/stacks-cli/internal/util"
-	"github.com/amido/stacks-cli/pkg/config"
+	"github.com/Ensono/stacks-cli/internal/config/staticFiles"
+	"github.com/Ensono/stacks-cli/internal/constants"
+	"github.com/Ensono/stacks-cli/internal/models"
+	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/Ensono/stacks-cli/pkg/config"
 	yaml "github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,6 +22,7 @@ import (
 
 var (
 	cfgFile string
+	tmpDir  string
 
 	// App holds the configured objects, such as the logger
 	App models.App
@@ -25,13 +30,24 @@ var (
 	// Config variable to hold the model after parsing
 	Config config.Config
 
+	// define a slice to hold a list of all the configuration files that have been read in
+	ConfigFiles []string
+
 	// Set a variable to hold the version number of the application
 	version string
+
+	// set shared variables that can be used as parameters across multiple commands
+	business_company            string
+	business_domain             string
+	terraform_backend_storage   string
+	terraform_backend_group     string
+	terraform_backend_container string
+	global                      bool
 )
 
 var rootCmd = &cobra.Command{
 	Use:     "stacks-cli",
-	Short:   "Build up a new project based on the Amido Stacks system",
+	Short:   "Build up a new project based on the Ensono Stacks system",
 	Long:    "",
 	Version: version,
 
@@ -58,7 +74,7 @@ func init() {
 	var onlineHelp bool
 
 	var workingDir string
-	var tmpDir string
+	var homeDir string
 
 	var noBanner bool
 	var noCLIVersionCheck bool
@@ -68,13 +84,16 @@ func init() {
 
 	var override_internal_config string
 
+	var folders []string
+
 	cobra.OnInitialize(initConfig)
 
 	// get the default directories
 	defaultTempDir := util.GetDefaultTempDir()
 	defaultWorkingDir := util.GetDefaultWorkingDir()
+	defaultUserHomeDir := util.GetUserHomeDir()
 
-	// Add flags that are to be used in every command
+	// Add flags that can be used in every command
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "Path to the configuration file")
 	rootCmd.PersistentFlags().StringVarP(&logLevel, "loglevel", "l", "info", "Logging Level")
 	rootCmd.PersistentFlags().StringVarP(&logFormat, "logformat", "f", "text", "Logging format, text or json")
@@ -83,6 +102,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVarP(&workingDir, "workingdir", "w", defaultWorkingDir, "Directory to be used to create the new projects in")
 	rootCmd.PersistentFlags().StringVar(&tmpDir, "tempdir", defaultTempDir, "Temporary directory to be used by the CLI")
+	rootCmd.PersistentFlags().StringVar(&homeDir, "homedir", defaultUserHomeDir, "Users home directory")
 
 	rootCmd.PersistentFlags().BoolVar(&dryrun, "dryrun", false, "Shows what actions would be taken but does not perform them")
 	rootCmd.PersistentFlags().BoolVar(&noBanner, "nobanner", false, "Do not display the Stacks banner when running the command")
@@ -92,6 +112,15 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&githubToken, "token", "", "GitHub token to perform authenticated requests against the GitHub API")
 
 	rootCmd.PersistentFlags().StringVar(&override_internal_config, "internalconfig", "", "Path to the configuration override file")
+
+	rootCmd.PersistentFlags().StringSliceVar(&folders, "folders", []string{}, "List of additional folders to be used when running setup")
+
+	rootCmd.PersistentFlags().StringVar(&business_company, "company", "", "The name of the company")
+	rootCmd.PersistentFlags().StringVarP(&business_domain, "area", "A", "", "Area within the company that this project will belong to, e.g. core")
+	rootCmd.PersistentFlags().StringVar(&terraform_backend_storage, "tfstorage", "", "Name of the storage to be used for Terraform state")
+	rootCmd.PersistentFlags().StringVar(&terraform_backend_group, "tfgroup", "", "Name of the group that the storage account is in")
+	rootCmd.PersistentFlags().StringVar(&terraform_backend_container, "tfcontainer", "", "Name of the container within the storage to use")
+	rootCmd.PersistentFlags().BoolVarP(&global, "global", "g", false, "Set the values globally. These will be set in the user's home directory")
 
 	// Bind command line arguments
 	viper.BindPFlags(rootCmd.Flags())
@@ -104,6 +133,7 @@ func init() {
 
 	viper.BindPFlag("input.directory.working", rootCmd.PersistentFlags().Lookup("workingdir"))
 	viper.BindPFlag("input.directory.temp", rootCmd.PersistentFlags().Lookup("tempdir"))
+	viper.BindPFlag("input.directory.home", rootCmd.PersistentFlags().Lookup("homedir"))
 
 	viper.BindPFlag("input.options.nobanner", rootCmd.PersistentFlags().Lookup("nobanner"))
 	viper.BindPFlag("input.options.nocliversion", rootCmd.PersistentFlags().Lookup("nocliversion"))
@@ -111,6 +141,16 @@ func init() {
 	viper.BindPFlag("input.options.dryrun", rootCmd.PersistentFlags().Lookup("dryrun"))
 
 	viper.BindPFlag("input.overrides.internal_config", rootCmd.PersistentFlags().Lookup("internalconfig"))
+	viper.BindPFlag("input.folders", rootCmd.PersistentFlags().Lookup("folders"))
+
+	viper.BindPFlag("input.business.company", rootCmd.PersistentFlags().Lookup("company"))
+	viper.BindPFlag("input.business.domain", rootCmd.PersistentFlags().Lookup("area"))
+
+	viper.BindPFlag("input.terraform.backend.storage", rootCmd.PersistentFlags().Lookup("tfstorage"))
+	viper.BindPFlag("input.terraform.backend.group", rootCmd.PersistentFlags().Lookup("tfgroup"))
+	viper.BindPFlag("input.terraform.backend.container", rootCmd.PersistentFlags().Lookup("tfcontainer"))
+
+	viper.BindPFlag("input.global", rootCmd.PersistentFlags().Lookup("global"))
 }
 
 // initConfig reads in a config file and ENV vars if set
@@ -119,13 +159,93 @@ func initConfig() {
 
 	Config.Init()
 
+	// determine the root path based on the operating system
+	root_path := "/"
+	if runtime.GOOS == "windows" {
+		root_path = fmt.Sprintf("%s\\", os.Getenv("SystemDrive"))
+	}
+
+	// get a list of the paths from the cwd
+	var directories []string
+	for _path := util.GetDefaultWorkingDir(); _path != root_path; _path = filepath.Dir(_path) {
+		directories = append(directories, util.NormalisePath(_path, string(os.PathSeparator)))
+	}
+	slices.Reverse(directories)
+
+	// if additional folders have been specified on the commandline add them to the list
+	folders := viper.GetStringSlice("input.folders")
+	if len(folders) > 0 {
+		directories = append(directories, folders...)
+	}
+
+	// set multiple paths that a configuration file can be read from
+	// - home directory file
+	// - all folders from the root to the current directory, this is so that the closest configuration
+	//   is the one that is read in last
+	// - any additional paths that have been specified on the command line
+	homeDirConfigfile := fmt.Sprintf("%s.yml", path.Join(util.GetUserHomeDir(), constants.ConfigFileDir, constants.ConfigName))
+	if util.Exists(homeDirConfigfile) {
+		ConfigFiles = append(ConfigFiles, util.NormalisePath(homeDirConfigfile, string(os.PathSeparator)))
+		viper.SetConfigName(constants.ConfigName)
+		viper.AddConfigPath(path.Join(util.GetUserHomeDir(), constants.ConfigFileDir))
+		viper.MergeInConfig()
+	}
+
+	// reverse the order of the directories so that the closest one is read in last
+	for i := len(directories) - 1; i >= 0; i-- {
+
+		// App.Logger.Debugf("Aanlysing directory: %s", directories[i])
+
+		// build up the path to a possible configuration file and check if it exists
+		configfile := util.NormalisePath(fmt.Sprintf("%s.yml", path.Join(directories[i], constants.ConfigFileDir, constants.ConfigName)), string(os.PathSeparator))
+		if util.Exists(configfile) {
+
+			if !util.SliceContains(ConfigFiles, configfile) {
+				ConfigFiles = append(ConfigFiles, configfile)
+			}
+
+			// add the config path to the viper instance
+			viper.AddConfigPath(path.Join(directories[i], constants.ConfigFileDir))
+
+			// merge the configuration file into the viper instance
+			viper.MergeInConfig()
+		}
+	}
+
+	// if a list of folders have been speccified on the command line, check each one to see if
+	// a configuation file exists, if it does add it
+
+	// if a configuation file has been specified on the command line, copy it to the tempdir and
+	// add to the viper instance. This is so that it can be named correctly
 	if cfgFile != "" {
-		// Use the config file from the cobra flag
-		viper.SetConfigFile(cfgFile)
+		cfgFile = util.NormalisePath(cfgFile, string(os.PathSeparator))
+		// if the cfgfile can be found, copy it to the tempdir
+		if util.Exists(cfgFile) {
+
+			ConfigFiles = append(ConfigFiles, cfgFile)
+
+			// get the name of the configuration file and add it to the configuration path
+			filename := filepath.Base(cfgFile)
+			viper.SetConfigName(strings.TrimSuffix(filename, filepath.Ext(filename)))
+			viper.AddConfigPath(filepath.Dir(cfgFile))
+			viper.MergeInConfig()
+
+			// reset the name of the configuration file
+			viper.SetConfigName(constants.ConfigName)
+		}
+	}
+
+	// Determine if an environment variable has been set that states the string to be
+	// used as the environment variable prefix
+	// This has been done so that the it is possible for people to set a different value and be
+	// compatible with older version of the Stacks CLI
+	envvarprefix := constants.EnvVarPrefix
+	if os.Getenv("STACKSCLI_ENVVARPREFIX") != "" {
+		envvarprefix = os.Getenv("STACKSCLI_ENVVARPREFIX")
 	}
 
 	// Allow configuration options to be set using Environment variables
-	viper.SetEnvPrefix(constants.EnvVarPrefix)
+	viper.SetEnvPrefix(envvarprefix)
 
 	// The configuration settings are nested
 	// Change the `.` delimiter to a `_` when accessing from an Environment Variable
@@ -143,6 +263,7 @@ func initConfig() {
 		fmt.Printf("Unable to read in configuration file: %s", err.Error())
 		return
 	}
+
 }
 
 func preRun(ccmd *cobra.Command, args []string) {
@@ -232,11 +353,8 @@ func preRun(ccmd *cobra.Command, args []string) {
 	// Call method to determine if this version of the CLI is the latest one
 	checkCLIVersion()
 
-	// output the configuration file that is being used
-	configFileUsed := viper.ConfigFileUsed()
-	if configFileUsed != "" {
-		App.Logger.Infof("Using configuration file: %s", configFileUsed)
-	}
+	// output a list of the configuration files that have been read in
+	App.Logger.Infof("Configuration files read:\n\t%s", strings.Join(ConfigFiles, "\n\t"))
 
 	// set the framework definitions on the config object
 	//err = yaml.Unmarshal(Config.Internal.GetFileContent("framework_defs"), &Config.FrameworkDefs)

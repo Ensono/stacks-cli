@@ -54,7 +54,7 @@ stacks:
       group: java
       name: webapi
       package:
-        url: https://github.com/amido/stacks-java
+        url: https://github.com/Ensono/stacks-java
         version: master
         type: git
 
@@ -62,7 +62,7 @@ stacks:
       group: java
       name: cqrs
       package:
-        url: https://github.com/amido/stacks-java-cqrs
+        url: https://github.com/Ensono/stacks-java-cqrs
         version: main
         type: git
 
@@ -70,7 +70,7 @@ stacks:
       group: java
       name: events
       package:
-        url: https://github.com/amido/stacks-java-cqrs-events
+        url: https://github.com/Ensono/stacks-java-cqrs-events
         version: main
         type: git
 
@@ -78,7 +78,7 @@ stacks:
       group: nx
       name: next
       package:
-        url: https://github.com/amido/stacks-nx
+        url: https://github.com/Ensono/stacks-nx
         version: main
         type: git
 
@@ -86,7 +86,7 @@ stacks:
       group: nx
       name: apps
       package:
-        url: https://github.com/amido/stacks-nx
+        url: https://github.com/Ensono/stacks-nx
         version: main
         type: git
 
@@ -94,7 +94,7 @@ stacks:
       group: infra
       name: aks
       package:
-        url: https://github.com/amido/stacks-infrastructure-aks/
+        url: https://github.com/Ensono/stacks-infrastructure-aks/
         version: master
         type: git
 
@@ -102,16 +102,16 @@ stacks:
       group: infra
       name: data
       package:
-        url: https://github.com/amido/stacks-azure-data-ingest
-        version: master
+        url: https://github.com/Ensono/stacks-azure-data
+        version: main
         type: git
 
 help:
-  root: "https://stacks.amido.com/docs/stackscli/usage"
-  scaffold: "https://stacks.amido.com/docs/stackscli/runtime_config#scaffold-options"
-  interactive: "https://stacks.amido.com/docs/stackscli/runtime_config#interactive-options"
-  version: "https://stacks.amido.com/docs/stackscli/runtime_config#version-options"
-  export: "https://stacks.amido.com/docs/stackscli/runtime_config#export-options"
+  root: "https://stacks.ensono.com/docs/stackscli/usage"
+  scaffold: "https://stacks.ensono.com/docs/stackscli/runtime_config#scaffold-options"
+  interactive: "https://stacks.ensono.com/docs/stackscli/runtime_config#interactive-options"
+  version: "https://stacks.ensono.com/docs/stackscli/runtime_config#version-options"
+  export: "https://stacks.ensono.com/docs/stackscli/runtime_config#export-options"
 
 commands:
   git:

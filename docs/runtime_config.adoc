@@ -12,7 +12,7 @@ When using a configuration file it is possible to setup more than one project.
 
 Environment variables can be set to configure the values for most parameters in the Stacks CLI. By default this prefix is `ENSONOSTACKS`.
 
-However this was changed from `AMIDOSTACKS` in version 3.x of the tool, which may mean that some configurations break. To achieve the same behaviour as before another environment variable can be set, `STACKSCLI_ENVVARPREFIX`, for example:
+However this was changed from `AMIDOSTACKS` in version 0.3.x of the tool, which may mean that some configurations break. To achieve the same behaviour as before another environment variable can be set, `STACKSCLI_ENVVARPREFIX`, for example:
 
 [cols="1a,1a",options=header]
 |===

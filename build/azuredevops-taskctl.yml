@@ -9,6 +9,12 @@ name: 0.3$(Rev:.r)
 pool:
   vmImage: ubuntu-20.04
 
+parameters:
+  - name: pre_release
+    displayName: Create a pre-release from a feature branch
+    type: boolean
+    default: false
+
 variables:
   - template: azuredevops-vars.yml
 
@@ -120,7 +126,7 @@ stages:
 
   - stage: Release
     dependsOn: Build
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(${{ parameters.pre_release }}, true)))
 
     variables:
       - group: amido-stacks-webapp
@@ -163,10 +169,8 @@ stages:
             script: |
               taskctl release
           env:
-            BUILDNUMBER: $(Build.BuildNumber)
-            API_KEY: $(GITHUB_TOKEN)
-            NOTES:
-            COMMIT_ID: $(Build.SourceVersion)
-            ARTIFACTS_DIR: outputs/assets
-            OWNER: ${{ variables.RepoOwner }}
-            REPONAME: ${{ variables.RepoName }}
+              STAGE: "release"
+              PUBLISH_RELEASE: "true"
+              GITHUB_TOKEN: "$(GITHUB_TOKEN)"
+              ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+                PRERELEASE: "true"

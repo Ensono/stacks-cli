@@ -176,6 +176,6 @@ stages:
               REPOSITORY: $(REPOSITORY)
               BUILD_BUILDNUMBER: $(BUILD_BUILDNUMBER)
               COMMIT_ID: $(Build.SourceVersion)
-              ARTIFACTS_DIR: $(ARTIFACTS_DIR)
+              ARTIFACTS_DIR: $(Build.SourcesDirectory)/outputs/assets
               ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
                 PRERELEASE: "true"

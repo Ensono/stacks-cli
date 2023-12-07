@@ -172,5 +172,8 @@ stages:
               STAGE: "release"
               PUBLISH_RELEASE: "true"
               GITHUB_TOKEN: "$(GITHUB_TOKEN)"
+              OWNER: $(OWNER)
+              REPOSITORY: $(REPOSITORY)
+              BUILD_BUILDNUMBER: $(BUILD_BUILDNUMBER)
               ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
                 PRERELEASE: "true"

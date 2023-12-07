@@ -16,4 +16,4 @@ variables:
   - name: REPOSITORY
     value: stacks-cli
   - name: ARTIFACTS_DIR
-    value: outputs/bin/
+    value: outputs/assets/

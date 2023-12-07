@@ -7,10 +7,3 @@ variables:
     value: Ensono
   - name: RepoName
     value: stacks-cli
-
-# GitHub ------------------------------
-  - name: OWNER
-    value: ensono
-  - name: REPOSITORY
-    value: stacks-cli
-

@@ -45,6 +45,6 @@ tasks:
 
   _release:
     context: buildenv
-    command:
+    command: 
       - Write-Host "Publish-GitHubRelease -version $BUILD_BUILDNUMBER -commitId $COMMIT_ID -apikey $GITHUB_TOKEN -artifactsDir $ARTIFACTS_DIR -Owner $OWNER -repository $REPOSITORY"
       - Publish-GitHubRelease -version $BUILD_BUILDNUMBER -commitId $COMMIT_ID -apikey $GITHUB_TOKEN -artifactsDir $ARTIFACTS_DIR -Owner $OWNER -repository $REPOSITORY

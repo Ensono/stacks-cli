@@ -172,10 +172,10 @@ stages:
               STAGE: "release"
               PUBLISH_RELEASE: "true"
               GITHUB_TOKEN: "$(GITHUB_TOKEN)"
-              OWNER: $(OWNER)
-              REPOSITORY: $(REPOSITORY)
+              OWNER: $(RepoOwner)
+              REPOSITORY: $(RepoName)
               BUILD_BUILDNUMBER: $(BUILD_BUILDNUMBER)
               COMMIT_ID: $(Build.SourceVersion)
-              ARTIFACTS_DIR: $(Build.SourcesDirectory)/outputs/assets
+              ARTIFACTS_DIR: /app/outputs/assets
               ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
                 PRERELEASE: "true"

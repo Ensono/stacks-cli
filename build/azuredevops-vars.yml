@@ -7,3 +7,13 @@ variables:
     value: Ensono
   - name: RepoName
     value: stacks-cli
+
+# GitHub ------------------------------
+  - name: COMMIT_ID
+    value: $(Build.SourceVersion)
+  - name: OWNER
+    value: ensono
+  - name: REPOSITORY
+    value: stacks-cli
+  - name: ARTIFACTS_DIR
+    value: outputs/bin/

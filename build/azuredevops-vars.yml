@@ -9,8 +9,6 @@ variables:
     value: stacks-cli
 
 # GitHub ------------------------------
-  - name: COMMIT_ID
-    value: $(Build.SourceVersion)
   - name: OWNER
     value: ensono
   - name: REPOSITORY

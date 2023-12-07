@@ -47,10 +47,10 @@ tasks:
     context: buildenv
     command:
       - Publish-GitHubRelease `
-         -version $env:BUILD_BUILDNUMBER `
-         -commitid $env:COMMIT_ID `
-         -apikey $env:GITHUB_TOKEN `
-         -artifactsDir $env:ARTIFACTS_DIR `
-         -Owner $env:OWNER `
-         -repository $env:REPOSITORY
+          -version $env:BUILD_BUILDNUMBER `
+          -commitId $env:COMMIT_ID `
+          -apikey $env:GITHUB_TOKEN `
+          -artifactsDir $env:ARTIFACTS_DIR `
+          -Owner $env:OWNER `
+          -repository $env:REPOSITORY
 

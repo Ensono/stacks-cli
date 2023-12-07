@@ -8,6 +8,8 @@ contexts:
         - --rm
         - -v
         - ${PWD}:/app
+        - -e
+        - PSModulePath=/modules
         - -w
         - /app
         - --env-file
@@ -30,6 +32,8 @@ contexts:
         - --rm
         - -v
         - ${PWD}:/app
+        - -e
+        - PSModulePath=/modules        
         - -w
         - /app
         - amidostacks/runner-pwsh-dotnet:0.4.60-stable
@@ -46,7 +50,7 @@ contexts:
         - -v
         - ${PWD}:/app
         - -e
-        - PSModulePath=/modules        
+        - PSModulePath=/modules
         - -w
         - /app
         - --env-file

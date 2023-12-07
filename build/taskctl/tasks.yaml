@@ -45,11 +45,6 @@ tasks:
 
   _release:
     context: buildenv
-    command:
-      - /app/build/scripts/Publish-GitHubRelease.ps1 -version $BUILDNUMBER -commitId $COMMIT_ID -apikey $API_KEY -artifactsDir $ARTIFACTS_DIR -Owner $OWNER -repository $REPONAME
-    env:
-      VERSION_NUMBER: $BUILDNUMBER
-      API_KEY: $API_KEY
-      COMMIT_ID: $COMMIT_ID
-      ARTIFACTS_DIR: $ARTIFACTS_DIR
-      REPONAME: $REPONAME
+    command: 
+      - Write-Host "Publish-GitHubRelease -version $BUILD_BUILDNUMBER -commitId $COMMIT_ID -apikey $GITHUB_TOKEN -artifactsDir $ARTIFACTS_DIR -Owner $OWNER -repository $REPOSITORY"
+      - Publish-GitHubRelease -version $BUILD_BUILDNUMBER -commitId $COMMIT_ID -apikey $GITHUB_TOKEN -artifactsDir $ARTIFACTS_DIR -Owner $OWNER -repository $REPOSITORY

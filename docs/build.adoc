@@ -77,9 +77,7 @@ image::images/taskctl-compile.png[]
 
 There is a task that performs as GitHub release and uploads the documentation and binaries that have been created.
 
-The release is done by a PowerShell script, which uses the GitHub API to do the release. By doing it like this Taskctl performs the execution of the script, so it is not done by a propriatry task in the CI/CD build pipeline.
-
-NOTE: The PowerShell script is too long to pull into this document, but can be seen in the repository `build/scripts/Publish-GitHubRelease.ps1`.
+The release is performed by a PowerShell function in th module, which uses the GitHub API to do the release. By doing it like this Taskctl performs the execution of the script, so it is not done by a propriatry task in the CI/CD build pipeline.
 
 Actioning the release is done by running the command `task release`
 

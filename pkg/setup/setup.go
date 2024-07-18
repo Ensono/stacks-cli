@@ -2,6 +2,10 @@ package setup
 
 import (
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -88,6 +92,38 @@ func (s *Setup) Upsert() error {
 
 	return err
 
+}
+
+func (s *Setup) GetLatestInternalConfig() error {
+	var err error
+
+	// download the file from the specified endpoint to the home directory of the user
+	s.Logger.Infof("Downloading latest configuration")
+
+	// Get the data from the URL
+	s.Logger.Debugf("Downloading file from: %s", s.Config.Input.Overrides.InternalConfigURL)
+	resp, err := http.Get(s.Config.Input.Overrides.InternalConfigURL)
+	if err != nil {
+		s.Logger.Errorf("Error downloading file: %s", err.Error())
+		return err
+	}
+	defer resp.Body.Close()
+
+	// create the file
+	// define the path to the file
+	filepath := path.Join(util.GetStacksCLIDir(), "internal_config.yml")
+	s.Logger.Debugf("Creating file: %s", filepath)
+	out, err := os.Create(filepath)
+	if err != nil {
+		s.Logger.Errorf("Error creating file: %s", err.Error())
+		return err
+	}
+	defer out.Close()
+
+	// write out the body of the file
+	_, err = io.Copy(out, resp.Body)
+
+	return err
 }
 
 func (s *Setup) List() error {

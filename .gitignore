@@ -28,11 +28,11 @@ build/tests
 
 cmdlog.txt
 cmds.log
-envfile
+envfile*
 
 .env
 
-projects/
+projects
 
 # Ignore the swagger docs, these will need to be generated on each build
 pkg/api/docs

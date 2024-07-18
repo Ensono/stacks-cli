@@ -15,9 +15,9 @@ import (
 	"github.com/Ensono/stacks-cli/internal/models"
 	"github.com/Ensono/stacks-cli/internal/util"
 	"github.com/Ensono/stacks-cli/pkg/config"
-	yaml "github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -159,6 +159,10 @@ func initConfig() {
 
 	Config.Init()
 
+	// Ensure that the home directory for stacks for the user exists
+	stacksCliHome := util.GetStacksCLIDir()
+	util.CreateIfNotExists(stacksCliHome, 0755)
+
 	// determine the root path based on the operating system
 	root_path := "/"
 	if runtime.GOOS == "windows" {
@@ -267,26 +271,61 @@ func initConfig() {
 }
 
 func preRun(ccmd *cobra.Command, args []string) {
+	var err error
+	
+	// Read in the internal configuration file
+	// This can come from three locations, in this order:
+	// - file that has been specified on the command line
+	// - downloaded configuration file that exists in the user home directory
+	// - the internal configuration file that is shipped with the application
 
-	// Unmarshal the data from the static config file into the config object
-	err := yaml.Unmarshal(Config.Internal.GetFileContent("config"), &Config)
+	// set the content of the file so it can be read in
+	var configContent []byte
+
+	if viper.GetString("input.overrides.internal_config") != "" {
+		configContent, err = util.GetFileContent(viper.GetString("input.overrides.internal_config"))
+	} else if util.Exists(path.Join(util.GetStacksCLIDir(), "internal_config.yml")) {
+		configContent, err = util.GetFileContent(path.Join(util.GetStacksCLIDir(), "internal_config.yml"))
+	} else {
+		configContent = Config.Internal.GetFileContent("config")
+	}
+
 	if err != nil {
 		log.Fatalf("Unable to read internal configuration: %v", err)
 		App.Logger.Exit(1)
 	}
 
-	// Determine if the internal configuration has been overridden
-	override_internal := viper.GetString("input.overrides.internal_config")
-	if override_internal != "" {
-		data, err := os.ReadFile(override_internal)
-		if err != nil {
-			log.Fatalf("Unable to read in specific override file (%s): %s", err.Error(), override_internal)
-			App.Logger.Exit(2)
-		}
-
-		viper.MergeConfig(strings.NewReader(string(data)))
-
+	err = yaml.Unmarshal(configContent, &Config)
+	if err != nil {
+		log.Fatalf("Unable to read internal configuration: %v", err)
+		App.Logger.Exit(1)
 	}
+
+	// Unmarshal the data from the static config file into the config object
+	// err = yaml.Unmarshal(Config.Internal.GetFileContent("config"), &Config)
+	// if err != nil {
+	// 	log.Fatalf("Unable to read internal configuration: %v", err)
+	// 	App.Logger.Exit(1)
+	// }
+
+	// // Create list of files that can potentially contain an internal configuration
+	// internalConfigFiles := []string{
+	// 	path.Join(util.GetStacksCLIDir(), "internal_config.yml"),
+	// 	viper.GetString("input.overrides.internal_config"),
+	// }
+
+	// // iterate around the files in the list and merge them into the config, if they exist
+	// for _, file := range internalConfigFiles {
+	// 	if file != "" && util.Exists(file) {
+	// 		data, err := os.ReadFile(file)
+	// 		if err != nil {
+	// 			log.Fatalf("Unable to read in specific override file (%s): %s", err.Error(), file)
+	// 			App.Logger.Exit(2)
+	// 		}
+
+	// 		viper.MergeConfig(strings.NewReader(string(data)))
+	// 	}
+	// }
 
 	ScaffoldOverrides()
 

@@ -329,13 +329,29 @@ func GetFileContent(path string) ([]byte, error) {
 	// read in the file, if it exists and return the results
 	if Exists(path) {
 		data, err = os.ReadFile(path)
-	
+
 		if err != nil {
 			return data, err
 		}
 
 		return data, err
 	} else {
-		return data, fmt.Errorf("File does not exist: %s", path)
+		return data, fmt.Errorf("file does not exist: %s", path)
 	}
+}
+
+// GetFileList returns a list of files that match the specified pattern
+func GetFileList(pattern string, parent string) ([]string, error) {
+	var err error
+	var filelist []string
+
+	// determine if the pattern is an absolute path or not
+	if !filepath.IsAbs(pattern) {
+		pattern = filepath.Join(parent, pattern)
+	}
+
+	// perform a glob pattern match on the pattern to get the files
+	filelist, err = filepath.Glob(pattern)
+
+	return filelist, err
 }

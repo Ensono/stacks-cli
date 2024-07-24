@@ -413,7 +413,7 @@ func (s *Scaffold) configurePipeline(project *config.Project) {
 		}
 
 		// perform any addition regex replacements
-		errs := pipelineSettings.ReplacePatterns(project.Directory.WorkingDir)
+		errs := pipelineSettings.ReplacePatterns(s.Config, replacements, project.Directory.WorkingDir)
 		if len(errs) > 0 {
 			for _, err := range errs {
 				s.Logger.Error(err.Error())

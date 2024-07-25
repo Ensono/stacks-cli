@@ -50,6 +50,9 @@ func (c *Config) Init() {
 func (c *Config) Check() error {
 	var err error
 
+	// ensure that there is a value set for the --config flag, or that enough command line values
+	// have been set to scaffold a project
+
 	// determine if any projects have been specified
 	if len(c.Input.Project) == 1 && c.Input.Project[0].Name == "" {
 		return fmt.Errorf("no projects have been defined")

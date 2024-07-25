@@ -1,0 +1,38 @@
+# File contains help messages that are output by the CLI in the event
+# of a known error.
+#
+# By setting the help in this file, it means that the help messages can be easily updated without
+# needing to update any code.
+
+# The help messages are stored in a map, with the key being the message code
+help:
+  - name: GEN001
+    value: "Error running %s: %s"
+
+  - name: LOG001
+    value: "Failed to write to log file, defaulting to screen: %s"
+
+  - name: INT001
+    value: "Using config override file: %s"
+
+  - name: SCAFF001
+    value: |
+      No configuration file or flags have been provided. The scaffold command requires some inputs in order
+      to generate a new project.
+
+      Please provide either a configuration file using `-c` or `--config`, or supply the information on the command
+      line using:
+
+        -n, --name
+        -u, --sourcecontrolurl
+        -F, --framework
+        -P, --platformtype
+        -p, --pipeline
+        -C, --cloud
+        -R, --cloudregion
+        -G, --cloudgroup
+        -d, --domain
+        --component
+        --intenaldomain
+
+      For more information on the available flags, please run `stackscli scaffold --help`.

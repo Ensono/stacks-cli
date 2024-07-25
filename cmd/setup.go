@@ -32,13 +32,13 @@ var (
 	}
 
 	setupLatestCmd = &cobra.Command{
-		Use: "latest",
+		Use:   "latest",
 		Short: "Get the latest version of the internal configuration file",
 		Long: `Stacks CLI has an internal configuration file that determines the different templates
 		that is can build projects from. This command will get the latest version of that file to
 		override the values shipped with this version of the application`,
 		Run: executeSetupLatest,
-	}	
+	}
 )
 
 func init() {
@@ -71,7 +71,7 @@ func executeSetupUpdate(ccmd *cobra.Command, args []string) {
 	setup := setup.New(&Config, App.Logger)
 	err := setup.Upsert()
 	if err != nil {
-		App.Logger.Fatalf("Error running update: %s", err.Error())
+		App.Log("GEN001", "fatal", "update", err.Error())
 	}
 }
 
@@ -81,7 +81,7 @@ func executeSetupList(ccmd *cobra.Command, args []string) {
 	setup := setup.New(&Config, App.Logger)
 	err := setup.List()
 	if err != nil {
-		App.Logger.Fatalf("Error running list: %s", err.Error())
+		App.Log("GEN001", "fatal", "list", err.Error())
 	}
 }
 
@@ -91,6 +91,6 @@ func executeSetupLatest(ccmd *cobra.Command, args []string) {
 	setup := setup.New(&Config, App.Logger)
 	err := setup.GetLatestInternalConfig()
 	if err != nil {
-		App.Logger.Fatalf("Error running latest: %s", err.Error())
+		App.Log("GEN001", "fatal", "latest", err.Error())
 	}
 }

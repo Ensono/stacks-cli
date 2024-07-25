@@ -24,7 +24,7 @@ var (
 	cfgFile string
 	tmpDir  string
 
-	// App holds the configured objects, such as the logger
+	// App holds the configured objects, such as the logger and help messages
 	App models.App
 
 	// Config variable to hold the model after parsing
@@ -197,9 +197,6 @@ func initConfig() {
 
 	// reverse the order of the directories so that the closest one is read in last
 	for i := len(directories) - 1; i >= 0; i-- {
-
-		// App.Logger.Debugf("Aanlysing directory: %s", directories[i])
-
 		// build up the path to a possible configuration file and check if it exists
 		configfile := util.NormalisePath(fmt.Sprintf("%s.yml", path.Join(directories[i], constants.ConfigFileDir, constants.ConfigName)), string(os.PathSeparator))
 		if util.Exists(configfile) {
@@ -215,9 +212,6 @@ func initConfig() {
 			viper.MergeInConfig()
 		}
 	}
-
-	// if a list of folders have been speccified on the command line, check each one to see if
-	// a configuation file exists, if it does add it
 
 	// if a configuation file has been specified on the command line, copy it to the tempdir and
 	// add to the viper instance. This is so that it can be named correctly
@@ -272,7 +266,7 @@ func initConfig() {
 
 func preRun(ccmd *cobra.Command, args []string) {
 	var err error
-	
+
 	// Read in the internal configuration file
 	// This can come from three locations, in this order:
 	// - file that has been specified on the command line
@@ -291,6 +285,7 @@ func preRun(ccmd *cobra.Command, args []string) {
 	}
 
 	if err != nil {
+
 		log.Fatalf("Unable to read internal configuration: %v", err)
 		App.Logger.Exit(1)
 	}
@@ -301,32 +296,6 @@ func preRun(ccmd *cobra.Command, args []string) {
 		App.Logger.Exit(1)
 	}
 
-	// Unmarshal the data from the static config file into the config object
-	// err = yaml.Unmarshal(Config.Internal.GetFileContent("config"), &Config)
-	// if err != nil {
-	// 	log.Fatalf("Unable to read internal configuration: %v", err)
-	// 	App.Logger.Exit(1)
-	// }
-
-	// // Create list of files that can potentially contain an internal configuration
-	// internalConfigFiles := []string{
-	// 	path.Join(util.GetStacksCLIDir(), "internal_config.yml"),
-	// 	viper.GetString("input.overrides.internal_config"),
-	// }
-
-	// // iterate around the files in the list and merge them into the config, if they exist
-	// for _, file := range internalConfigFiles {
-	// 	if file != "" && util.Exists(file) {
-	// 		data, err := os.ReadFile(file)
-	// 		if err != nil {
-	// 			log.Fatalf("Unable to read in specific override file (%s): %s", err.Error(), file)
-	// 			App.Logger.Exit(2)
-	// 		}
-
-	// 		viper.MergeConfig(strings.NewReader(string(data)))
-	// 	}
-	// }
-
 	ScaffoldOverrides()
 
 	// Unmarshal the configuration into the models in the application
@@ -336,8 +305,8 @@ func preRun(ccmd *cobra.Command, args []string) {
 		App.Logger.Exit(4)
 	}
 
-	// ensure that the components are checked for uniqueness
-	// Config.Stacks.SetUniqueComponents()
+	// Set the help messages in the App.Help object
+	App.LoadHelp(Config.Internal.GetFileContent("help"))
 
 	// Configure application logging
 	// This is done after unmarshalling of the configuration so that the
@@ -345,7 +314,8 @@ func preRun(ccmd *cobra.Command, args []string) {
 	App.ConfigureLogging(Config.Input.Log)
 
 	if Config.Input.Overrides.InternalConfigPath != "" {
-		App.Logger.Infof("Using config override file: %s", Config.Input.Overrides.InternalConfigPath)
+		msg := App.Help.GetMessage("INT001", Config.Input.Overrides.InternalConfigPath)
+		App.Logger.Infof(msg)
 	}
 
 	// Set the version of the app in the configuration

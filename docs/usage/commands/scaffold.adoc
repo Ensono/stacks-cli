@@ -12,6 +12,11 @@ image::images/stackscli-scaffold-help.png[]
 
 The <<Examples>> section has a lot of examples showing how to run the Ensono Stacks CLI.
 
+If the Stacks CLI scaffold command is run without any command line options, it does not know what operations are required. In this case the CLI will abort with a help message defining exactly what is required.
+
+.Help when `scaffold` is run without arguments
+image::images/stackscli-scaffold-noinput.png[]
+
 ===== Overriding internal configuration
 
 When new features are added to components or new components need to be tested, the CLI scaffold command accepts an override file using the `--internalconfig` argument.
@@ -23,7 +28,7 @@ The CLI has a number of components already configured. By using an override file
 [cols="1a,1a",options="header"]
 |====
 | Internal Config (section) | Override Config
-| 
+|
 [source,yml]
 ----
 include::../../../internal/config/staticFiles/config.yml[lines=35..59]
@@ -83,7 +88,7 @@ stacks:
       name: data
       package:
         name: https://github.com/ensonodigital/stacks-infra-data
-        type: git        
+        type: git
 ----
 
 As can be seen the `dotnet_webapi` compnent ULR, on line 7, has been updated to reflect the new URL as well as change the type of package.

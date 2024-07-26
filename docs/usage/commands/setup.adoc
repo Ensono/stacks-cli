@@ -8,6 +8,7 @@ There are a couple of sub commands for `setup`:
 
 * <<Update>> - Adds or updates values in the file
 * <<List>> - Lists the files that would be read in from the current directory
+* <<Latest>> - Retrieves the latest configuration for Stacks that has been released
 
 ===== Update
 
@@ -64,3 +65,18 @@ stackscli setup list
 
 .List out the configuration files
 image::images/stackscli-setup-list.png[]
+
+===== Latest
+
+The way in which the CLI knows about the projects it can scaffold is by an embedded configuration file. As the Ensono Stacks ecosystem grows and new projects are added, the CLI will need to be updated to know about these new projects. The `latest` command will download the latest configuration file from the Ensono Stacks repository and place it in the correct location.
+
+This means that the CLI can be updated without needing to update the CLI itself.
+
+[source,powershell]
+----
+stackscli setup latest
+----
+
+This will result in the latest internal configuration file being downloads and placed in `$HOME/.stackscli/internal_config.yml`.
+
+NOTE: The CLI will always prefer this file over the embedded one. If the default behaviour is required then delete the downloaded file.

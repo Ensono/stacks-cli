@@ -106,6 +106,14 @@ stacks:
         version: main
         type: git
 
+    infra_template:
+      group: infra
+      name: template
+      package:
+        url: https://github.com/Ensono/stacks-project-template
+        version: main
+        type: git
+
 help:
   root: "https://stacks.ensono.com/docs/stackscli/usage"
   scaffold: "https://stacks.ensono.com/docs/stackscli/runtime_config#scaffold-options"

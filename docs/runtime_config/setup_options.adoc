@@ -9,6 +9,7 @@ There are two sub commands for setup:
 |===
 | Command Name | Description
 | `update` | Add or update a setting to the configuration file
+| `latest` | Downloads the latest configuration file
 | `list` | List the locations of the configuration files that would be read in from the current location
 |===
 
@@ -21,10 +22,21 @@ The following sections show the options for each sub command.
 .Update Options
 [options=header]
 |===
-| Option | Environment Variable | Description 
+| Option | Environment Variable | Description
 | `--project` | ENSONOSTACKS_PROJECT_NAME | Name of the project being worked on
 |===
 
 ==== List options
 
 There are no options that can be set on the `list` command
+
+==== Latest options
+
+.Latest Options
+[options=header]
+|===
+| Option | Environment Variable | Description
+| `--url` | ENSONOSTACKS_LATEST_URL | Specify an alternative URL to download the latest configuration file from
+|===
+
+By default the CLI will attempt to download the YAML configuration file from `http://support.stacks.ensono.com/cli/config.yml`.

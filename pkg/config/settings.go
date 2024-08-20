@@ -2,13 +2,14 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 
-	"github.com/Masterminds/semver"
 	"github.com/Ensono/stacks-cli/internal/models"
 	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/Masterminds/semver"
 	"github.com/sirupsen/logrus"
 )
 
@@ -91,6 +92,7 @@ func (s *Settings) GetRequiredVersion(name string) string {
 // path - pa
 func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, path string, tmpPath string) ([]models.Command, string) {
 
+	var comparator string = "="
 	var err error
 	var incorrect []models.Command
 	var versionCmd string
@@ -98,6 +100,7 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 	var specificVersion string
 	var re regexp.Regexp
 	var info string
+	var infoMsg string
 
 	// iterate around the framework commands
 	for _, cmd := range s.Framework.Commands {
@@ -113,7 +116,7 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 			// check to see if a global.json file exists in the project dir, if it is read it in
 			// so that the version of dotnet can be matched against it as a more specific check
 			globalJsonPath := filepath.Join(tmpPath, "global.json")
-			specificVersion, err = util.DotnetSDKVersion(globalJsonPath)
+			specificVersion, infoMsg, err = util.DotnetSDKVersion(globalJsonPath)
 
 			if err != nil {
 				logger.Warnf("Issue retrieving global .NET version: %s", err.Error())
@@ -121,6 +124,13 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 
 			if specificVersion != "" {
 				info = "Specific version constraint has been found in project using the 'global.json' file"
+			}
+
+			if infoMsg != "" {
+				info += fmt.Sprintf("\n%s", infoMsg)
+
+				// modify the comparator to be a greater than or equal to
+				comparator = "~"
 			}
 
 		case "java":
@@ -152,6 +162,12 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 			continue
 		}
 
+		// if there are no results then throw an error
+		if result == "" {
+			logger.Errorf("No versions for '%s' SDKs found", versionCmd)
+			os.Exit(7)
+		}
+
 		// get the version from the result so it can be tested using semver
 		matches := re.FindStringSubmatch(result)
 		idx := re.SubexpIndex(("version"))
@@ -163,7 +179,8 @@ func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, p
 		// if a specific version has been specified modify this constraint
 		constraint := cmd.Version
 		if specificVersion != "" {
-			constraint = fmt.Sprintf("= %s", specificVersion)
+
+			constraint = fmt.Sprintf("%s %s", comparator, specificVersion)
 		}
 
 		met := s.CompareVersion(constraint, versionFound, logger)
@@ -217,7 +234,7 @@ func (s *Settings) CompareVersion(constraint string, version string, logger *log
 		return false
 	}
 
-	// check if the version meets the contraint
+	// check if the version meets the constraint
 	result = c.Check(v)
 
 	return result

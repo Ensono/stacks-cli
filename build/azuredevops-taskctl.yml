@@ -85,7 +85,7 @@ stages:
 
         steps:
           # Download the StacksCLI and the integration_tests
-          - task: DownloadPipelineArtifact@
+          - task: DownloadPipelineArtifact@2
             inputs:
               artifact: StacksCLI
               path: $(Build.SourcesDirectory)/outputs/bin

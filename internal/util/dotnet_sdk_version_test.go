@@ -10,24 +10,42 @@ func TestDotnetSDKVersionWithString(t *testing.T) {
 
 	// create test table to iterate over to check the dotnet version
 	tables := []struct {
-		sdk  string
-		test string
-		msg  string
+		sdk         string
+		testVersion string
+		msgVersion  string
+		logMsg      string
 	}{
 		{
 			`{"sdk": {"version": "6.0.200"}}`,
 			"6.0.200",
 			"Version should be 6.0.200: %s",
+			"",
+		},
+		{
+			`{"sdk": {"version": "6.0.200", "rollForward": "latestPatch"}}`,
+			"6.0.x",
+			"Version should be 6.0.x: %s",
+			"Rolling forward to the latest patch/feature version of .NET SDK: 6.0.x",
+		},
+		{
+			`{"sdk": {"version": "6.0.200", "rollForward": "latestFeature"}}`,
+			"6.0.x",
+			"Version should be 6.0.x: %s",
+			"Rolling forward to the latest patch/feature version of .NET SDK: 6.0.x",
 		},
 	}
 
 	// iterate around the tests tables and perform the tests
 	for _, table := range tables {
 
-		version, _ := DotnetSDKVersion(table.sdk)
+		version, logMsg, _ := DotnetSDKVersion(table.sdk)
 
-		if version != table.test {
-			t.Errorf(table.msg, version)
+		if version != table.testVersion {
+			t.Errorf(table.msgVersion, version)
+		}
+
+		if logMsg != table.logMsg {
+			t.Errorf("Log message should be '%s' but was '%s'", table.logMsg, logMsg)
 		}
 	}
 }
@@ -37,16 +55,32 @@ func TestDotnetSDKVersionFromFile(t *testing.T) {
 	// create test able with the name of the file and the content and
 	// the expected result of the test
 	tables := []struct {
-		filename string
-		content  string
-		test     string
-		msg      string
+		filename    string
+		content     string
+		testVersion string
+		msgVersion  string
+		logMsg      string
 	}{
 		{
 			"global.json",
 			`{"sdk": {"version": "6.0.200"}}`,
 			"6.0.200",
 			"Version should be 6.0.200: %s",
+			"",
+		},
+		{
+			"global.json",
+			`{"sdk": {"version": "6.0.200", "rollForward": "latestPatch"}}`,
+			"6.0.x",
+			"Version should be 6.0: %s",
+			"Rolling forward to the latest patch/feature version of .NET SDK: 6.0.x",
+		},
+		{
+			"global.json",
+			`{"sdk": {"version": "6.0.200", "rollForward": "latestFeature"}}`,
+			"6.0.x",
+			"Version should be 6.0: %s",
+			"Rolling forward to the latest patch/feature version of .NET SDK: 6.0.x",
 		},
 	}
 
@@ -64,10 +98,14 @@ func TestDotnetSDKVersionFromFile(t *testing.T) {
 			t.Fatalf("Unable to create '%s' file: %s", file, err.Error())
 		}
 
-		version, _ := DotnetSDKVersion(file)
+		version, logMsg, _ := DotnetSDKVersion(file)
 
-		if version != table.test {
-			t.Errorf(table.msg, version)
+		if version != table.testVersion {
+			t.Errorf(table.msgVersion, version)
+		}
+
+		if logMsg != table.logMsg {
+			t.Errorf("Log message should be '%s' but was '%s'", table.logMsg, logMsg)
 		}
 	}
 }

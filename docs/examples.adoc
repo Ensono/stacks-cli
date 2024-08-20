@@ -196,4 +196,6 @@ There are two different version checks that are performed by the Ensono Stacks C
 If a `global.json` file is present in the the project, it provides and absolute version of .NET that is required. It _is_ possible to force the setup of a project but the results may vary, as shown in <<Dotnet command version check>>.
 
 If the `global.json` file does not exist, but a version constraint exists in the project settings, this will be evaluated and a similar message will be shown as before.
+
+.NET understands the properties `latestPatch` and `latestFeature` which allows some flexibility when evaluating the version of .NET to being used. As the CLI is meant to provide quick responses to the user about the environment, it now understands this two values of `rollForward` as well.
 ====

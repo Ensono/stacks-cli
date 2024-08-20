@@ -309,8 +309,13 @@ func (s *Scaffold) processProject(project config.Project) {
 		}
 	}
 
-	// iterate around the phases of the project and the operations contained therin
+	if info != "" {
+		s.Logger.Warn(info)
+	}
+
+	// iterate around the phases of the project and the operations contained therein
 	for _, phase := range project.Phases {
+
 		for _, op := range phase.Operations {
 
 			// output information about the operation being performed

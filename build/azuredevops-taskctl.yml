@@ -57,7 +57,7 @@ stages:
               testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/report.xml
               testRunTitle: UnitTests
 
-          - task: PublishCodeCoverageResults@1
+          - task: PublishCodeCoverageResults@2
             inputs:
               codeCoverageTool: Cobertura
               summaryFileLocation: $(Build.SourcesDirectory)/outputs/tests/coverage.xml

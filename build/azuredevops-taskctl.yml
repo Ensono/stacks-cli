@@ -129,7 +129,7 @@ stages:
     condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(${{ parameters.pre_release }}, true)))
 
     variables:
-      - group: amido-stacks-webapp
+      - group: github-creds
 
     jobs:
 

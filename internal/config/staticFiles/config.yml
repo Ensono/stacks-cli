@@ -38,7 +38,7 @@ stacks:
       group: dotnet
       name: webapi
       package:
-        name: Amido.Stacks.Templates
+        name: Ensono.Stacks.Templates
         type: nuget
         id: stacks-dotnet
 
@@ -46,9 +46,9 @@ stacks:
       group: dotnet
       name: cqrs
       package:
-        name: Amido.Stacks.CQRS.Templates
+        name: Ensono.Stacks.Templates
         type: nuget
-        id: stacks-dotnet-cqrs
+        id: stacks-dotnet
 
     java_webapi:
       group: java

@@ -7,15 +7,12 @@ contexts:
         - --rm
         - -v
         - ${PWD}:/app
-        - -e
-        - PSModulePath=/modules
         - -w
         - /app
         - --env-file
         - envfile
-        - ensonostackseuweirdfmu.azurecr.io/ensono/eir-golang:1.1.91
+        - ensono/eir-golang:224
         - pwsh
-        - -NoProfile
         - -Command
     envfile:
       generate: true
@@ -33,13 +30,10 @@ contexts:
         - --rm
         - -v
         - ${PWD}:/app
-        - -e
-        - PSModulePath=/modules
         - -w
         - /app
-        - amidostacks/runner-pwsh-dotnet:0.4.60-stable
+        - ensono/eir-dotnet:224
         - pwsh
-        - -NoProfile
         - -Command
 
   docsenv:
@@ -50,15 +44,12 @@ contexts:
         - --rm
         - -v
         - ${PWD}:/app
-        - -e
-        - PSModulePath=/modules
         - -w
         - /app
         - --env-file
         - envfile
-        - amidostacks/runner-pwsh-asciidoctor:0.4.60-stable
+        - ensono/eir-asciidoctor:224
         - pwsh
-        - -NoProfile
         - -Command
     envfile:
       generate: true

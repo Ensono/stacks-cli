@@ -90,7 +90,7 @@ stages:
               artifact: StacksCLI
               path: $(Build.SourcesDirectory)/outputs/bin
 
-          # Install Taskfile so that the tests can be run
+          # Install Taskctl so that the tests can be run
           - task: Bash@3
             displayName: Install Taskctl
             inputs:
@@ -147,7 +147,7 @@ stages:
                 **
                 !**/*inttest*
 
-          # Install Taskfile for the build to run
+          # Install Taskctl for the build to run
           - task: Bash@3
             displayName: Install Taskctl
             inputs:

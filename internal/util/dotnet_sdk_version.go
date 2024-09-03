@@ -40,7 +40,7 @@ func DotnetSDKVersion(file string) (string, string, error) {
 		versionStr = fmt.Sprintf("%v", version)
 	}
 
-	// if the follForward is not empty, then change the version constraint based on the string
+	// if the rollForward is not empty, then change the version constraint based on the string
 	if rollForward != nil {
 		switch rollForward {
 		case "latestPatch", "latestFeature":

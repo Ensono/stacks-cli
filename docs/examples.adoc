@@ -197,5 +197,5 @@ If a `global.json` file is present in the the project, it provides and absolute 
 
 If the `global.json` file does not exist, but a version constraint exists in the project settings, this will be evaluated and a similar message will be shown as before.
 
-.NET understands the properties `latestPatch` and `latestFeature` which allows some flexibility when evaluating the version of .NET to being used. As the CLI is meant to provide quick responses to the user about the environment, it now understands this two values of `rollForward` as well.
+.NET understands the properties `latestPatch` and `latestFeature` which allows some flexibility when evaluating the version of .NET to being used. As the CLI is meant to provide quick responses to the user about the environment, it now understands this two values as well.
 ====

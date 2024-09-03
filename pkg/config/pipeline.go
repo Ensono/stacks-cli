@@ -120,7 +120,6 @@ func (p *Pipeline) GetSupported() []string {
 // the regex pattern with the specified value
 func (p *Pipeline) ReplacePatterns(config *Config, inputs Replacements, dir string) []error {
 
-	// var err error
 	var errs []error
 	var filelist []string
 	errs = make([]error, 0)

@@ -1,14 +1,13 @@
 import:
-- ./build/taskctl/contexts.yaml
-- ./build/taskctl/tasks.yaml
+  - ./build/taskctl/contexts.yaml
+  - ./build/taskctl/tasks.yaml
 
 pipelines:
-
   build:
     - task: clean
     - task: buildnumber
     - task: _docs
-      depends_on: 
+      depends_on:
         - clean
         - buildnumber
     - task: test:unit
@@ -20,8 +19,11 @@ pipelines:
 
   docs:
     - task: buildnumber
+    - task: _docs:cmd:options
     - task: _docs
-      depends_on: buildnumber
+      depends_on:
+        - buildnumber
+        - _docs:cmd:options
 
   inttest:
     - task: buildnumber

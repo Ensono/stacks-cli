@@ -1,0 +1,47 @@
+[cols="2a,1,2,1,1",options="header"]
+|===
+2+| Parameter | Environment Variable | Default | Permitted Values
+
+.2+^| `--config`, `-c` ^| icon:check[fw] | CONFIG |  |
+4+| Path to the configuration file
+.2+^| `--loglevel`, `-l` ^| icon:times[fw] | LOGLEVEL | info |
+4+| Logging Level
+.2+^| `--logformat`, `-f` ^| icon:times[fw] | LOGFORMAT | text |
+4+| Logging format
+.2+^| `--logcolour`, `-` ^| icon:times[fw] | LOGCOLOUR | true |
+4+| State if colours should be used in the text output
+.2+^| `--logfile` ^| icon:check[fw] | LOGFILE |  |
+4+| File to write logs to
+.2+^| `--workingdir`, `-w` ^| icon:times[fw] | WORKINGDIR | defaultWorkingDir |
+4+| Directory to be used to create the new projects in
+.2+^| `--tempdir` ^| icon:times[fw] | TEMPDIR | defaultTempDir |
+4+| Temporary directory to be used by the CLI
+.2+^| `--homedir` ^| icon:times[fw] | HOMEDIR | defaultUserHomeDir |
+4+| Users home directory
+.2+^| `--dryrun` ^| icon:times[fw] | DRYRUN | false |
+4+| Shows what actions would be taken but does not perform them
+.2+^| `--nobanner` ^| icon:times[fw] | NOBANNER | false |
+4+| Do not display the Stacks banner when running the command
+.2+^| `--nocliversion` ^| icon:times[fw] | NOCLIVERSION | false |
+4+| Do not check for latest version of the CLI
+.2+^| `--onlinehelp`, `-H` ^| icon:times[fw] | ONLINEHELP | false |
+4+| Open web browser with help for the command
+.2+^| `--token` ^| icon:check[fw] | TOKEN |  |
+4+| GitHub token to perform authenticated requests against the GitHub API
+.2+^| `--internalconfig` ^| icon:check[fw] | INTERNALCONFIG |  |
+4+| Path to the configuration override file
+.2+^| `--folders` ^| icon:times[fw] | FOLDERS | []string{} |
+4+| List of additional folders to be used when running setup
+.2+^| `--company` ^| icon:check[fw] | COMPANY |  |
+4+| The name of the company
+.2+^| `--area`, `-A` ^| icon:check[fw] | AREA |  |
+4+| Area within the company that this project will belong to
+.2+^| `--tfstorage` ^| icon:check[fw] | TFSTORAGE |  |
+4+| Name of the storage to be used for Terraform state
+.2+^| `--tfgroup` ^| icon:check[fw] | TFGROUP |  |
+4+| Name of the group that the storage account is in
+.2+^| `--tfcontainer` ^| icon:check[fw] | TFCONTAINER |  |
+4+| Name of the container within the storage to use
+.2+^| `--global`, `-g` ^| icon:times[fw] | GLOBAL | false |
+4+| Set the values globally. These will be set in the user's home directory
+|===

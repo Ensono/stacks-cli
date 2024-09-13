@@ -1,0 +1,7 @@
+[cols="2a,1,2,1,1",options="header"]
+|===
+2+| Parameter | Environment Variable | Default | Permitted Values
+
+.2+^| `--url` ^| icon:times[fw] | URL | http://support.stacks.ensono.com/cli/config.yml |
+4+| The URL to get the latest configuration file from
+|===

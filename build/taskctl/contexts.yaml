@@ -11,7 +11,7 @@ contexts:
         - /app
         - --env-file
         - envfile
-        - ensono/eir-golang:224
+        - ensono/eir-golang:1.1.224
         - pwsh
         - -Command
     envfile:
@@ -32,7 +32,7 @@ contexts:
         - ${PWD}:/app
         - -w
         - /app
-        - ensono/eir-dotnet:224
+        - ensono/eir-dotnet:1.1.224
         - pwsh
         - -Command
 
@@ -48,7 +48,28 @@ contexts:
         - /app
         - --env-file
         - envfile
-        - ensono/eir-asciidoctor:224
+        - ensono/eir-asciidoctor:1.1.224
+        - pwsh
+        - -Command
+    envfile:
+      generate: true
+      exclude:
+        - home
+        - path
+
+  powershell:
+    executable:
+      bin: docker
+      args:
+        - run
+        - --rm
+        - -v
+        - ${PWD}:/app
+        - -w
+        - /app
+        - --env-file
+        - envfile
+        - ensono/eir-infrastructure:1.1.224
         - pwsh
         - -Command
     envfile:

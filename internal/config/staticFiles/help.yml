@@ -13,7 +13,7 @@ help:
     value: "Failed to write to log file, defaulting to screen: %s"
 
   - name: INT001
-    value: "Using config override file: %s"
+    value: "Found config override file: %s"
 
   - name: SCAFF001
     value: |

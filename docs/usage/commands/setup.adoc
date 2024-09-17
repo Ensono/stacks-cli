@@ -80,3 +80,7 @@ stackscli setup latest
 This will result in the latest internal configuration file being downloads and placed in `$HOME/.stackscli/internal_config.yml`.
 
 NOTE: The CLI will always prefer this file over the embedded one. If the default behaviour is required then delete the downloaded file.
+
+If a an internal configuration file is detected by the CLI it will output that the file has been read:
+
+image::images/stackscli-internal-config.png[]

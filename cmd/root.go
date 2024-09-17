@@ -276,10 +276,14 @@ func preRun(ccmd *cobra.Command, args []string) {
 	// set the content of the file so it can be read in
 	var configContent []byte
 
+	// define flag to state that a alternative configuration file has been read in
+	var overrideConfig string = path.Join(util.GetStacksCLIDir(), "internal_config.yml")
+
 	if viper.GetString("input.overrides.internal_config") != "" {
-		configContent, err = util.GetFileContent(viper.GetString("input.overrides.internal_config"))
-	} else if util.Exists(path.Join(util.GetStacksCLIDir(), "internal_config.yml")) {
-		configContent, err = util.GetFileContent(path.Join(util.GetStacksCLIDir(), "internal_config.yml"))
+		overrideConfig = viper.GetString("input.overrides.internal_config")
+		configContent, err = util.GetFileContent(overrideConfig)
+	} else if util.Exists(overrideConfig) {
+		configContent, err = util.GetFileContent(overrideConfig)
 	} else {
 		configContent = Config.Internal.GetFileContent("config")
 	}
@@ -313,9 +317,15 @@ func preRun(ccmd *cobra.Command, args []string) {
 	// model values can be used rather than the strings from viper
 	App.ConfigureLogging(Config.Input.Log)
 
-	if Config.Input.Overrides.InternalConfigPath != "" {
-		msg := App.Help.GetMessage("INT001", Config.Input.Overrides.InternalConfigPath)
-		App.Logger.Infof(msg)
+	// Check that the CLI is online
+	// use a DNS lookup to check that github can be accessed
+	// this is so that the check is not performed if the the environment is not
+	// connected to the internet
+	App.Logger.Info("Performing connectivity check")
+	err = util.CheckConnectivity("github.com")
+	if err != nil {
+		App.Logger.Fatal(err.Error())
+		return
 	}
 
 	// Set the version of the app in the configuration
@@ -326,15 +336,13 @@ func preRun(ccmd *cobra.Command, args []string) {
 		fmt.Println(staticFiles.IntFile_Banner)
 	}
 
-	// Check that the CLI is online
-	// use a DNS lookup to check that github can be accessed
-	// this is so that the check is not performed if the the environment is not
-	// connected to the internet
-	App.Logger.Info("Performing connectivity check")
-	err = util.CheckConnectivity("github.com")
-	if err != nil {
-		App.Logger.Fatal(err.Error())
-		return
+	if overrideConfig != "" {
+		msg := App.Help.GetMessage("INT001", overrideConfig)
+		App.Logger.Infof(msg)
+
+		// add in the internal configuration file to the ConfigFiles slice
+		ConfigFiles = append([]string{overrideConfig}, ConfigFiles...)
+
 	}
 
 	// set the urls to use to open the web based help for a command

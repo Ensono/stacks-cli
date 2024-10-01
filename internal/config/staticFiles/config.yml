@@ -111,7 +111,7 @@ stacks:
       name: aca
       package:
         url: https://github.com/Ensono/stacks-infrastructure-aca/
-        version: master
+        version: main
         type: git
 
 help:

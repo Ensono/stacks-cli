@@ -122,6 +122,7 @@ This is dependent on the framework that has been chosen. Multiple options can be
 Which type of infrastructure is required?
 | A number of projects support different infrastructure. By answering this question, the CLI will prepare the project, if applicable, to the chosen cloud. 
 
+* ACA
 * AKS
 * Data
 

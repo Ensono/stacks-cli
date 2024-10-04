@@ -1,36 +1,34 @@
 frameworks:
   - name: dotnet
     commands:
-      - dotnet
-      - git
-    version:
-      command: dotnet
-      arguments: --version
-      pattern: (?P<version>.*)
+      - name: dotnet
+        version:
+          arguments: --version
+          pattern: (?P<version>(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<feature>[0-9]{1})(?P<patch>[0-9]*))
+      - name: git
 
   - name: java
     commands:
-      - java
-      - git
-      - mvn
-    version:
-      command: java
-      arguments: -version
-      pattern: '"(?P<version>.*)"'
+      - name: java
+        version:
+          arguments: -version
+          pattern: version\s+"(?P<version>(?P<major>[0-9]*)\.(?P<minor>[0-9]*).(?P<patch>[0-9]*))
+      - name: git
+      - name: mvn
 
   - name: nx
     commands:
-      - node
-      - npx
-      - git
-    version:
-      command: node
-      arguments: --version
-      pattern: '"v(?P<version>.*)"'
+      - name: node
+        version:
+          arguments: -version
+          pattern: v(?P<version>(?P<major>[0-9]*)\.(?P<minor>[0-9]*).(?P<patch>[0-9]*))
+      - name: npx
+      - name: git
 
   - name: infra
     commands:
-      - git
+      - name: git
+      - name: terraform
 
 stacks:
   components:

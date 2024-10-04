@@ -1,7 +1,7 @@
 package config
 
 type FrameworkDefVersion struct {
-	Command   string `mapstructure:"command"`
-	Arguments string `mapstructure:"arguments"`
-	Pattern   string `mapstructure:"pattern"`
+	Arguments  string `mapstructure:"arguments" yaml:"arguments"`
+	Pattern    string `mapstructure:"pattern" yaml:"pattern"`
+	Comparator string `mapstructure:"comparator" yaml:"comparator"`
 }

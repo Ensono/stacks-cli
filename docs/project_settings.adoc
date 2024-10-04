@@ -34,6 +34,8 @@ This is a list, so multiple commands and versions can be specified in the yaml f
 | `commands.version` | This is a semantic version constraint that the command version must conform to
 
 So to ensure that the `dotnet` command is version `3.1` the following version string can be used `>= 3.1, < 3.2` | `>= 3.1, < 3.2` | Any valid semver constraint
+
+NOTE: This is ignored if the framework is `dotnet`. In this the constraint is set using the `global.json` file.
 |===
 
 NOTE: If no command or version is specified then the command that is found on the machine that the CLI is running on will be used without checking.

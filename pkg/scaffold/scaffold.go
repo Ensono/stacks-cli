@@ -129,7 +129,7 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 		if operation.Command == "" {
 			return fmt.Errorf("command has not been set for the operation")
 		} else {
-			if !util.SliceContains(cmdList, operation.Command) {
+			if !util.SliceContains(cmdList.GetCmdList(), operation.Command) {
 				return fmt.Errorf("command '%s' is not is the known list of commands for '%s'", operation.Command, project.Framework.Type)
 			}
 		}
@@ -282,7 +282,7 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	// check to see if any framework commands have been set and check the
 	// version if they have
-	incorrect, info := project.Settings.CheckCommandVersions(s.Config, s.Logger, project.Directory.WorkingDir, project.Directory.TempDir)
+	incorrect, info := project.Settings.CheckCmdVersions(s.Config, s.Logger, project.Directory.WorkingDir, project.Directory.TempDir)
 	if len(incorrect) > 0 {
 
 		var parts []string

@@ -665,7 +665,7 @@ func TestGetFrameworkCommands(t *testing.T) {
 
 		res := config.GetFrameworkCommands(table.name)
 
-		if len(res) != table.count {
+		if len(res.Commands) != table.count {
 			t.Error(table.message)
 		}
 	}

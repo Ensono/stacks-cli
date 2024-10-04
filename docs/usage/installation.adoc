@@ -35,6 +35,13 @@ After the CLI has been downloaded, it needs to be made executable. This can be d
 
 [source,console,subs="attributes"]
 ----
+# Download the binary to a location in the PATH
+## Mac OS
+curl -L https://github.com/Ensono/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-darwin-amd64-{stackscli_version} -o /usr/local/bin/stacks-cli
+
+## Linux
+curl -L https://github.com/Ensono/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-linux-amd64-{stackscli_version} -o /usr/local/bin/stacks-cli
+
 ## Ensure that the command is executable
 chmod +x /usr/local/bin/stacks-cli
 ----

@@ -103,6 +103,14 @@ stacks:
         url: https://github.com/Ensono/stacks-azure-data
         version: main
         type: git
+    
+    infra_aca:
+      group: infra
+      name: aca
+      package:
+        url: https://github.com/Ensono/stacks-infrastructure-aca/
+        version: main
+        type: git
 
     infra_template:
       group: infra

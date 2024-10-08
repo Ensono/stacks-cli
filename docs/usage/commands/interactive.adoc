@@ -125,6 +125,7 @@ Which type of infrastructure is required?
 * ACA
 * AKS
 * Data
+* EKS
 
 | infra | aks | `input.project[0].framework.type`
 

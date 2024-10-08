@@ -1,5 +1,4 @@
 
-#function Set-Options() {
 
     <#
     .SYNOPSIS
@@ -163,5 +162,3 @@
         }
 
     }
-
-# }

@@ -100,12 +100,9 @@ func (s *Settings) GetRequiredVersion(name string) string {
 func (s *Settings) CheckCmdVersions(config *Config, logger *logrus.Logger, path string, tmpPath string) ([]models.Command, string) {
 
 	var constraint string
-	//var defaultComparator string = "="
-	//var defaultConstraint string = "*"
 	var incorrect []models.Command
 	var info string
 	var met bool
-	//var re regexp.Regexp
 	var resultErrors []string
 	var versionFound string
 
@@ -189,14 +186,7 @@ func (s *Settings) CheckCmdVersions(config *Config, logger *logrus.Logger, path 
 					version.SetSemverConstraint(cmd.Version)
 				}
 
-				// get the version of the command
-				//idx := re.SubexpIndex(("version"))
-				//versionFound = matches[idx]
-
 				logger.Debugf("Version of '%s' found: %s", fCmd.Name, versionFound)
-
-				// Perform the check against the versionn
-				// met = s.CompareVersion(constraint, versionFound, logger)
 
 				met, err = version.Semver()
 				if err != nil {

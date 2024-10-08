@@ -111,6 +111,14 @@ stacks:
         url: https://github.com/Ensono/stacks-infrastructure-aca/
         version: main
         type: git
+    
+    infra_eks:
+      group: infra
+      name: eks
+      package:
+        url: https://github.com/Ensono/stacks-infrastructure-eks/
+        version: main
+        type: git
 
     infra_template:
       group: infra

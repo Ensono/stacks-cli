@@ -171,10 +171,41 @@ func ScaffoldOverrides() {
 
 func executeScaffoldRun(ccmd *cobra.Command, args []string) {
 
+	// initialise a counter to see how many flags have been set
+	flagCount := 0
+
+	// set a list of the flags that we are interested in
+	flags := []string{
+		"input.project.name",
+		"input.project.platform.type",
+		"input.project.sourcecontrol.url",
+		"input.project.cloud.region",
+		"input.project.cloud.group",
+		"input.project.framework.type",
+		"input.pipeline",
+		"input.cloud.platform",
+		"input.business.component",
+		"input.network.base.domain.external",
+		"input.network.base.domain.internal",
+	}
+
+	// check each flag to see if it has been set
+	for _, flagName := range flags {
+		if viper.IsSet(flagName) {
+			flagCount++
+		}
+	}
+
+	// if a config file has not been set and neither have any flags, throw an error with a help message
+	if cfgFile == "" && flagCount == 0 {
+		App.Log("SCAFF001", "fatal")
+		App.Logger.Exit(5)
+	}
+
 	// Call the scaffolding method
 	scaff := scaffold.New(&Config, App.Logger)
 	err := scaff.Run()
 	if err != nil {
-		App.Logger.Fatalf("Error running scaffold: %s", err.Error())
+		App.Log("GEN001", "fatal", "scaffold", err.Error())
 	}
 }

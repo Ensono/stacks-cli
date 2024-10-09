@@ -1,4 +1,3 @@
-
 contexts:
   buildenv:
     executable:
@@ -8,21 +7,20 @@ contexts:
         - --rm
         - -v
         - ${PWD}:/app
-        - -e
-        - PSModulePath=/modules
         - -w
         - /app
         - --env-file
-        - envfile        
-        - amidostacks/runner-pwsh-golang:0.4.60-stable
+        - envfile
+        - ensono/eir-golang:1.1.224
         - pwsh
-        - -NoProfile
         - -Command
     envfile:
       generate: true
       exclude:
         - home
-        - path      
+        - path
+        - tmpdir
+        - gopath
 
   inttestenv:
     executable:
@@ -32,14 +30,11 @@ contexts:
         - --rm
         - -v
         - ${PWD}:/app
-        - -e
-        - PSModulePath=/modules        
         - -w
         - /app
-        - amidostacks/runner-pwsh-dotnet:0.4.60-stable
+        - ensono/eir-dotnet:1.1.224
         - pwsh
-        - -NoProfile
-        - -Command        
+        - -Command
 
   docsenv:
     executable:
@@ -49,15 +44,12 @@ contexts:
         - --rm
         - -v
         - ${PWD}:/app
-        - -e
-        - PSModulePath=/modules
         - -w
         - /app
         - --env-file
-        - envfile        
-        - amidostacks/runner-pwsh-asciidoctor:0.4.60-stable
+        - envfile
+        - ensono/eir-asciidoctor:1.1.224
         - pwsh
-        - -NoProfile
         - -Command
     envfile:
       generate: true
@@ -65,3 +57,23 @@ contexts:
         - home
         - path
 
+  powershell:
+    executable:
+      bin: docker
+      args:
+        - run
+        - --rm
+        - -v
+        - ${PWD}:/app
+        - -w
+        - /app
+        - --env-file
+        - envfile
+        - ensono/eir-infrastructure:1.1.224
+        - pwsh
+        - -Command
+    envfile:
+      generate: true
+      exclude:
+        - home
+        - path

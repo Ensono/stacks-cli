@@ -13,10 +13,10 @@ The following table details the structure of the settings file.
 .Settings file root structure
 [options="header"]
 |===
-| Parameter | Description | Example | Allowed Values 
-| `framework` | The framework that the project is based on. | | 
+| Parameter | Description | Example | Allowed Values
+| `framework` | The framework that the project is based on. | |
 | `pipeline` | This is a list of the supported pipelines and the associated files | |
-| `init.operations` | List of operations that need to be performed on the temporary project directory | | 
+| `init.operations` | List of operations that need to be performed on the temporary project directory | |
 | `setup.operations` | List of operations that need to be performed on the project directory | |
 |===
 
@@ -30,10 +30,12 @@ The following table shows the options that can be specified for a framework
 | `commands` | A list of the commands and the versions that are required for the project
 
 This is a list, so multiple commands and versions can be specified in the yaml file | |
-| `commands.name` | Name of the command to be checked | `dotnet` | 
+| `commands.name` | Name of the command to be checked | `dotnet` |
 | `commands.version` | This is a semantic version constraint that the command version must conform to
 
-So to ensure that the `dotnet` command is version `3.1` the following version string can be used `>= 3.1, < 3.2` | `>= 3.1, < 3.2` | Any valid semver constraint 
+So to ensure that the `dotnet` command is version `3.1` the following version string can be used `>= 3.1, < 3.2` | `>= 3.1, < 3.2` | Any valid semver constraint
+
+NOTE: This is ignored if the framework is `dotnet`. In this the constraint is set using the `global.json` file.
 |===
 
 NOTE: If no command or version is specified then the command that is found on the machine that the CLI is running on will be used without checking.
@@ -52,14 +54,14 @@ NOTE: These are valid for both `init` and `setup` operations
 | Parameter | Description | Example | Allowed Values
 | `action` | The type of action that needs to be performed
 
-If `copy` is specified then no other parameters are required. This only really makes sense when in the `setup` phase of the project. It copy the contents of the downloaded repository to the project directory. This is useful for projects that do not have a templating system, such as `stacks-infrastructure-aks`. | `cmd` | `cmd`, `copy` 
+If `copy` is specified then no other parameters are required. This only really makes sense when in the `setup` phase of the project. It copies the contents of the downloaded repository to the project directory. This is useful for projects that do not have a templating system, such as `stacks-infrastructure-aks`. | `cmd` | `cmd`, `copy`
 | `cmd` | The command that needs to be run.
 
 Each framework has a set of commands that it knows it can during the setup of the project run. The value that is set here must be specified within that list in order for the command to execute. | java = `java`
 
-dotnet = `dotnet` | 
-| `args` | The arguments that need to be passed to the command | `new -i .` | 
-| `desc` | Description of what is being performed. This is output during the execution of the CLI | Installing template from folder | 
+dotnet = `dotnet` |
+| `args` | The arguments that need to be passed to the command | `new -i .` |
+| `desc` | Description of what is being performed. This is output during the execution of the CLI | Installing template from folder |
 | `applyProperties` | State if the properties that were defined in the `stacks.yml` file for the project should be applied to this command
 
 Default is `false` | true | `true`, `false`
@@ -68,15 +70,40 @@ Default is `false` | true | `true`, `false`
 The follow table shows the values that can be assigned to the pipeline list.
 
 .Pipeline options
-[options="header"]
+[cols="1,2a,2a,1",options="header"]
 |===
 | Parameter | Description | Example | Allowed Values
 | `type` | Type of pipeline being configured | `azdo` | `azdo`
 | `files` | List of files that should be worked on.
 
-See <<project_settings_file_definition,File definition>> for syntax |  | 
-| `template` | List of templates that the CLI should use. At the moment only `variable` is supported. |  | 
-| `replacements` | This is a list of replacements that need to be made in the build file | | 
+See <<project_settings_file_definition,File definition>> for syntax |  |
+| `items` | This is a list of glob patterns that can be used to gather up several files. These are then parses by the replacements that have been specified
+
+If the path specified is not absolute, the path to the project is prepended to the path
+
+Several glob patterns can be specified |
+
+----
+items:
+ - build/**/*.yaml
+----
+
+This would find all files that have the `.yaml` extension in all the subfolders of the `build` directory.
+
+ | Any valid pattern that translates to a path in the repo file system.
+| `template` | List of templates that the CLI should use. At the moment only `variable` is supported. |  |
+| `replacements` | This is a list of replacements that need to be made in the specified files.
+
+It is a list of patterns and the associated value. Before a value is replaced, any tokens in the value are substituted.|
+
+----
+replacements:
+  - pattern: ^.*myvalue$
+    value: {{ .Inputs.Business.Company }}-value
+----
+
+As can be seen the values that are set as part of the Stacks CLI configuration can be used in the replacement.
+|
 |===
 
 .File definition
@@ -101,7 +128,7 @@ NOTE: If no template is specified for the `variable` then the static version bui
 .Replacement definition
 [options="header"]
 |===
-| Parameter | Description | Example 
+| Parameter | Description | Example
 | `pattern` | Regular expression pattern for finding the text to be replaced | `^.*myvalue$`
 | `value` | Value to replace the phrase that has been found by the pattern | `Foo Bar`
 |===
@@ -114,7 +141,7 @@ The following code listing shows an example settings file.
 [[project_settings_file,{listing-caption} {counter:refnum}]]
 [source,yaml]
 ----
-framework: 
+framework:
   name: dotnet // <1>
   commands: // <2>
     - name: dotnet // <3>
@@ -126,9 +153,9 @@ pipeline:
        - name: build // <6>
          path: build/azDevOps/azure/azure-pipelines-netcore-k8s.yml
        - name: variable // <7>
-         path: build/azDevOps/azure/azuredevops-vars.yml 
+         path: build/azDevOps/azure/azuredevops-vars.yml
     replacements: // <8>
-        - pattern: ^.*myvalue$ 
+        - pattern: ^.*myvalue$
           value: Foo Bar
 
 init: // <9>
@@ -179,7 +206,7 @@ The following listing shows a snippet of the project settings file for a project
 ----
 - action: cmd
   cmd: dotnet
-  args: new stacks-cqrs-events-app -n {{ .Input.Business.Company }}.{{ .Input.Business.Domain }} -o {{ .Project.Directory.WorkingDir }} -e {{ or .Project.Framework.Properties.Prop1 "servicebus"}}  
+  args: new stacks-cqrs-events-app -n {{ .Input.Business.Company }}.{{ .Input.Business.Domain }} -o {{ .Project.Directory.WorkingDir }} -e {{ or .Project.Framework.Properties.Prop1 "servicebus"}}
 ----
 
 In this example all of the values for the parameters come from the `.Input` or `.Project` object (as detailed in the <<_templating>> section).

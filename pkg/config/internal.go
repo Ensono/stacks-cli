@@ -36,6 +36,10 @@ func (i *Internal) AddFiles() {
 		data:     []byte(staticFiles.Ado_Variable_Template_Tmpl),
 	}
 
+	i.Files["help"] = internalFileInfo{
+		filename: "help.yml",
+		data:     []byte(staticFiles.Help_Messages),
+	}
 }
 
 func (i *Internal) GetFileContentString(name string) string {

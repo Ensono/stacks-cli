@@ -52,3 +52,47 @@ func TestConfigureLogging(t *testing.T) {
 
 	hook.Reset()
 }
+
+func TestHelpMessage(t *testing.T) {
+
+	// Create YAML file which will be loaded into the app
+	help_data := `
+help:
+  - name: TEST001
+    value: This is a test help message
+  - name: GEN001
+    value: "Error in %s: %s"
+`
+
+	// build up the test tables
+	tables := []struct {
+		code     string
+		subs     []interface{}
+		expected string
+	}{
+		{
+			"TEST001",
+			[]interface{}{},
+			"This is a test help message",
+		},
+		{
+			"GEN001",
+			[]interface{}{"export", "missing"},
+			"Error in export: missing",
+		},
+	}
+
+	// Create an App object
+	app := App{}
+
+	// load the help data into the app
+	app.LoadHelp([]byte(help_data))
+
+	// iterate around the test tables
+	for _, table := range tables {
+		message := app.Help.GetMessage(table.code, table.subs...)
+
+		assert.Equal(t, table.expected, message, "The message should be '%s'", table.expected)
+	}
+
+}

@@ -2,7 +2,37 @@
 
 As the CLI is a single binary the quickest way to install it is to download it and put it somewhere in your PATH. The following code snippets show how this can be achieved using Bash and PowerShell.
 
+The CLI is built for different platforms, and this is denoted in the filename of the download.
+
 ==== Linux and Mac OS
+
+[cols="1,1,3a",options="header"]
+|===
+| Platform | OS | Command
+.2+| AMD64
+(Intel Chip)
+| MacOS
+|
+----
+curl https://github.com/Ensono/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-darwin-amd64-{stackscli_version} -o /usr/local/bin/stacks-cli
+----
+| Linux
+a|
+----
+curl https://github.com/Ensono/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-linux-amd64-{stackscli_version} -o /usr/local/bin/stacks-cli
+----
+| ARM64
+(Apple Silicon)
+| MacOS
+|
+----
+curl https://github.com/Ensono/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-darwin-arm64-{stackscli_version} -o /usr/local/bin/stacks-cli
+----
+
+|===
+
+After the CLI has been downloaded, it needs to be made executable. This can be done using the following command:
+
 [source,console,subs="attributes"]
 ----
 # Download the binary to a location in the PATH

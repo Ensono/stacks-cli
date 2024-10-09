@@ -206,7 +206,7 @@ func (s *Settings) CheckCmdVersions(config *Config, logger *logrus.Logger, path 
 		}
 	}
 
-	// if there any errors, log them
+	// if there any errors, log them and then exit
 	if len(resultErrors) > 0 {
 		for _, err := range resultErrors {
 			logger.Errorf(err)

@@ -57,17 +57,17 @@ func (ic *InputConfig) CheckFrameworks(config *Config) []models.Command {
 			// get the binaries for this framework type
 			binaries := config.GetFrameworkCommands(project.Framework.Type)
 
-			for _, binary := range binaries {
+			for _, binary := range binaries.Commands {
 				// create a command object
 				command := models.Command{
 					Framework: project.Framework.Type,
-					Binary:    binary,
+					Binary:    string(binary.Name),
 				}
 
 				// if the binary is null then the framework has not been specified properly so
 				// add the command to the missing list
 				// otherwise check that the binary exists in the path
-				if binary == "" {
+				if binary.Name == "" {
 					missing = append(missing, command)
 				} else {
 
@@ -82,7 +82,6 @@ func (ic *InputConfig) CheckFrameworks(config *Config) []models.Command {
 				}
 			}
 		}
-
 	}
 
 	return missing

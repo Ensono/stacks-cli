@@ -1,0 +1,51 @@
+[cols="2a,1,2,1,1",options="header"]
+|===
+2+| Parameter | Environment Variable | Default | Permitted Values
+
+.2+^| `--cachedir` ^| icon:times[fw] | CACHEDIR | defaultCacheDir |
+4+| Cache directory to be used for all downloads
+.2+^| `--name`, `-n` ^| icon:check[fw] | NAME |  |
+4+| Name of the project to create
+.2+^| `--sourcecontrol` ^| icon:times[fw] | SOURCECONTROL | github |
+4+| Type of source control being used
+.2+^| `--sourcecontrolurl`, `-u` ^| icon:check[fw] | SOURCECONTROLURL |  |
+4+| Url of the remote for source control
+.2+^| `--projectsettingsfile` ^| icon:check[fw] | PROJECTSETTINGSFILE |  |
+4+| Path to a settings file to use for the project
+.2+^| `--framework`, `-F` ^| icon:check[fw] | FRAMEWORK |  |
+4+| Framework for the project
+.2+^| `--frameworkoption`, `-O` ^| icon:check[fw] | FRAMEWORKOPTION |  |
+4+| Option of the chosen framework to use
+.2+^| `--frameworkversion`, `-V` ^| icon:times[fw] | FRAMEWORKVERSION | latest |
+4+| Version of the framework package to download
+.2+^| `--frameworkprops` ^| icon:times[fw] | FRAMEWORKPROPS | []string{} |
+4+| Properties to pass to the project settings
+.2+^| `--platformtype`, `-P` ^| icon:check[fw] | PLATFORMTYPE |  |
+4+| Type of platform being deployed to
+.2+^| `--pipeline`, `-p` ^| icon:check[fw] | PIPELINE |  |
+4+| Pipeline to use for CI/CD
+.2+^| `--cloud`, `-C` ^| icon:check[fw] | CLOUD |  |
+4+| Cloud platform being targetted
+.2+^| `--cloudregion`, `-R` ^| icon:check[fw] | CLOUDREGION |  |
+4+| Region that the resources should be deployed to
+.2+^| `--cloudgroup`, `-G` ^| icon:check[fw] | CLOUDGROUP |  |
+4+| Group that the resources should belong to
+.2+^| `--component` ^| icon:check[fw] | COMPONENT |  |
+4+| Business component
+.2+^| `--domain`, `-d` ^| icon:check[fw] | DOMAIN |  |
+4+| External domain for the app
+.2+^| `--internaldomain` ^| icon:check[fw] | INTERNALDOMAIN |  |
+4+| Internal domain for the app
+.2+^| `--adovariables` ^| icon:check[fw] | ADOVARIABLES |  |
+4+| Path to the ado variables override file
+.2+^| `--cmdlog` ^| icon:times[fw] | CMDLOG | false |
+4+| Specify if commands should be logged
+.2+^| `--save` ^| icon:times[fw] | SAVE | false |
+4+| Save the the configuration from interactive or command line settings. Has no effect when using a configuration file.
+.2+^| `--nocleanup` ^| icon:times[fw] | NOCLEANUP | false |
+4+| If set
+.2+^| `--force` ^| icon:times[fw] | FORCE | false |
+4+| If set
+.2+^| `--noscaffold` ^| icon:times[fw] | NOSCAFFOLD | false |
+4+| When used in conjunction with --save
+|===

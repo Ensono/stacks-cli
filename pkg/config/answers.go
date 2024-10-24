@@ -262,9 +262,10 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				},
 			},
 			{
-				Name: "framework_deployment",
+				Name: "framework_deployment_mode",
+				//TODO: Update to options
 				Prompt: &survey.Input{
-					Message: "What type of environment will this be deployed to?",
+					Message: "What type of environment will this be deployed to? This question is only relevant for Azure",
 					Default: "AKS",
 					Help:    "Containers can be deployed to an AKS cluster or ACA environment",
 				},

@@ -30,16 +30,17 @@ type Answers struct {
 // ProjectAnswers are the list of answers that are provided for each project defined
 // on the command line
 type ProjectAnswers struct {
-	Name                string `survey:"name"`
-	FrameworkType       string `survey:"framework_type"`
-	FrameworkOption     string `survey:"framework_option"`
-	FrameworkVersion    string `survey:"framework_version"`
-	FrameworkProperties string `survey:"framework_properties"`
-	PlatformType        string `survey:"platform_type"`
-	SourceControlType   string `survey:"source_control_type"`
-	SourceControlUrl    string `survey:"source_control_url"`
-	CloudRegion         string `survey:"cloud_region"`
-	CloudGroup          string `survey:"cloud_group"`
+	Name                    string `survey:"name"`
+	FrameworkType           string `survey:"framework_type"`
+	FrameworkOption         string `survey:"framework_option"`
+	FrameworkVersion        string `survey:"framework_version"`
+	FrameworkProperties     string `survey:"framework_properties"`
+	FrameworkDeploymentMode string `survey:"framework_deployment_mode"`
+	PlatformType            string `survey:"platform_type"`
+	SourceControlType       string `survey:"source_control_type"`
+	SourceControlUrl        string `survey:"source_control_url"`
+	CloudRegion             string `survey:"cloud_region"`
+	CloudGroup              string `survey:"cloud_group"`
 }
 
 type EnvironmentAnswers struct {
@@ -207,7 +208,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				Validate: survey.Required,
 			},
 		}
-	case "dotnet", "java":
+	case "java":
 
 		// define the list of options for each of the different languages
 		// options := []string{"webapi", "cqrs"}
@@ -231,6 +232,41 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 					Message: "Specify any additional framework properties. (Use a comma to separate each one).",
 					Default: "",
 					Help:    "Additional properties that need to applied to the project when it is built. This is dependent on the framework that has been chosen. Multiple options can be specified by separating the options with a comma",
+				},
+			},
+		}
+	case "dotnet":
+
+		// define the list of options for each of the different languages
+		// options := []string{"webapi", "cqrs"}
+		// if qType == "java" {
+		// 	options = append(options, "events")
+		// }
+
+		questions = []*survey.Question{
+			{
+				Name: "framework_option",
+				Prompt: &survey.Select{
+					Message: "Which option of the framework do you require?",
+					Options: config.Stacks.GetComponentOptions(qType),
+					Help:    "Ensono Stacks has a number of options that are available for specific frameworks. Select the one that is appropriate for the desired workload.",
+				},
+				Validate: survey.Required,
+			},
+			{
+				Name: "framework_properties",
+				Prompt: &survey.Input{
+					Message: "Specify any additional framework properties. (Use a comma to separate each one).",
+					Default: "",
+					Help:    "Additional properties that need to applied to the project when it is built. This is dependent on the framework that has been chosen. Multiple options can be specified by separating the options with a comma",
+				},
+			},
+			{
+				Name: "framework_deployment",
+				Prompt: &survey.Input{
+					Message: "What type of environment will this be deployed to?",
+					Default: "AKS",
+					Help:    "Containers can be deployed to an AKS cluster or ACA environment",
 				},
 			},
 		}
@@ -460,10 +496,11 @@ func (a *Answers) RunInteractive(config *Config) error {
 		project := Project{
 			Name: pa.Name,
 			Framework: Framework{
-				Type:       pa.FrameworkType,
-				Option:     pa.FrameworkOption,
-				Version:    pa.FrameworkVersion,
-				Properties: properties,
+				Type:           pa.FrameworkType,
+				Option:         pa.FrameworkOption,
+				Version:        pa.FrameworkVersion,
+				Properties:     properties,
+				DeploymentMode: pa.FrameworkDeploymentMode,
 			},
 			SourceControl: SourceControl{
 				Type: pa.SourceControlType,

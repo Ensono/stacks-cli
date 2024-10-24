@@ -44,6 +44,7 @@ func init() {
 	var framework_option string
 	var framework_version string
 	var framework_properties []string
+	var framework_deployment_mode []string
 
 	// - platform settings
 	var platform_type string
@@ -86,6 +87,7 @@ func init() {
 
 	// get the properties from the command line
 	scaffoldCmd.Flags().StringSliceVar(&framework_properties, "frameworkprops", []string{}, "Properties to pass to the project settings")
+	scaffoldCmd.Flags().StringSliceVar(&framework_deployment_mode, "framework_deployment_mode", []string{}, "How containers will be deployed")
 
 	scaffoldCmd.Flags().StringVarP(&platform_type, "platformtype", "P", "", "Type of platform being deployed to")
 

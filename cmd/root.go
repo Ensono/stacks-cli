@@ -15,16 +15,16 @@ import (
 	"github.com/Ensono/stacks-cli/internal/models"
 	"github.com/Ensono/stacks-cli/internal/util"
 	"github.com/Ensono/stacks-cli/pkg/config"
-	yaml "github.com/goccy/go-yaml"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
 var (
 	cfgFile string
 	tmpDir  string
 
-	// App holds the configured objects, such as the logger
+	// App holds the configured objects, such as the logger and help messages
 	App models.App
 
 	// Config variable to hold the model after parsing
@@ -159,6 +159,10 @@ func initConfig() {
 
 	Config.Init()
 
+	// Ensure that the home directory for stacks for the user exists
+	stacksCliHome := util.GetStacksCLIDir()
+	util.CreateIfNotExists(stacksCliHome, 0755)
+
 	// determine the root path based on the operating system
 	root_path := "/"
 	if runtime.GOOS == "windows" {
@@ -193,9 +197,6 @@ func initConfig() {
 
 	// reverse the order of the directories so that the closest one is read in last
 	for i := len(directories) - 1; i >= 0; i-- {
-
-		// App.Logger.Debugf("Aanlysing directory: %s", directories[i])
-
 		// build up the path to a possible configuration file and check if it exists
 		configfile := util.NormalisePath(fmt.Sprintf("%s.yml", path.Join(directories[i], constants.ConfigFileDir, constants.ConfigName)), string(os.PathSeparator))
 		if util.Exists(configfile) {
@@ -211,9 +212,6 @@ func initConfig() {
 			viper.MergeInConfig()
 		}
 	}
-
-	// if a list of folders have been speccified on the command line, check each one to see if
-	// a configuation file exists, if it does add it
 
 	// if a configuation file has been specified on the command line, copy it to the tempdir and
 	// add to the viper instance. This is so that it can be named correctly
@@ -267,25 +265,39 @@ func initConfig() {
 }
 
 func preRun(ccmd *cobra.Command, args []string) {
+	var err error
 
-	// Unmarshal the data from the static config file into the config object
-	err := yaml.Unmarshal(Config.Internal.GetFileContent("config"), &Config)
+	// Read in the internal configuration file
+	// This can come from three locations, in this order:
+	// - file that has been specified on the command line
+	// - downloaded configuration file that exists in the user home directory
+	// - the internal configuration file that is shipped with the application
+
+	// set the content of the file so it can be read in
+	var configContent []byte
+
+	// define flag to state that a alternative configuration file has been read in
+	var overrideConfig string = path.Join(util.GetStacksCLIDir(), "internal_config.yml")
+
+	if viper.GetString("input.overrides.internal_config") != "" {
+		overrideConfig = viper.GetString("input.overrides.internal_config")
+		configContent, err = util.GetFileContent(overrideConfig)
+	} else if util.Exists(overrideConfig) {
+		configContent, err = util.GetFileContent(overrideConfig)
+	} else {
+		configContent = Config.Internal.GetFileContent("config")
+	}
+
 	if err != nil {
+
 		log.Fatalf("Unable to read internal configuration: %v", err)
 		App.Logger.Exit(1)
 	}
 
-	// Determine if the internal configuration has been overridden
-	override_internal := viper.GetString("input.overrides.internal_config")
-	if override_internal != "" {
-		data, err := os.ReadFile(override_internal)
-		if err != nil {
-			log.Fatalf("Unable to read in specific override file (%s): %s", err.Error(), override_internal)
-			App.Logger.Exit(2)
-		}
-
-		viper.MergeConfig(strings.NewReader(string(data)))
-
+	err = yaml.Unmarshal(configContent, &Config)
+	if err != nil {
+		log.Fatalf("Unable to read internal configuration: %v", err)
+		App.Logger.Exit(1)
 	}
 
 	ScaffoldOverrides()
@@ -297,25 +309,13 @@ func preRun(ccmd *cobra.Command, args []string) {
 		App.Logger.Exit(4)
 	}
 
-	// ensure that the components are checked for uniqueness
-	// Config.Stacks.SetUniqueComponents()
+	// Set the help messages in the App.Help object
+	App.LoadHelp(Config.Internal.GetFileContent("help"))
 
 	// Configure application logging
 	// This is done after unmarshalling of the configuration so that the
 	// model values can be used rather than the strings from viper
 	App.ConfigureLogging(Config.Input.Log)
-
-	if Config.Input.Overrides.InternalConfigPath != "" {
-		App.Logger.Infof("Using config override file: %s", Config.Input.Overrides.InternalConfigPath)
-	}
-
-	// Set the version of the app in the configuration
-	Config.Input.Version = version
-
-	// output the banner, unless it has been disabled or the parent command is completion
-	if !Config.NoBanner() && ccmd.Parent().Use != "completion" && !Config.OnlineHelp() {
-		fmt.Println(staticFiles.IntFile_Banner)
-	}
 
 	// Check that the CLI is online
 	// use a DNS lookup to check that github can be accessed
@@ -326,6 +326,23 @@ func preRun(ccmd *cobra.Command, args []string) {
 	if err != nil {
 		App.Logger.Fatal(err.Error())
 		return
+	}
+
+	// Set the version of the app in the configuration
+	Config.Input.Version = version
+
+	// output the banner, unless it has been disabled or the parent command is completion
+	if !Config.NoBanner() && ccmd.Parent().Use != "completion" && !Config.OnlineHelp() {
+		fmt.Println(staticFiles.IntFile_Banner)
+	}
+
+	if overrideConfig != "" {
+		msg := App.Help.GetMessage("INT001", overrideConfig)
+		App.Logger.Infof(msg)
+
+		// add in the internal configuration file to the ConfigFiles slice
+		ConfigFiles = append([]string{overrideConfig}, ConfigFiles...)
+
 	}
 
 	// set the urls to use to open the web based help for a command

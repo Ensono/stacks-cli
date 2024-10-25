@@ -1,17 +1,27 @@
 package models
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/Ensono/stacks-cli/internal/constants"
 	"github.com/mattn/go-colorable"
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v2"
 )
 
 // App contains the objects from which the application will work,
 // such as the application logger
 type App struct {
 	Logger *log.Logger
+	Help   Help
+}
+
+func (app *App) LoadHelp(data []byte) {
+	err := yaml.Unmarshal(data, &app.Help)
+	if err != nil {
+		log.Printf("Unable to parse help data, help messages will be missing: %s", err.Error())
+	}
 }
 
 // ConfigureLogging sets up the logging for the application
@@ -62,7 +72,7 @@ func (app *App) ConfigureLogging(logging Log) {
 			// app.Logger.Out = file
 			app.Logger.SetOutput(file)
 		} else {
-			app.Logger.Warnf("Failed to log to file, defaulting to screen: %s", err.Error())
+			app.Log("LOG001", "warn", err.Error())
 		}
 	}
 }
@@ -112,5 +122,31 @@ func (app *App) HandleErrorWithFields(err error, errorType string, msg string, f
 		case "warn":
 			app.Logger.WithFields(fields).Warn(message)
 		}
+	}
+}
+
+func (app *App) Log(data string, level string, replacements ...interface{}) {
+
+	// get the message from help, if it does not exist use the data as is
+	message := app.Help.GetMessage(data)
+	if message == "" {
+		message = data
+	}
+
+	// perform the subsitutions on the message
+	message = fmt.Sprintf(message, replacements...)
+
+	// output the message with the correct level
+	switch level {
+	case "info":
+		app.Logger.Info(message)
+	case "error":
+		app.Logger.Error(message)
+	case "warn":
+		app.Logger.Warn(message)
+	case "fatal":
+		app.Logger.Fatal(message)
+	case "debug":
+		app.Logger.Debug(message)
 	}
 }

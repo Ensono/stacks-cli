@@ -39,7 +39,8 @@ func executeExportFiles(ccmd *cobra.Command, args []string) {
 	export := export.New(&Config, App.Logger)
 	err := export.Run()
 	if err != nil {
-		App.Logger.Fatalf("Error running export: %s", err.Error())
+		msg := App.Help.GetMessage("GEN001", "export", err.Error())
+		App.Logger.Fatalf(msg)
 	}
 
 }

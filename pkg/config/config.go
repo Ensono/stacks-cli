@@ -342,14 +342,14 @@ func (config *Config) ExecuteCommand(path string, logger *logrus.Logger, command
 // GetFrameworkCommands gets the list of commands that are associated with
 // the specified framework. This is so that their existence on the PATH can
 // be checked
-func (config *Config) GetFrameworkCommands(framework string) []string {
+func (config *Config) GetFrameworkCommands(framework string) FrameworkDef {
 
-	var result []string
+	var result FrameworkDef
 
 	// get the commands that have been specified for the framework
 	for _, f := range config.FrameworkDefs {
 		if f.Name == framework {
-			result = f.Commands
+			result = f
 			break
 		}
 	}

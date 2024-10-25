@@ -1,5 +1,4 @@
 tasks:
-
   buildnumber:
     context: buildenv
     command:
@@ -25,6 +24,12 @@ tasks:
       - Invoke-AsciiDoc -PDF -basepath /app -config /app/docs.json
       - /app/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /app/docs -output_dir /app/outputs/docs/md
 
+  _docs:cmd:options:
+    description: Generates documentation for the command options
+    context: powershell
+    command:
+      - /app/build/scripts/Set-Options.ps1
+
   test:unit:
     context: buildenv
     description: Run Unit Tests
@@ -34,7 +39,7 @@ tasks:
   test:int:
     context: inttestenv
     description: Run Integration Tests
-    
+
     command:
       - /app/build/scripts/Invoke-IntegrationTests.ps1 -build_number $BUILDNUMBER -RunTests
 
@@ -45,6 +50,11 @@ tasks:
 
   _release:
     context: buildenv
-    command: 
+    command:
       - Write-Host "Publish-GitHubRelease -version $BUILD_BUILDNUMBER -commitId $COMMIT_ID -apikey $GITHUB_TOKEN -artifactsDir $ARTIFACTS_DIR -Owner $OWNER -repository $REPOSITORY"
       - Publish-GitHubRelease -version $BUILD_BUILDNUMBER -commitId $COMMIT_ID -apikey $GITHUB_TOKEN -artifactsDir $ARTIFACTS_DIR -Owner $OWNER -repository $REPOSITORY
+
+  options:
+    context: powershell
+    command:
+      - /app/build/scripts/Set-Options.ps1 -Path /app/build/conf/docs/command_options.yml

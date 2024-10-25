@@ -15,6 +15,9 @@ var IntFile_config string
 //go:embed ado_variable_template.yml
 var Ado_Variable_Template_Tmpl string
 
+//go:embed help.yml
+var Help_Messages string
+
 func GetPipelineTemplate(name string) string {
 	var template string
 

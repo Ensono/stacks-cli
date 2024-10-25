@@ -2,13 +2,14 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 
-	"github.com/Masterminds/semver"
 	"github.com/Ensono/stacks-cli/internal/models"
 	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/Masterminds/semver"
 	"github.com/sirupsen/logrus"
 )
 
@@ -85,98 +86,132 @@ func (s *Settings) GetRequiredVersion(name string) string {
 
 }
 
-// CheckCommandVersions checks all of the framework commands that have been specified
-// and ensures that they are the correct version
+// CheckCmdVersions checks that all of the commands that have been specified for the
+// component exist and that they are the correct version.
 //
-// path - pa
-func (s *Settings) CheckCommandVersions(config *Config, logger *logrus.Logger, path string, tmpPath string) ([]models.Command, string) {
+// It takes the following parameters:
+// - config: A pointer to the Config struct containing the framework commands.
+// - logger: A logger instance from the logrus package for logging errors and information.
+// - path: The file path where the commands should be executed.
+// - tmpPath: A temporary file path used for specific command checks.
+//
+// It returns a slice of models.Command containing the commands that do not meet the specified version constraints,
+// and an info string providing additional information.
+func (s *Settings) CheckCmdVersions(config *Config, logger *logrus.Logger, path string, tmpPath string) ([]models.Command, string) {
 
-	var err error
+	var constraint string
 	var incorrect []models.Command
-	var versionCmd string
-	var versionArgs string
-	var specificVersion string
-	var re regexp.Regexp
 	var info string
+	var met bool
+	var resultErrors []string
+	var versionFound string
 
-	// iterate around the framework commands
+	// iterate around the framework commands and if a version constraint has been specified, run
+	// the command and check against the pattern
 	for _, cmd := range s.Framework.Commands {
 
-		// define the command to get the version of it
-		switch cmd.Name {
-		case "dotnet":
+		// Get the commands for the framework
+		fCommands := config.GetFrameworkCommands(cmd.Name)
 
-			versionCmd = "dotnet"
-			versionArgs = "--list-sdks"
-			re = *regexp.MustCompile(`(?P<version>(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*))`)
+		// perform a check on the version of the command, if a version pattern has been specified
+		// the version check is slightly different for .NET as it can be more specific
+		for _, fCmd := range fCommands.Commands {
 
-			// check to see if a global.json file exists in the project dir, if it is read it in
-			// so that the version of dotnet can be matched against it as a more specific check
-			globalJsonPath := filepath.Join(tmpPath, "global.json")
-			specificVersion, err = util.DotnetSDKVersion(globalJsonPath)
+			// if the current cmd does not have a version specified then skip
+			if fCmd.Version == (FrameworkDefVersion{}) {
+				continue
+			}
 
+			// Run the command to get the the version of the command
+			result, err := config.ExecuteCommand(path, logger, fCmd.Name, fCmd.Version.Arguments, false, true)
+
+			// raise an error if the command failed for any reason
 			if err != nil {
-				logger.Warnf("Issue retrieving global .NET version: %s", err.Error())
+				logger.Errorf("Issue running command: %s", err.Error())
+				continue
 			}
 
-			if specificVersion != "" {
-				info = "Specific version constraint has been found in project using the 'global.json' file"
+			// if there are no results, add to the error slice so that all the errors can be
+			// displayed at the end
+			if result == "" {
+				resultErrors = append(resultErrors, fmt.Sprintf("No versions for '%s' SDKs found", fCmd.Name))
+				continue
 			}
 
-		case "java":
+			// create an object the version struct
+			version := models.Version{}
+			version.Init(result, fCmd.Version.Pattern)
 
-			versionCmd = "java"
-			versionArgs = "-version"
-			re = *regexp.MustCompile(`"(?P<version>.*)"`)
+			// use the pattern to check for the version of the command
+			// however as .NET has a different ruleset for this,
+			switch cmd.Name {
+			case "dotnet":
 
-		case "nx":
+				// put together a path for the global.json file
+				globalData := filepath.Join(tmpPath, "global.json")
 
-			versionCmd = "node"
-			versionArgs = "--version"
-			re = *regexp.MustCompile(`"v(?P<version>.*)"`)
+				// determine if the file exists, if not see if there is a constraint set in the
+				// framework project settings
+				if !util.Exists(globalData) {
+					if cmd.Version != "" {
+						globalData = cmd.Version
+					}
+				}
 
-		default:
-			versionCmd = ""
+				// set the global value
+				version.DotNetGlobal(globalData)
+
+				met, err = version.DotNet()
+
+				// version_segments, err := util.VersionSegments(re, matches)
+				if err != nil {
+					logger.Errorf(err.Error())
+				}
+
+				if err != nil {
+					resultErrors = append(resultErrors, err.Error())
+				}
+
+			default:
+
+				// for all other commands this is a semantic version check
+				// so use the "version" named group to compare against
+
+				// get the comparator to use and override the default if
+				// one has been provided
+
+				// If a version constraint has been specified, update the version object
+				// to use it
+				if cmd.Version != "" {
+					version.SetSemverConstraint(cmd.Version)
+				}
+
+				logger.Debugf("Version of '%s' found: %s", fCmd.Name, versionFound)
+
+				met, err = version.Semver()
+				if err != nil {
+					resultErrors = append(resultErrors, err.Error())
+				}
+
+			}
+
+			// if not matched then create a command object and set in the array
+			if !met {
+				incorrect = append(incorrect, models.Command{
+					Binary:          cmd.Name,
+					VersionFound:    versionFound,
+					VersionRequired: constraint,
+				})
+			}
 		}
+	}
 
-		// execute the command if one has been set
-		if versionCmd == "" {
-			continue
+	// if there any errors, log them and then exit
+	if len(resultErrors) > 0 {
+		for _, err := range resultErrors {
+			logger.Errorf(err)
 		}
-
-		result, err := config.ExecuteCommand(path, logger, versionCmd, versionArgs, false, true)
-
-		// check for errors
-		if err != nil {
-			logger.Errorf("Issue running command: %s", err.Error())
-			continue
-		}
-
-		// get the version from the result so it can be tested using semver
-		matches := re.FindStringSubmatch(result)
-		idx := re.SubexpIndex(("version"))
-		versionFound := matches[idx]
-
-		logger.Debugf("Tool version found: %s", versionFound)
-
-		// get the constraint that should be used to check for
-		// if a specific version has been specified modify this constraint
-		constraint := cmd.Version
-		if specificVersion != "" {
-			constraint = fmt.Sprintf("= %s", specificVersion)
-		}
-
-		met := s.CompareVersion(constraint, versionFound, logger)
-
-		// if not matched then create a command object and set in the array
-		if !met {
-			incorrect = append(incorrect, models.Command{
-				Binary:          cmd.Name,
-				VersionFound:    versionFound,
-				VersionRequired: constraint,
-			})
-		}
-
+		os.Exit(7)
 	}
 
 	return incorrect, info
@@ -217,7 +252,7 @@ func (s *Settings) CompareVersion(constraint string, version string, logger *log
 		return false
 	}
 
-	// check if the version meets the contraint
+	// check if the version meets the constraint
 	result = c.Check(v)
 
 	return result

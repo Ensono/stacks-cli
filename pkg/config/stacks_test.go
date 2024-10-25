@@ -38,7 +38,7 @@ stacks:
         url: https://github.com/amido/stacks-golang-webapi
         version: main
         type: git
- 
+
 `)
 
 var basicConfiguration = []byte(`
@@ -93,7 +93,7 @@ func setupTestCase(t *testing.T, configuration []byte) (func(t *testing.T), stri
 
 func TestStacksComponents(t *testing.T) {
 
-	var expected int = 11
+	var expected int = 12
 
 	config := Config{}
 	config.Init()
@@ -128,7 +128,7 @@ func TestStacksComponents(t *testing.T) {
 }
 
 func TestOverriddenStacksComponents(t *testing.T) {
-	var expected int = 13
+	var expected int = 14
 
 	config := Config{}
 	config.Init()
@@ -281,12 +281,12 @@ func TestGetComponentOptionsDefault(t *testing.T) {
 		},
 		{
 			"infra",
-			[]string{"aca", "aks", "data", "eks"},
+			[]string{"aca", "aks", "data", "eks", "template"},
 			false,
 		},
 		{
 			"infra",
-			[]string{"aca", "aks", "data", "eks", "keyvault"},
+			[]string{"aca", "aks", "data", "eks", "keyvault", "template"},
 			true,
 		},
 		{

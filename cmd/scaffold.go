@@ -44,7 +44,7 @@ func init() {
 	var framework_option string
 	var framework_version string
 	var framework_properties []string
-	var framework_deployment_mode []string
+	var framework_deployment_mode string
 
 	// - platform settings
 	var platform_type string
@@ -87,7 +87,7 @@ func init() {
 
 	// get the properties from the command line
 	scaffoldCmd.Flags().StringSliceVar(&framework_properties, "frameworkprops", []string{}, "Properties to pass to the project settings")
-	scaffoldCmd.Flags().StringSliceVar(&framework_deployment_mode, "framework_deployment_mode", []string{}, "How containers will be deployed")
+	scaffoldCmd.Flags().StringVar(&framework_deployment_mode, "framework_deployment_mode", "AKS", "How containers will be deployed")
 
 	scaffoldCmd.Flags().StringVarP(&platform_type, "platformtype", "P", "", "Type of platform being deployed to")
 
@@ -128,6 +128,7 @@ func init() {
 	viper.BindPFlag("input.project.framework.type", scaffoldCmd.Flags().Lookup("framework"))
 	viper.BindPFlag("input.project.framework.option", scaffoldCmd.Flags().Lookup("frameworkoption"))
 	viper.BindPFlag("input.project.framework.version", scaffoldCmd.Flags().Lookup("frameworkversion"))
+	viper.BindPFlag("input.project.framework.deployment_mode", scaffoldCmd.Flags().Lookup("framework_deployment_mode"))
 
 	// -- bind the framework properties to the project framework
 	viper.BindPFlag("input.project.framework.properties", scaffoldCmd.Flags().Lookup("frameworkprops"))

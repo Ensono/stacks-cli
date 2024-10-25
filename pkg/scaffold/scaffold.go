@@ -211,7 +211,7 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	// Get the URL for the repository to download
 	key := project.Framework.GetMapKey()
-	project.Framework.DeploymentMode = "AKS" //TODO: Where is the best place to set a default?
+
 	packageInfo := s.Config.Stacks.GetComponentPackage(key)
 
 	// if the URL is empty, emit error message and state why this might be the case

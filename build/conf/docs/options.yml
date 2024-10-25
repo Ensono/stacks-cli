@@ -1,0 +1,12 @@
+# Configuration file to define which files need to be interrogted to build up the
+# documentation for the command line options
+
+output: docs/runtime_config/tables
+commands:
+  - path: cmd/export.go
+
+  - path: cmd/root.go
+
+  - path: cmd/scaffold.go
+
+  - path: cmd/setup.go

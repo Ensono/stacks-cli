@@ -1,8 +1,4 @@
 ===== Export Options
 
 .Export Options
-[options="header"]
-|===
-| Option | Environment Variable | Description | Default | Options 
-| `-d`, `--directory` | ENSONOSTACKS_DIRECTORY_EXPORT | The directory into which the files will be exported to | Current directory | |
-|===
+include::tables/exportCmd.adoc[]

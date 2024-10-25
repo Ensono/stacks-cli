@@ -9,9 +9,11 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"path"
 	"path/filepath"
 	"strings"
 
+	"github.com/Ensono/stacks-cli/internal/constants"
 	"gopkg.in/yaml.v2"
 )
 
@@ -258,6 +260,11 @@ func GetUserHomeDir() string {
 	return homeDir
 }
 
+// GetStacksCLIDir returns the directory that should be used for storing all configuration
+func GetStacksCLIDir() string {
+	return path.Join(GetUserHomeDir(), constants.ConfigFileDir)
+}
+
 // GetDefaultCacheDir returns the directory that should be used for caching all downloads
 // that the CLI makes
 func GetDefaultCacheDir() string {
@@ -312,4 +319,39 @@ func WriteYAMLToFile(object interface{}, path string, perm uint32) error {
 	err = os.WriteFile(path, data, 0666)
 
 	return err
+}
+
+func GetFileContent(path string) ([]byte, error) {
+
+	var err error
+	var data []byte
+
+	// read in the file, if it exists and return the results
+	if Exists(path) {
+		data, err = os.ReadFile(path)
+
+		if err != nil {
+			return data, err
+		}
+
+		return data, err
+	} else {
+		return data, fmt.Errorf("file does not exist: %s", path)
+	}
+}
+
+// GetFileList returns a list of files that match the specified pattern
+func GetFileList(pattern string, parent string) ([]string, error) {
+	var err error
+	var filelist []string
+
+	// determine if the pattern is an absolute path or not
+	if !filepath.IsAbs(pattern) {
+		pattern = filepath.Join(parent, pattern)
+	}
+
+	// perform a glob pattern match on the pattern to get the files
+	filelist, err = filepath.Glob(pattern)
+
+	return filelist, err
 }

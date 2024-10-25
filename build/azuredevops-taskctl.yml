@@ -3,7 +3,7 @@
 # on a local machine as well as in the CLI
 
 # Set the name which will define the build number
-name: 0.3$(Rev:.r)
+name: 0.4$(Rev:.r)
 
 # Set the agent pool that is going to be used for the build
 pool:
@@ -22,107 +22,103 @@ stages:
   - stage: Build
 
     jobs:
+      - job: Build
+        steps:
+          # Install Taskfile for the build to run
+          - task: Bash@3
+            displayName: Install Taskctl
+            inputs:
+              targetType: inline
+              script: |
+                wget https://github.com/Ensono/taskctl/releases/download/v${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
+                tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl
 
-    - job: Build
-      steps:
+          # Run the tasks to build the application
+          - task: Bash@3
+            displayName: Build & Test
+            inputs:
+              targetType: inline
+              script: |
+                taskctl build
+            env:
+              BUILDNUMBER: $(Build.BuildNumber)
 
-      # Install Taskfile for the build to run
-      - task: Bash@3
-        displayName: Install Taskctl
-        inputs:
-          targetType: inline
-          script: |
-            wget https://github.com/Ensono/taskctl/releases/download/v${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
-            tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl 
+          - task: Bash@3
+            displayName: Outputs
+            inputs:
+              targetType: inline
+              script: |
+                tree outputs
 
-      # Run the tasks to build the application
-      - task: Bash@3
-        displayName: Build & Test
-        inputs:
-          targetType: inline
-          script: |
-            taskctl build
-        env:
-          BUILDNUMBER: $(Build.BuildNumber)
+          # Upload the tests and the coverage
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/report.xml
+              testRunTitle: UnitTests
 
-      - task: Bash@3
-        displayName: Outputs
-        inputs:
-          targetType: inline
-          script: |
-            tree outputs
+          - task: PublishCodeCoverageResults@2
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: $(Build.SourcesDirectory)/outputs/tests/coverage.xml
 
-      # Upload the tests and the coverage
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFormat: JUnit
-          testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/report.xml
-          testRunTitle: UnitTests
+          # Upload the binary files
+          - task: PublishBuildArtifacts@1
+            displayName: Publish Binaries
+            inputs:
+              pathToPublish: $(Build.SourcesDirectory)/outputs/bin
+              artifactName: StacksCLI
 
-      - task: PublishCodeCoverageResults@1 
-        inputs:
-          codeCoverageTool: Cobertura
-          summaryFileLocation: $(Build.SourcesDirectory)/outputs/tests/coverage.xml
-
-      # Upload the binary files
-      - task: PublishBuildArtifacts@1
-        displayName: Publish Binaries
-        inputs:
-          pathToPublish: $(Build.SourcesDirectory)/outputs/bin
-          artifactName: StacksCLI      
-
-      # Upload the documentation
-      - task: PublishBuildArtifacts@1
-        displayName: Publish Documentation
-        inputs:
-          pathToPublish: $(Build.SourcesDirectory)/outputs/docs
-          artifactName: docs
+          # Upload the documentation
+          - task: PublishBuildArtifacts@1
+            displayName: Publish Documentation
+            inputs:
+              pathToPublish: $(Build.SourcesDirectory)/outputs/docs
+              artifactName: docs
 
   - stage: IntegrationTests
     dependsOn: Build
     condition: succeeded()
 
     jobs:
-    
-    - job: IntegrationTests
+      - job: IntegrationTests
 
-      steps:  
+        steps:
+          # Download the StacksCLI and the integration_tests
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: StacksCLI
+              path: $(Build.SourcesDirectory)/outputs/bin
 
-      # Download the StacksCLI and the integration_tests
-      - task: DownloadPipelineArtifact@2
-        inputs: 
-          artifact: StacksCLI
-          path: $(Build.SourcesDirectory)/outputs/bin
+          # Install Taskctl so that the tests can be run
+          - task: Bash@3
+            displayName: Install Taskctl
+            inputs:
+              targetType: inline
+              script: |
+                wget https://github.com/Ensono/taskctl/releases/download/v${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
+                tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl
 
-      # Install Taskfile so that the tests can be run
-      - task: Bash@3
-        displayName: Install Taskctl
-        inputs:
-          targetType: inline
-          script: |
-            wget https://github.com/Ensono/taskctl/releases/download/v${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
-            tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl   
+          # Run the integration tests
+          - task: Bash@3
+            displayName: Execute Tests
+            inputs:
+              targetType: inline
+              script: |
+                export GOBIN=$HOME/go/bin
+                export PATH=$PATH:$GOBIN
+                taskctl inttest
+            env:
+              BIN_DIR: $(Build.ArtifactStagingDirectory)/bin
+              BUILDNUMBER: $(Build.BuildNumber)
+              WORKING_DIR: $(Build.SourcesDirectory)/projects
 
-      # Run the integration tests
-      - task: Bash@3
-        displayName: Execute Tests
-        inputs:
-          targetType: inline
-          script: |
-            export GOBIN=$HOME/go/bin
-            export PATH=$PATH:$GOBIN
-            taskctl inttest
-        env:
-          BIN_DIR: $(Build.ArtifactStagingDirectory)/bin
-          BUILDNUMBER: $(Build.BuildNumber)
-          WORKING_DIR: $(Build.SourcesDirectory)/projects
-
-      # Upload the integration test results
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFormat: JUnit
-          testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/integration_test_report.xml
-          testRunTitle: IntegrationTests
+          # Upload the integration test results
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: $(Build.SourcesDirectory)/outputs/tests/integration_test_report.xml
+              testRunTitle: IntegrationTests
 
   - stage: Release
     dependsOn: Build
@@ -132,43 +128,42 @@ stages:
       - group: github-creds
 
     jobs:
+      - job: CreateGHRelease
 
-    - job: CreateGHRelease
+        steps:
+          # Download the necessary artifacts from the previous stage
+          # - documentation
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: "docs"
+              patterns: "**/*.pdf"
+              path: $(Build.SourcesDirectory)/outputs/assets
 
-      steps:
-        # Download the necessary artifacts from the previous stage
-        # - documentation
-        - task: DownloadPipelineArtifact@2
-          inputs:
-            artifact: 'docs'
-            patterns: '**/*.pdf'
-            path: $(Build.SourcesDirectory)/outputs/assets
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: "StacksCLI"
+              path: $(Build.SourcesDirectory)/outputs/assets
+              patterns: |
+                **
+                !**/*inttest*
 
-        - task: DownloadPipelineArtifact@2
-          inputs:
-            artifact: 'StacksCLI'
-            path: $(Build.SourcesDirectory)/outputs/assets
-            patterns: |
-              **
-              !**/*inttest*
+          # Install Taskctl for the build to run
+          - task: Bash@3
+            displayName: Install Taskctl
+            inputs:
+              targetType: inline
+              script: |
+                wget https://github.com/Ensono/taskctl/releases/download/v${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
+                tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl
 
-        # Install Taskfile for the build to run
-        - task: Bash@3
-          displayName: Install Taskctl
-          inputs:
-            targetType: inline
-            script: |
-              wget https://github.com/Ensono/taskctl/releases/download/v${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
-              tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl 
-
-        # Run the tasks to build the application
-        - task: Bash@3
-          displayName: Release
-          inputs:
-            targetType: inline
-            script: |
-              taskctl release
-          env:
+          # Run the tasks to build the application
+          - task: Bash@3
+            displayName: Release
+            inputs:
+              targetType: inline
+              script: |
+                taskctl release
+            env:
               STAGE: "release"
               PUBLISH_RELEASE: "true"
               GITHUB_TOKEN: "$(GITHUB_TOKEN)"

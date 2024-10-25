@@ -1,0 +1,9 @@
+{
+    "asciidoc.antora.enableAntoraSupport": false,
+    "files.associations": {
+        "**/reusable/**/*.yaml": "github-actions-workflow",
+    },
+    "files.trimFinalNewlines": true,
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true
+}

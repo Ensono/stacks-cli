@@ -86,6 +86,9 @@ func TestPipelineIsNotValid(t *testing.T) {
 
 func TestReplacePatterns(t *testing.T) {
 
+	config := &Config{}
+	inputs := Replacements{}
+
 	// set the name of the build file
 	name := "build.yml"
 
@@ -116,7 +119,7 @@ func TestReplacePatterns(t *testing.T) {
 	}
 
 	// call the function
-	errs := pipeline.ReplacePatterns(dir)
+	errs := pipeline.ReplacePatterns(config, inputs, dir)
 
 	// set the expected value of the contents of the file
 	expected := `
@@ -139,6 +142,9 @@ stages:
 }
 
 func TestReplacePatternsWithNoReplace(t *testing.T) {
+
+	config := &Config{}
+	inputs := Replacements{}
 
 	// set the name of the build file
 	name := "build.yml"
@@ -171,7 +177,7 @@ func TestReplacePatternsWithNoReplace(t *testing.T) {
 	}
 
 	// call the function
-	errs := pipeline.ReplacePatterns(dir)
+	errs := pipeline.ReplacePatterns(config, inputs, dir)
 
 	// set the expected value of the contents of the file
 	expected := `
@@ -191,4 +197,64 @@ stages:
 		assert.Equal(t, nil, err)
 	}
 	assert.Equal(t, expected, string(actual))
+}
+
+func TestReplacePatternsUsingRegex(t *testing.T) {
+
+	config := &Config{}
+	inputs := Replacements{
+		Input: InputConfig{
+			Business: Business{
+				Company: "ensono",
+			},
+		},
+	}
+
+	// define the name of the build file
+	name := "build.yml"
+
+	// setup the environment
+	cleanup, dir := setupPipelineTests(t, name)
+	defer cleanup(t)
+
+	buildFile := filepath.Join(dir, name)
+
+	// create a set of regular expressions that have tokens based values
+	replacements := make([]PipelineReplacement, 1)
+	replacements[0] = PipelineReplacement{
+		Pattern: `stacks-credentials-nonprod-kv`,
+		Value:   "{{ .Input.Business.Company }}-creds-kv",
+	}
+
+	// set the list of files that need to be modified
+	list := []string{buildFile}
+
+	// create the pipeline settings block
+	pipeline := Pipeline{
+		Items:        list,
+		Replacements: replacements,
+	}
+
+	// call the function
+	errs := pipeline.ReplacePatterns(config, inputs, dir)
+
+	// set the expected value of the contents of the file
+	expected := `
+stages:
+- stage: Build
+	variables:
+	- group: amido-stacks-infra-credentials-nonprod
+	- group: ensono-creds-kv
+	- group: amido-stacks-webapp
+	`
+
+	// read in the contents of the build file, which should have been modified
+	actual, _ := os.ReadFile(buildFile)
+
+	// check that there are no errors
+	for _, err := range errs {
+		assert.Equal(t, nil, err)
+	}
+	assert.Equal(t, expected, string(actual))
+
 }

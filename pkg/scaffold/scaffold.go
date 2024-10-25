@@ -129,7 +129,7 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 		if operation.Command == "" {
 			return fmt.Errorf("command has not been set for the operation")
 		} else {
-			if !util.SliceContains(cmdList, operation.Command) {
+			if !util.SliceContains(cmdList.GetCmdList(), operation.Command) {
 				return fmt.Errorf("command '%s' is not is the known list of commands for '%s'", operation.Command, project.Framework.Type)
 			}
 		}
@@ -283,7 +283,7 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	// check to see if any framework commands have been set and check the
 	// version if they have
-	incorrect, info := project.Settings.CheckCommandVersions(s.Config, s.Logger, project.Directory.WorkingDir, project.Directory.TempDir)
+	incorrect, info := project.Settings.CheckCmdVersions(s.Config, s.Logger, project.Directory.WorkingDir, project.Directory.TempDir)
 	if len(incorrect) > 0 {
 
 		var parts []string
@@ -310,8 +310,13 @@ func (s *Scaffold) processProject(project config.Project) {
 		}
 	}
 
-	// iterate around the phases of the project and the operations contained therin
+	if info != "" {
+		s.Logger.Warn(info)
+	}
+
+	// iterate around the phases of the project and the operations contained therein
 	for _, phase := range project.Phases {
+
 		for _, op := range phase.Operations {
 
 			// output information about the operation being performed
@@ -414,7 +419,7 @@ func (s *Scaffold) configurePipeline(project *config.Project) {
 		}
 
 		// perform any addition regex replacements
-		errs := pipelineSettings.ReplacePatterns(project.Directory.WorkingDir)
+		errs := pipelineSettings.ReplacePatterns(s.Config, replacements, project.Directory.WorkingDir)
 		if len(errs) > 0 {
 			for _, err := range errs {
 				s.Logger.Error(err.Error())

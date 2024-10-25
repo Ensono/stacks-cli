@@ -15,6 +15,7 @@ type Pipeline struct {
 	Type         string                `mapstructure:"type"`
 	File         []PipelineFile        `mapstructure:"files"`
 	Template     []PipelineFile        `mapstructure:"templates"`
+	Items        []string              `mapstructure:"items"`
 	Replacements []PipelineReplacement `mapstructure:"replacements"`
 }
 
@@ -117,10 +118,10 @@ func (p *Pipeline) GetSupported() []string {
 
 // ReplacePatterns replaces the phrases that are found in the build file according to
 // the regex pattern with the specified value
-func (p *Pipeline) ReplacePatterns(dir string) []error {
+func (p *Pipeline) ReplacePatterns(config *Config, inputs Replacements, dir string) []error {
 
-	var err error
 	var errs []error
+	var filelist []string
 	errs = make([]error, 0)
 
 	// Return if there are no replacements to perform
@@ -128,24 +129,32 @@ func (p *Pipeline) ReplacePatterns(dir string) []error {
 		return errs
 	}
 
-	// iterate around all the files that have been set
+	// iterate around the p.File and get a list of all the files
+	// these can be treated as globs from the filesystem
 	for _, item := range p.File {
 
-		// continue onto the next iteration if the file is has NoReplace set
+		// if no replace has been set on the file then continue to the next iteration
 		if item.NoReplace {
 			continue
 		}
 
-		// determine the path to the build file
-		buildFile := filepath.Join(dir, item.Path)
-		if !util.Exists(buildFile) {
-			err = fmt.Errorf("unable to find '%s' file: %s", item.Name, buildFile)
-			errs = append(errs, err)
-			return errs
-		}
+		files, _ := util.GetFileList(item.Path, dir)
+
+		// add the files to the filelist
+		filelist = append(filelist, files...)
+	}
+
+	// now iterate over the items that have been set
+	for _, item := range p.Items {
+		files, _ := util.GetFileList(item, dir)
+		filelist = append(filelist, files...)
+	}
+
+	// iterate around all the files that have been set
+	for _, item := range filelist {
 
 		// read the file into a variable
-		content, err := os.ReadFile(buildFile)
+		content, err := os.ReadFile(item)
 		if err != nil {
 			errs = append(errs, err)
 			return errs
@@ -153,6 +162,15 @@ func (p *Pipeline) ReplacePatterns(dir string) []error {
 
 		// iterate around the replacements to get the pattern and the replacement value
 		for _, replacement := range p.Replacements {
+
+			// TODO Ensure that the template for the replacement is rendered. This will mean that the value
+			// the regex is replacing can come from the inputs of the CLI
+			// render the replacement value as a template
+			replacement_value, err := config.RenderTemplate("regex", replacement.Value, inputs)
+			if err != nil {
+				errs = append(errs, err)
+				continue
+			}
 
 			// create the regex object from the pattern
 			pattern := fmt.Sprintf(`(?m)%s`, replacement.Pattern)
@@ -162,11 +180,11 @@ func (p *Pipeline) ReplacePatterns(dir string) []error {
 				errs = append(errs, err)
 				continue
 			}
-			content = re.ReplaceAll(content, []byte(replacement.Value))
+			content = re.ReplaceAll(content, []byte(replacement_value))
 		}
 
 		// write out the file
-		err = os.WriteFile(buildFile, content, 0666)
+		err = os.WriteFile(item, content, 0666)
 		if err != nil {
 			errs = append(errs, err)
 		}

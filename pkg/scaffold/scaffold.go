@@ -211,7 +211,6 @@ func (s *Scaffold) processProject(project config.Project) {
 
 	// Get the URL for the repository to download
 	key := project.Framework.GetMapKey()
-
 	packageInfo := s.Config.Stacks.GetComponentPackage(key)
 
 	// if the URL is empty, emit error message and state why this might be the case

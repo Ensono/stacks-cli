@@ -22,7 +22,11 @@ param (
 
     [string[]]
     # architecture that should be targeted
-    $arch = @("amd64")
+    $arch = @("amd64"),
+
+    [switch]
+    # specify if the VCS status should be built into the go binaries
+    $NoVCS
 )
 
 # If the base directory does not exist, create it
@@ -35,9 +39,15 @@ if (!(Test-Path -Path $BasePath)) {
 $cmd = "go get"
 Invoke-Expression -Command $cmd
 
+# Set up the go build argument for vcs
+$build_vcs = ""
+if ($NoVCS.IsPresent) {
+    $build_vcs = "-buildvcs=false"
+}
+
 # iterate around each of the target os
 foreach ($os in $targets) {
-    
+
     # get a list of the architectures to build for this OS
     $archs = $arch
 
@@ -76,9 +86,10 @@ foreach ($os in $targets) {
         Write-Output ("Building for '{0}' ({1})" -f $os, $_arch)
 
         # Build up the command to create the CLI binary
-        $cmd = 'go build -ldflags "-X github.com/Ensono/stacks-cli/cmd.version={0}" -o {1}' -f
+        $cmd = 'go build -ldflags "-X github.com/Ensono/stacks-cli/cmd.version={0}" -o {1} {2}' -f
                     $BuildNumber,
-                    $cli_filename
+                    $cli_filename,
+                    $build_vcs
 
         Invoke-Expression -Command $cmd
 
@@ -93,6 +104,3 @@ foreach ($os in $targets) {
 
     }
 }
-
-
-

@@ -24,10 +24,6 @@ stages:
     jobs:
       - job: Build
         steps:
-          # Do not perform a shallow checkout of the repo
-          - checkout: self
-            fetchDepth: 0
-
           # Install Taskfile for the build to run
           - task: Bash@3
             displayName: Install Taskctl

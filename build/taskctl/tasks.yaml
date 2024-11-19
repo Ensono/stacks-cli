@@ -15,7 +15,7 @@ tasks:
     description: Compile CLI and Integration Tests
     context: buildenv
     command:
-      - /app/build/scripts/Invoke-Compile.ps1 -BuildNumber $BUILDNUMBER
+      - /app/build/scripts/Invoke-Compile.ps1 -BuildNumber $BUILDNUMBER -NoVCS
 
   _docs:
     description: Build Docs for Stacks CLI

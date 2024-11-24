@@ -1,6 +1,4 @@
-== Troubleshooting
-
-The section provides some troubleshooting points when the CLI does not operate as expected.
+include::troubleshooting/_index.adoc[]
 
 include::troubleshooting/project_scaffolding_errors.adoc[]
 

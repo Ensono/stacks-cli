@@ -1,0 +1,15 @@
+---
+id: stacks-cli-commands
+title: Commands
+tags:
+  - cli
+---
+
+=== Commands
+
+The CLI has a number of commands and various options. The easiest way to see what is available it to run the `stacks-cli` command, which will display the help page.
+
+NOTE: The operation of the Ensono Stacks CLI is identical on every supported platform.
+
+.Stacks CLI Help
+image::images/stackscli-global-help.png[]

@@ -1,3 +1,12 @@
+---
+id: stacks-cli-troubleshooting-access-denied
+title: Access Denied
+weight: 30
+tags:
+  - cli
+  - troubleshooting
+---
+
 === Access Denied when running stacks-cli
 
 After the command has been downloaded on a Linux or MacOS computer, the execution bit must be set. If this is not done an Access Denied error will be displayed:
@@ -13,4 +22,3 @@ The command to set the execution bit is shown below.
 
 chmod u+x /usr/local/bin/stacks-cli
 ----
-

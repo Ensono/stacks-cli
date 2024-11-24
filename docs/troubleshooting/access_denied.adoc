@@ -12,7 +12,7 @@ tags:
 After the command has been downloaded on a Linux or MacOS computer, the execution bit must be set. If this is not done an Access Denied error will be displayed:
 
 .Access denied running the stacks-cli command
-image::images/stackscli-permission-denied.png[]
+image::{images_cli}images/stackscli-permission-denied.png[]
 
 The command to set the execution bit is shown below.
 

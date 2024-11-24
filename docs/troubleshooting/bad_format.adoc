@@ -25,6 +25,6 @@ NOTE: In the table `arm` includes Apple Silicon
 If the incorrect binary for your CPU is downloaded the following error maybe displayed.
 
 .Bad format running Mac OS ARM binary on AMD64 Linux
-image::images/stackscli-bad-format.png[]
+image::{base_cli_dir}images/stackscli-bad-format.png[]
 
 Please download the correct format.

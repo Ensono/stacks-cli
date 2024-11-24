@@ -32,4 +32,4 @@ Reference: https://github.com/go-survey/survey/issues/148
 To prevent the application from stopping with an unhelpful error the CLI now detects this shell environment and will exit gracefully.
 
 .Running Ensono Stacks CLI in Git Bash on Windows (MINGW64)
-image::images/stackscli-gitbash-shell.png[]
+image::{base_cli_dir}images/stackscli-gitbash-shell.png[]

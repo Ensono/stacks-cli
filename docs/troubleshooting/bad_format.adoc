@@ -1,3 +1,12 @@
+---
+id: stacks-cli-troubleshooting-bad-format
+title: Bad Format
+weight: 40
+tags:
+  - cli
+  - troubleshooting
+---
+
 === Bad Format
 
 The Ensono Stacks CLI is built for specific platform combinations. The following table shows the combinations that are currently supported.
@@ -6,9 +15,9 @@ The Ensono Stacks CLI is built for specific platform combinations. The following
 [options="header",cols="1a,1,1",stripes=even]
 |===
 | Operating System | amd64 | arm
-| icon:linux[fw] Linux | icon:check-square[fw] | 
+| icon:linux[fw] Linux | icon:check-square[fw] |
 | icon:apple[fw] Mac OS | icon:check-square[fw] | icon:check-square[fw]
-| icon:windows[fw] Windows | icon:check-square[fw] | 
+| icon:windows[fw] Windows | icon:check-square[fw] |
 |===
 
 NOTE: In the table `arm` includes Apple Silicon

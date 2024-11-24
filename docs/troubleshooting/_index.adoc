@@ -1,0 +1,10 @@
+---
+id: stacks-cli-troubleshooting
+title: Troubleshooting
+tags:
+  - cli
+---
+
+== Troubleshooting
+
+The section provides some troubleshooting points when the CLI does not operate as expected.

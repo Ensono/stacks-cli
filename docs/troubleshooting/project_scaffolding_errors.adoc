@@ -1,3 +1,12 @@
+---
+id: stacks-cli-troubleshooting-project-scaffolding-errors
+title: Project Scaffolding Errors
+weight: 10
+tags:
+  - cli
+  - troubleshooting
+---
+
 === Project scaffolding errors
 
 When the CLI runs the commands from the project settings file, any errors from the command are suppressed and the only output is the exit error code.

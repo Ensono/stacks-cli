@@ -1,0 +1,16 @@
+---
+id: stacks-cli-usage
+title: Usage
+tags:
+  - cli
+---
+
+== Using the CLI
+
+The Ensono Stacks CLI is built using Go, which means that it is a single binary which can be downloaded and run without the need to run an installer. It is currently built for the following platforms
+
+ - icon:windows[fw] Windows
+ - icon:apple[fw] Mac OS
+ - icon:linux[fw] Linux
+
+The CLI will download the specified projects and run a series of operations to customise them according to the user's requirements. The steps that are to be performed in each project is governed by a project settings file, which by default is called `stackscli.yml`.

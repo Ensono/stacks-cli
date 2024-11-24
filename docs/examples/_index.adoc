@@ -1,0 +1,59 @@
+---
+id: stacks-cli-examples
+title: Examples
+tags:
+  - cli
+---
+
+:example_company: Ensono Digital
+:example_area: core
+:example_component: backend
+:example_domain: stacks-example.com
+:example_cloud: azure
+:example_region: ukwest
+:example_group: mywebapi-resources
+:example_tf_group: supporting-group
+:example_tf_storage: kjh56sdfnjnkjn
+:example_tf_container: tfstate
+:example_project_name: my-webapi
+:example_dotnet_framework: dotnet
+:example_dotnet_framework_version: v6.0.274
+:example_java_framework: java
+:example_java_framework_version: v1.0.0
+:example_nx_framework: nx
+:example_nx_framework_version: latest
+:example_nx_area: frontend
+:example_nx_component: ui
+:example_framework_option: webapi
+:example_project_src_url: https://github.com/my-company/my-webapi
+
+== Examples
+
+This section provides some examples on how to run the CLI to setup a project from the Ensono Digital Stacks projects.
+
+NOTE: It is assumed that the Stacks CLI command has been installed and is in the path to be called using the `stacks-cli` name.
+
+The following table shows the settings that are being used in each of the examples.
+
+.Example settings
+[options="header"]
+|===
+| Name | Value | Description
+| company | `{example_company}` | Name of the company that the project is being created for
+| area | `{example_area}` | The area within the company that the project is relevant to.
+
+In previous versions of the CLI, this has been referred to as the domain, but it has been changed to area to avoid confusion with DNS domain.
+| component | `{example_component}` | Component that the project is for
+| domain | `{example_domain}` | DNS domain for which the application will respond to
+| cloud | `{example_cloud}` | The cloud platform being used
+| region | `{example_region}` | Region in the cloud that the resources will be deployed to
+| group | `{example_group}` | Group that holds all of the cloud resources
+| tfgroup | `{example_tf_group}` | Group that has the resources to be used to hold the Terraform state
+| tfstorage | `{example_tf_storage}` | Name of the storage that will hold the Terraform state
+| tfcontainer | `{example_tf_container}` | Container in the storage for the state files
+| name | `{example_project_name}` | Name of the project to create in the working directory
+| framework_option | `{example_framework_option}` | The option within the framework being created.
+
+For `dotnet` or `java` the options are `webapi`, `cqrs` or `events`.
+For `infra` the options are `aks`.
+|===

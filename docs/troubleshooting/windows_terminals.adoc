@@ -1,3 +1,12 @@
+---
+id: stacks-cli-troubleshooting-windows-terminals
+title: Windows Terminals
+weight: 20
+tags:
+  - cli
+  - troubleshooting
+---
+
 === Windows Terminals
 
 Microsoft Windows is able to run different shells natively, such as PowerShell, Bash and the command prompt. Traditionally Windows has always accepted the back slash `\` as a path delimiter, however PowerShell understands both `\` and `/` in a path. Finally, if running Git Bash for example, only `/` is understood.

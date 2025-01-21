@@ -1,0 +1,9 @@
+---
+id: stacks-cli
+title: Stacks CLI
+description: The Stacks CLI allows fast scaffolding of multiple Ensono Stacks based projects
+tags:
+  - cli
+---
+
+= Stacks CLI

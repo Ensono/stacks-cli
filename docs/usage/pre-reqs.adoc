@@ -1,3 +1,12 @@
+---
+id: stacks-cli-usage-prereqs
+title: Pre-Requisites
+weight: 10
+tags:
+  - cli
+  - install
+---
+
 === Pre-Requisites
 
 In order to download and use the Ensono Stacks CLI tool, there are some programs that are required. The following table shows what is required and in what circumstance.

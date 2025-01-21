@@ -1,3 +1,13 @@
+---
+id: stacks-cli-examples-java-interactive
+title: Interactive
+weight: 20
+tags:
+  - cli
+  - examples
+  - java
+---
+
 ==== Java WebApi project using the interactive command
 
 As with the .NET example, it is possible to create a configuration file interactively to scaffold out a new project Java project. This is achieved using the `interactive` sub-command.
@@ -12,13 +22,13 @@ stacks-cli interactive
 The values specified in the example are the ones as show in the configuration table and are the same as the settings used in the Java example fo scaffolding from the command line.
 
 .Using the interactive command to generate Java project
-image::images/stackscli-interactive-java.png[]
+image::{base_cli_dir}images/stackscli-interactive-java.png[]
 
 The resulting configuration file contains all of the configuration that was used to generate the projects, which means it can be used to produce the same project stack again.
 
 [source,yaml]
 ----
-include::files/java-stacks.yml[]
+include::../files/java-stacks.yml[]
 ----
 
 The command that needs to be run next is displayed at the end of the output.

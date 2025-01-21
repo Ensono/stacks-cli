@@ -1,3 +1,12 @@
+---
+id: stacks-cli-cmd-setup
+title: Setup
+weight: 40
+tags:
+  - cli
+  - commands
+---
+
 ==== Setup
 
 The `setup` command can be used to set values to be used as defaults when running other commands. This is to help reduce the amount of times repetitive values need to be manually entered.
@@ -20,7 +29,7 @@ stackscli setup update -g --company ensono
 ----
 
 .Updating the globals settings file
-image::images/stackscli-setup-update-global.png[]
+image::{base_cli_dir}images/stackscli-setup-update-global.png[]
 
 It is possible to set any of the values as a global value, however it is not recommended. The following example shows what happens when the project name is set as a global value.
 
@@ -30,7 +39,7 @@ stackscli setup update -g --company ensono --project website
 ----
 
 .Updating the globals settings file with project value
-image::images/stackscli-setup-update-global-project.png[]
+image::{base_cli_dir}images/stackscli-setup-update-global-project.png[]
 
 Setting values in a project file is just a case of moving into the directory in which the file should be created or set the working directory value. The following two commands achieve the same result.
 
@@ -52,7 +61,7 @@ stackscli setup update --project website -w workspaces/projects/myproject
 The result will be a file in a the directory `workspaces/projects/.stackscli/config.yml`.
 
 .Update settings in project directory
-image::images/stackscli-setup-update-local.png[]
+image::{base_cli_dir}images/stackscli-setup-update-local.png[]
 
 ===== List
 
@@ -64,7 +73,7 @@ stackscli setup list
 ----
 
 .List out the configuration files
-image::images/stackscli-setup-list.png[]
+image::{base_cli_dir}images/stackscli-setup-list.png[]
 
 ===== Latest
 
@@ -83,4 +92,4 @@ NOTE: The CLI will always prefer this file over the embedded one. If the default
 
 If a an internal configuration file is detected by the CLI it will output that the file has been read:
 
-image::images/stackscli-internal-config.png[]
+image::{base_cli_dir}images/stackscli-internal-config.png[]

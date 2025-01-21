@@ -1,3 +1,13 @@
+---
+id: stacks-cli-examples-dotnet-interactive
+title: Interactive
+weight: 20
+tags:
+  - cli
+  - examples
+  - .net
+---
+
 ==== .NET WebApi project using the interactive command
 
 The interactive command is designed to ask questions on the command line about the configuration required for setting up Ensono Digital Stacks. It will then save this configuration out to a file that can be read in using the `scaffold` command.
@@ -10,13 +20,13 @@ stacks-cli interactive
 The values as specified in the previous configuration table have been used in the following screenshot of the interactive session.
 
 .Using the interactive command to generate .NET project
-image::images/stackscli-interactive.png[]
+image::{base_cli_dir}images/stackscli-interactive.png[]
 
 The resulting configuration file contains all of the configuration that was used to generate the projects, which means it can be used to produce the same project stack again.
 
 [source,yaml]
 ----
-include::files/dotnet-stacks.yml[]
+include::../files/dotnet-stacks.yml[]
 ----
 
 The command that needs to be run next is displayed at the end of the output.

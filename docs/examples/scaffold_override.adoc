@@ -1,3 +1,12 @@
+---
+id: stacks-cli-examples-scaffold-override
+title: Scaffold Override
+weight: 50
+tags:
+  - cli
+  - examples
+---
+
 ==== Using a modified internal configuration
 
 The following YML snippet can be used to override settings in the CLI.

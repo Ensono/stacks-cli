@@ -1,3 +1,12 @@
+---
+id: stacks-cli-usage-cli-version-check
+title: CLI Version Check
+weight: 70
+tags:
+  - cli
+  - usage
+---
+
 === CLI Version Check
 
 The Ensono Stacks CLI is constantly evolving and as such there are new versions being released frequently. To help ensure that you are running the most up to date version, it will check the releases for the CLI and compare that version against the one that you are running. If there is a mismatch then the CLI will inform you of the newer version.
@@ -5,7 +14,7 @@ The Ensono Stacks CLI is constantly evolving and as such there are new versions 
 NOTE: This check does not prevent normal operation if you have an older version. However you _may_ find that some things do not work as you intend.
 
 .Stacks CLI version check
-image::images/stackscli-version-check.png[]
+image::{base_cli_dir}images/stackscli-version-check.png[]
 
 This is a simple version check, it does not update the CLI for you, but does provide a link to the latest version for download and information purposes.
 

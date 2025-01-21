@@ -1,6 +1,7 @@
 ---
 id: stacks-cli-usage
 title: Usage
+weight: 10
 tags:
   - cli
 ---

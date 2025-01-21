@@ -1,6 +1,7 @@
 ---
 id: stacks-cli-troubleshooting
 title: Troubleshooting
+weight: 40
 tags:
   - cli
 ---

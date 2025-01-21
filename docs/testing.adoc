@@ -35,11 +35,11 @@ The test also checks that a configuration file is generated.
 NOTE: This is not something that is done by the CLI itself as it calls out to the `dotnet` command, but as the CLI calls out to the command it is tested.
 | TestNoGitRepo | As no remote URL for the GitRepository has been specified there should be no git repository created for the project.
 .8+| Config File Suite | TestProject1/project_directory_exists | Checks that the project directory has been created for the project
-| TestProject1/variable_template_exists | Checks that the Azure DevOps variables template exists 
-| TestProject1/git_repo | Ensures that the project has been configured as a Git repository 
+| TestProject1/variable_template_exists | Checks that the Azure DevOps variables template exists
+| TestProject1/git_repo | Ensures that the project has been configured as a Git repository
 | TestProject1/git_remote_url | Checks that the configuration file for the git repo has got the correct remote URL set
 | TestProject2/project_directory_exists | Checks that the project directory has been created for the project
-| TestProject2/variable_template_exists | Checks that the Azure DevOps variables template exists 
+| TestProject2/variable_template_exists | Checks that the Azure DevOps variables template exists
 | TestProject2/git_repo_not_created | Checks that the project does not have a git repo configured
 | TestCmdLogDoesNotExist | Checks that a `cmdlog.txt` file has not been created
 | Version Suite | TestVersionNumber | Tests that the version of the CLI matches the version of the test being run
@@ -48,11 +48,11 @@ NOTE: This is not something that is done by the CLI itself as it calls out to th
 All of tests are run as part of the build and the results are uploaded as artifacts. The following screenshot shows an example of the results being displayed in Azure DevOps.
 
 .Test results
-image::images/build_tests.png[]
+image::{base_cli_dir}images/build_tests.png[]
 
 === Running the tests locally
 
-All of the integration tests are run using Taskctl, which means that they can be run on a local workstation. 
+All of the integration tests are run using Taskctl, which means that they can be run on a local workstation.
 
 [source,bash,subs="attributes"]
 ----
@@ -62,4 +62,3 @@ task test:integration
 Running this command will execute the integration tests and use the current directory for creating projects and files.
 
 IMPORTANT: The integration tests are destructive in that the project directory contents will be removed during and after the tests. Do not run this in a directory with files that you wish to keep.
-

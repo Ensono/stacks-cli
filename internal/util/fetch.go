@@ -13,6 +13,7 @@ func GitClone(repoUrl, ref, trunk string, tmpPath string, token string) (string,
 
 	// get the URL to be used to clone the repo from
 	archiveUrl, err := ArchiveUrl(repoUrl, ref, trunk, token)
+	fmt.Printf(archiveUrl)
 	if err != nil {
 		return "", err
 	}

@@ -1,0 +1,20 @@
+---
+id: stacks-cli-examples-dotnet
+title: .NET
+weight: 10
+tags:
+  - cli
+  - examples
+---
+
+=== .NET
+
+The following table shows the additional options that are required when scaffolding the .NET examples.
+
+..NET Specific settings
+[options="header"]
+|===
+| Name | Value | Description
+| framework | `{example_dotnet_framework}` | Framework being used, e.g. `dotnet`, `java`, `nx` or `infra`
+| framework_version | `{example_dotnet_framework_version}` | Version of the framework option to grab.
+|===

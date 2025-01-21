@@ -1,3 +1,13 @@
+---
+id: stacks-cli-examples-java-config-file
+title: Config File
+weight: 30
+tags:
+  - cli
+  - examples
+  - java
+---
+
 ==== Java WebApi project using a configuration file
 
 The Ensono Stacks CLI can be used with a configuration file to setup multiple projects in one go.
@@ -14,7 +24,7 @@ stacks-cli scaffold -c ./stacks.yml
 The CLI will use the configuration file to get all the settings required to scaffold the projects that have been requested.
 
 .Scaffold Java project
-image::images/stackscli-java-webapi-config-file.png[]
+image::{base_cli_dir}images/stackscli-java-webapi-config-file.png[]
 
 As the configuration file was configured with a company name with a space in it, the CLI has modified the value so it will be compatible with the commands that need to be run. This can be seen in the output of the CLi in the above image.
 

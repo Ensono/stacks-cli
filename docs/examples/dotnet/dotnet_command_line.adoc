@@ -1,3 +1,13 @@
+---
+id: stacks-cli-examples-dotnet-command-line
+title: Command Line
+weight: 10
+tags:
+  - cli
+  - examples
+  - .net
+---
+
 ==== .NET WebApi project from command line
 
 Run the following command to create the new project in the working directory, which will be the directory that the command is being run in.
@@ -46,7 +56,7 @@ This will get the specified version of the framework project, create a new proje
 
 .CLI with command line options
 [[example_cli_cmdline,{figure-caption} {counter:refnum}]]
-image::images/example_dotnet_webapi_cmdline.png[]
+image::{base_cli_dir}images/example_dotnet_webapi_cmdline.png[]
 
 <<example_cli_cmdline>> shows the output of the command running in PowerShell. It also shows the commands that have been run in the `cmdlog.txt`.
 

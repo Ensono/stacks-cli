@@ -1,0 +1,20 @@
+---
+id: stacks-cli-examples-nx
+title: Nx
+weight: 30
+tags:
+  - cli
+  - examples
+---
+
+=== Nx
+
+The following table shows the additional options that are required when scaffolding the Nx examples
+
+.Nx Specific settings
+[options="header"]
+|===
+| Name | Value | Description
+| framework | `{example_nx_framework}` | Framework being used, e.g. `dotnet`, `java`, `nx` or `infra`
+| framework_version | `{example_nx_framework_version}` | Version of the framework option to grab.
+|===

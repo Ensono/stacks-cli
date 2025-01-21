@@ -1,3 +1,13 @@
+---
+id: stacks-cli-examples-nx-config-file
+title: Config File
+weight: 30
+tags:
+  - cli
+  - examples
+  - nx
+---
+
 ==== Nx Next.js project using a configuration file
 
 Thew CLI can be used with a configuration file to generate the Ensono Stacks based projects.
@@ -12,7 +22,7 @@ stacks-cli scaffold -c projects/stackscli.yml
 The CLI will read in the configuration file and scaffold the requested projects.
 
 .Scaffolding an Nx project with a configuration file
-image::images/stackscli-nx-nextjs-config-file.png[]
+image::{base_cli_dir}images/stackscli-nx-nextjs-config-file.png[]
 
 As has been seen with the scaffolding command and the command line examples, the resultant project has been created as follows.
 

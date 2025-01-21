@@ -1,3 +1,12 @@
+---
+id: stacks-cli-cmd-export
+title: Export
+weight: 50
+tags:
+  - cli
+  - commands
+---
+
 ===== Export
 
 The CLI relies on a number of internal configuration settings. This is not normally information that is required as the inputs to the command are sufficient to create the necessary projects.
@@ -12,8 +21,8 @@ stacks-cli version --directory exported
 NOTE: As with all commands the `--dryrun` option can be specified which will display what will be done but not actually perform the operation.
 
 .Exporting the internal configuration
-image::images/stackscli-export.png[]
+image::{base_cli_dir}images/stackscli-export.png[]
 
 As can be seen from the screenshot the two files have been output to the `exported` directory in the current location.
 
-image::images/stackscli-exported-files.png[]
+image::{base_cli_dir}images/stackscli-exported-files.png[]

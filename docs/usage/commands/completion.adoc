@@ -1,3 +1,12 @@
+---
+id: stacks-cli-cmd-completion
+title: Completion
+weight: 10
+tags:
+  - cli
+  - commands
+---
+
 ==== Completion
 
 The completion command adds completion scripts to any of the following shells:
@@ -17,6 +26,6 @@ stacks-cli completion powershell -h
 ----
 
 .Help page for `completion` command
-image::images/stackscli-completion-help.png[]
+image::{base_cli_dir}images/stackscli-completion-help.png[]
 
 As can be seen from the output, the command required to load the completion script into the current shell is displayed.

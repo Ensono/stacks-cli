@@ -1,6 +1,7 @@
 ---
 id: stacks-cli-examples
 title: Examples
+weight: 20
 tags:
   - cli
 ---

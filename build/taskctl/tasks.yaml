@@ -22,7 +22,7 @@ tasks:
     context: docsenv
     command:
       - Invoke-AsciiDoc -PDF -basepath /app -config /app/docs.json
-      - /app/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /app/docs -output_dir /app/outputs/docs/md
+      # - /app/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /app/docs -output_dir /app/outputs/docs/md
 
   _docs:cmd:options:
     description: Generates documentation for the command options

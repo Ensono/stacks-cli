@@ -1,3 +1,13 @@
+---
+id: stacks-cli-examples-nx-command-line
+title: Command Line
+weight: 10
+tags:
+  - cli
+  - examples
+  - nx
+---
+
 ==== NX Nextjs project from the command line
 
 Run the following command to scaffold a new Nx project based on the Ensono Digital NextJS project. The project will be created in the working directory, which in this case will be the directory that the command is being run in.
@@ -24,7 +34,7 @@ stacks-cli scaffold -A {example_nx_area} \
                 -u {example_project_src_url} \
                 -C azure \
                 -G website-resources \
-                -R westeurope \                
+                -R westeurope \
                 --cmdlog
 ----
 |[source,powershell,subs="attributes"]
@@ -54,7 +64,7 @@ This command will download version {example_nx_framework_version}, from the GitH
 
 .CLI scaffolding Nx project from the command line
 [[example_cli_nx_cmdline,{figure_caption} {counter:refnum}]]
-image::images/example-nx-nextjs-cmdline.png[]
+image::{base_cli_dir}images/example-nx-nextjs-cmdline.png[]
 
 As the option to save all the commands that are executed by the CLI has been specified, the `cmdlog.txt` file for the above command is as follows.
 
@@ -64,4 +74,3 @@ As the option to save all the commands that are executed by the CLI has been spe
 [/Users/russells/scratch/projects/website] git init
 [/Users/russells/scratch/projects/website] git remote add origin https://github.com/my-company/my-webapi
 ----
-

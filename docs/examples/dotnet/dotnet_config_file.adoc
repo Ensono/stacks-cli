@@ -1,3 +1,13 @@
+---
+id: stacks-cli-examples-dotnet-config-file
+title: Config File
+weight: 30
+tags:
+  - cli
+  - examples
+  - .net
+---
+
 ==== .NET WebApi project using a configuration file
 
 The CLI can be used with a configuration file to generate the Ensono Stacks based projects.
@@ -12,7 +22,7 @@ stacks-cli scaffold -c ./stacks.yml
 The CLI will use the configuration file to scaffold the requested projects.
 
 .Scaffolding projects with a configuration file
-image::images/stackscli-dotnet-webapi-config-file.png[]
+image::{base_cli_dir}images/stackscli-dotnet-webapi-config-file.png[]
 
 As has been seen with using the scaffolding command with command line options, the resultant project has been created with the namespace set to the specified company name.
 

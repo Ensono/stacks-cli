@@ -1,3 +1,12 @@
+---
+id: stacks-cli-usage-tool-check
+title: Tool Check
+weight: 60
+tags:
+  - cli
+  - usage
+---
+
 === Command Availability Checks
 
 Each framework has a list of commands associated with it. This denotes the list of commands that it can run during the configuration of the project.
@@ -22,7 +31,7 @@ If a command cannot be located, the CLI will be terminated. This does not mean t
 The following screenshot shows the output of a scaffolding run where the "dotnet" framework has been specified and the `dotnet` command cannot be found:
 
 .Checking availability for framework commands
-image::images/stackscli-framework-cmd-availability.png[]
+image::{base_cli_dir}images/stackscli-framework-cmd-availability.png[]
 
 If multiple frameworks have been set, by specifying multiple projects, each framework's commands will be checked for availability.
 

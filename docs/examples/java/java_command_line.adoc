@@ -1,3 +1,13 @@
+---
+id: stacks-cli-examples-java-command-line
+title: Command Line
+weight: 10
+tags:
+  - cli
+  - examples
+  - java
+---
+
 ==== Java WebApi project from command line
 
 Run the following command to scaffold a new Java project based on the Ensono WebApi Java project. The project will be created in the working directory, which in this case will be the directory that the command has is being run under.
@@ -48,7 +58,7 @@ This command will download version {example_java_framework_version}, from the Gi
 
 .CLI scaffolding Java project from command line
 [[example_cli_java_cmdline,{figure-caption} {counter:refnum}]]
-image::images/example-java-webapi-cmdline.png[]
+image::{base_cli_dir}images/example-java-webapi-cmdline.png[]
 
 As the option to save all the commands that are executed by the CLI has been specified, the `cmdlog.txt` file for the above command is as follows.
 
@@ -182,4 +192,3 @@ The resultant project, as stated by the `Project path:` statement in the screens
             └───classes
                 └───local
 ----
-

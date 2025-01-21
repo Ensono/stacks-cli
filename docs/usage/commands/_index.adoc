@@ -1,6 +1,7 @@
 ---
 id: stacks-cli-commands
 title: Commands
+weight: 30
 tags:
   - cli
 ---
@@ -12,4 +13,4 @@ The CLI has a number of commands and various options. The easiest way to see wha
 NOTE: The operation of the Ensono Stacks CLI is identical on every supported platform.
 
 .Stacks CLI Help
-image::images/stackscli-global-help.png[]
+image::{base_cli_dir}images/stackscli-global-help.png[]

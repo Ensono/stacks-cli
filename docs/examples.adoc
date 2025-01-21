@@ -13,11 +13,11 @@ The following table shows the additional options that are required when scaffold
 | framework_version | `{example_dotnet_framework_version}` | Version of the framework option to grab.
 |===
 
-include::examples/dotnet_command_line.adoc[]
+include::examples/dotnet/dotnet_command_line.adoc[]
 
-include::examples/dotnet_interactive.adoc[]
+include::examples/dotnet/dotnet_interactive.adoc[]
 
-include::examples/dotnet_config_file.adoc[]
+include::examples/dotnet/dotnet_config_file.adoc[]
 
 === Java
 
@@ -32,11 +32,11 @@ The following table shows the additional options that are required when scaffold
 |===
 
 
-include::examples/java_command_line.adoc[]
+include::examples/java/java_command_line.adoc[]
 
-include::examples/java_interactive.adoc[]
+include::examples/java/java_interactive.adoc[]
 
-include::examples/java_config_file.adoc[]
+include::examples/java/java_config_file.adoc[]
 
 === Nx
 
@@ -50,11 +50,11 @@ The following table shows the additional options that are required when scaffold
 | framework_version | `{example_nx_framework_version}` | Version of the framework option to grab.
 |===
 
-include::examples/nx_command_line.adoc[]
+include::examples/nx/nx_command_line.adoc[]
 
-include::examples/nx_interactive.adoc[]
+include::examples/nx/nx_interactive.adoc[]
 
-include::examples/nx_config_file.adoc[]
+include::examples/nx/nx_config_file.adoc[]
 
 === Using internal configuration
 
@@ -72,7 +72,7 @@ stacks-cli scaffold -c ./stacks.yml
 ----
 
 .Project protection guard
-image::images/stackscli-scaffold-project-guard.png[]
+image::{base_cli_dir}images/stackscli-scaffold-project-guard.png[]
 
 As can be seen the CLI will not overwrite anything at the same target path.
 
@@ -84,7 +84,7 @@ stacks-cli scaffold -c ./stacks.yml --force
 ----
 
 .Force removal of existing project directories
-image::images/stackscli-scaffold-project-guard-force.png[]
+image::{base_cli_dir}images/stackscli-scaffold-project-guard-force.png[]
 
 === Checking Framework command versions
 
@@ -129,14 +129,14 @@ init:
 When the CLI runs it will take take the version constraint, on line 5, and compare the version of `dotnet` it finds with this constraint. The following screenshot shows this in action on a machine that has .NET version `5.0.303` installed.
 
 .Dotnet command version check
-image::images/stacks-scaffold-command-version-check.png[]
+image::{base_cli_dir}images/stacks-scaffold-command-version-check.png[]
 
 It is possible to bypass this version check by using the `--force` option on the command line, but note this is a destructive operation and if the project exists at the same location as the CLI is trying to write to the original project will be deleted.
 
 In this case the error will still be displayed, but a a warning will state that the process is continuing.
 
 .Dotnet command bypass version check
-image::images/stacks-scaffold-command-version-check-force.png[]
+image::{base_cli_dir}images/stacks-scaffold-command-version-check-force.png[]
 
 [IMPORTANT]
 ====

@@ -1,3 +1,12 @@
+---
+id: stacks-cli-cmd-scaffold
+title: Scaffold
+weight: 30
+tags:
+  - cli
+  - commands
+---
+
 ==== Scaffold
 
 The `scaffold` command is the main command that will be used. This downloads the specified projects, customises them and sets them up in the specified directory. To see the help for this command run the following:
@@ -8,14 +17,14 @@ stacks-cli scaffold -h
 ----
 
 .Help page for `scaffold` command
-image::images/stackscli-scaffold-help.png[]
+image::{base_cli_dir}images/stackscli-scaffold-help.png[]
 
 The <<Examples>> section has a lot of examples showing how to run the Ensono Stacks CLI.
 
 If the Stacks CLI scaffold command is run without any command line options, it does not know what operations are required. In this case the CLI will abort with a help message defining exactly what is required.
 
 .Help when `scaffold` is run without arguments
-image::images/stackscli-scaffold-noinput.png[]
+image::{base_cli_dir}images/stackscli-scaffold-noinput.png[]
 
 ===== Overriding internal configuration
 

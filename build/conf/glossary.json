@@ -1,0 +1,47 @@
+[
+  {
+    "term": "SP",
+    "expansion": "Service Principal",
+    "description": "An Azure Entra ID identity that is used by applications, such as Terraform, to provide programmatic access to Azure."
+  },
+  {
+    "term": "EIR",
+    "expansion": "Ensono Independent Runner",
+    "description": "A cross-platform tool that allows developers to run tasks in a containerized environment, facilitating builds and deployments."
+  },
+  {
+    "term": "IDE",
+    "expansion": "Integrated Development Environment",
+    "description": "A software application that provides comprehensive facilities to programmers for software development. It typically includes a code editor, debugger, and build automation tools."
+  },
+  {
+    "term": "CLI",
+    "expansion": "Command Line Interface",
+    "description": "A text-based interface used to interact with software and operating systems, allowing users to execute commands and scripts."
+  },
+  {
+    "term": "API",
+    "expansion": "Application Programming Interface",
+    "description": "A set of rules and protocols for building and interacting with software applications, enabling different software systems to communicate with each other."
+  },
+  {
+    "term": "GUID",
+    "expansion": "Globally Unique Identifier",
+    "description": "A unique reference number used as an identifier in software applications, ensuring that no two identifiers are the same across systems."
+  },
+  {
+    "term": "TL;DR",
+    "expansion": "Too Long; Didn't Read",
+    "description": "An abbreviation used to indicate a summary of a longer text, often used to provide a quick overview of the main points for readers who may not have time to read the full content."
+  },
+  {
+    "term": "UPN",
+    "expansion": "User Principal Name",
+    "description": "A user identifier in Azure Entra ID that is formatted like an email address, typically used to log in to services and applications."
+  },
+  {
+    "term": "ADO",
+    "expansion": "Azure DevOps",
+    "description": "A Microsoft service that provides a set of tools for software development, including version control, project management, and build automation."
+  }
+]

@@ -89,7 +89,7 @@ All of the necessary parameters can be set using environment variables, which ar
 | Parameter | Environment Variable | Description | Example Value
 | version | VERSION_NUMBER | Version number to be assigned to the release | `0.0.69`
 | commitid | COMMIT_ID | The SHA commit id to be used to set up the release | `0E42486F2`
-| notes | NOTES | Any notes that should be displayed on the release page | 
+| notes | NOTES | Any notes that should be displayed on the release page |
 `This is the latest release of the code`
 | artifactsDir | ARTIFACTS_DIR | Directory that the artifacts to be added as assets to the release are in | `outputs`
 | artifactsList | | List of files that need to be uploaded
@@ -138,7 +138,7 @@ This script iterates around the `.adoc` files in the `docs/` directory and perfo
 [[convert_adoc_to_md_docker,{listing-caption} {counter:refnum}]]
 [source,bash]
 ----
-docker run -v ${PWD}:/app amidostacks/runner-pwsh-asciidoc:0.4.60-stable pwsh -command /app/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /app/docs/ -output_dir /app/outputs/docs/md
+docker run -v ${PWD}:/app amidostacks/runner-pwsh-asciidoc:0.4.60-stable pwsh -command /eirctl/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /eirctl/docs/ -output_dir /eirctl/outputs/docs/md
 ----
 
 All of the markdown files are then uploaded as artefacts as part of the build.

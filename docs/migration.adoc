@@ -5,3 +5,5 @@ From time to time there will be changes that are made to the CLI that will requi
 NOTE: To determine the version of the CLI that is being used please run the command `stacks-cli version`
 
 include::migrations/0.1.x_to_0.2.x.adoc[]
+
+include::migrations/to_eirctl.adoc[]

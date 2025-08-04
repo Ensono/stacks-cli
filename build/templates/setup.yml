@@ -1,0 +1,14 @@
+parameters:
+  - name: EirctlVersion
+    type: string
+
+steps:
+
+  # Install Eirctl so that the tests can be run
+  - task: Bash@3
+    displayName: "Install: Eirctl"
+    inputs:
+      targetType: inline
+      script: |
+        sudo wget https://github.com/Ensono/eirctl/releases/download/${{ parameters.EirctlVersion }}/eirctl-linux-amd64 -O /usr/local/bin/eirctl
+        sudo chmod +x /usr/local/bin/eirctl

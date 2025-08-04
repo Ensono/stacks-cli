@@ -16,7 +16,7 @@ parameters:
     default: false
 
 variables:
-  - template: azuredevops-vars.yml
+  - template: variables.yml
 
 stages:
   - stage: Build
@@ -24,14 +24,10 @@ stages:
     jobs:
       - job: Build
         steps:
-          # Install Taskfile for the build to run
-          - task: Bash@3
-            displayName: Install Taskctl
-            inputs:
-              targetType: inline
-              script: |
-                wget https://github.com/Ensono/taskctl/releases/download/v${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
-                tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl
+          # Install Eirctl for the build to run
+          - template: templates/setup.yml
+            parameters:
+              EirctlVersion: $(EirctlVersion)
 
           # Run the tasks to build the application
           - task: Bash@3
@@ -90,14 +86,10 @@ stages:
               artifact: StacksCLI
               path: $(Build.SourcesDirectory)/outputs/bin
 
-          # Install Taskctl so that the tests can be run
-          - task: Bash@3
-            displayName: Install Taskctl
-            inputs:
-              targetType: inline
-              script: |
-                wget https://github.com/Ensono/taskctl/releases/download/v${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
-                tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl
+          # Install Eirctl for the build to run
+          - template: templates/setup.yml
+            parameters:
+                EirctlVersion: $(EirctlVersion)
 
           # Run the integration tests
           - task: Bash@3
@@ -147,14 +139,10 @@ stages:
                 **
                 !**/*inttest*
 
-          # Install Taskctl for the build to run
-          - task: Bash@3
-            displayName: Install Taskctl
-            inputs:
-              targetType: inline
-              script: |
-                wget https://github.com/Ensono/taskctl/releases/download/v${{ variables.TaskctlVersion }}/taskctl_${{ variables.TaskctlVersion }}_linux_amd64.tar.gz -O /tmp/taskctl.tar.gz
-                tar zxf /tmp/taskctl.tar.gz -C /usr/local/bin taskctl
+          # Install Eirctl for the build to run
+          - template: templates/setup.yml
+            parameters:
+                EirctlVersion: $(EirctlVersion)
 
           # Run the tasks to build the application
           - task: Bash@3
@@ -171,6 +159,6 @@ stages:
               REPOSITORY: $(RepoName)
               BUILD_BUILDNUMBER: $(BUILD_BUILDNUMBER)
               COMMIT_ID: $(Build.SourceVersion)
-              ARTIFACTS_DIR: /app/outputs/assets
+              ARTIFACTS_DIR: /eirctl/outputs/assets
               ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
                 PRERELEASE: "true"

@@ -4,7 +4,7 @@ extends: default
 page:
   size: A4
   margin: [2cm, 1.27cm, 1.27cm, 1.27cm]
-  background_image: 'image:../../../docs/images/page-image.png[position=top right]'
+  background_image: "image:../../images/page-image.png[position=top right]"
 
 # Add extra fonts to the catalog
 font:
@@ -28,9 +28,9 @@ header:
   recto:
     columns: "<40% =20% >40%"
     left:
-      content: 'image:../../../docs/images/ensono-digital.svg[Ensono Digital,100]'
+      content: "image:../../images/ensono.svg[Ensono Digital,100]"
     center:
-      content: ''
+      content: ""
   verso:
     left:
       content: $header_recto_left_content
@@ -42,7 +42,7 @@ table:
   caption:
     side: bottom
   head:
-    background-color: #08c1a7
+    background-color: #6941eb
     font-color: #ffffff
 
 role:
@@ -54,3 +54,11 @@ role:
 
 heading:
   font-color: #6941eb
+
+footer:
+  recto:
+    right:
+      content: "{page-number}"
+  verso:
+    right:
+      content: "{page-number}"

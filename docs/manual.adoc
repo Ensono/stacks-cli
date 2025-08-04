@@ -3,6 +3,10 @@
 :table-stripes: even
 :listing-caption: Listing
 :icons: font
+:icon-set: font-awesome
+:source-highlighter: rouge
+:rouge-style: monokai.sublime
+:table-stripes: even
 
 :stackscli_version: 100.98.99
 :taskctl_version: 1.5.1
@@ -25,5 +29,15 @@ include::templating.adoc[]
 
 include::testing.adoc[]
 
+<<<
+
+include::migration.adoc[]
+
+<<<
+
 == Appendix
 include::appendix.adoc[]
+
+<<<
+
+include::glossary.adoc[]

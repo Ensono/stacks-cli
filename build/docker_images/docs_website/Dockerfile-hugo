@@ -1,6 +1,6 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
-ARG HUGO_VERSION=0.88.1
+ARG HUGO_VERSION=0.148.2
 ENV DOCUMENT_DIR=/hugo-project
 
 RUN apt-get update && apt-get upgrade -y \
@@ -14,7 +14,7 @@ RUN gem install --no-document asciidoctor asciidoctor-revealjs asciidoctor-html5
 
 RUN mv /usr/local/bin/asciidoctor /usr/local/bin/asciidoctor_real
 
-ADD build/asciidoctor /usr/local/bin/asciidoctor
+ADD asciidoctor /usr/local/bin/asciidoctor
 
 RUN chmod +x /usr/local/bin/asciidoctor
 
@@ -36,4 +36,3 @@ WORKDIR ${DOCUMENT_DIR}
 VOLUME ${DOCUMENT_DIR}/content
 
 CMD ["hugo","server","--bind","0.0.0.0", "--config", "/repo/config.toml"]
-

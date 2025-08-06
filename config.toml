@@ -10,3 +10,9 @@ ignoreFiles = ['manual\.adoc', 'appendix\.adoc']
     name = "Usage"
     url = "/usage"
     weight = 50
+
+[security]
+  enableInlineShortcodes = false
+
+  [security.exec]
+    allow = ['^(dart-)?sass(-embedded)?$', '^go$', '^git$', '^postcss$', '^tailwindcss$', '^asciidoctor$']

@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 ARG HUGO_VERSION=0.88.1
 ENV DOCUMENT_DIR=/hugo-project
@@ -36,4 +36,3 @@ WORKDIR ${DOCUMENT_DIR}
 VOLUME ${DOCUMENT_DIR}/content
 
 CMD ["hugo","server","--bind","0.0.0.0", "--config", "/repo/config.toml"]
-

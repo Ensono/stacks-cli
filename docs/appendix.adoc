@@ -8,7 +8,7 @@ A number of items are embedded using this technique.
 
 The following listing shows the built in template that is used for the variable template if one is not set in the project settings file.
 
-Location: `internal/config/staticFiles/ado_veriable_template.yml`
+Location: `internal/config/staticFiles/ado_variable_template.yml`
 
 .Azure DevOps Variable Template
 [[azdo_variable_template,{listing-caption} {counter:refnum}]]

@@ -7,7 +7,7 @@ name: 0.4$(Rev:.r)
 
 # Set the agent pool that is going to be used for the build
 pool:
-  vmImage: ubuntu-20.04
+  vmImage: ubuntu-24.04
 
 parameters:
   - name: pre_release

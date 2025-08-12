@@ -93,7 +93,7 @@ func setupTestCase(t *testing.T, configuration []byte) (func(t *testing.T), stri
 
 func TestStacksComponents(t *testing.T) {
 
-	var expected int = 13
+	var expected int = 12
 
 	config := Config{}
 	config.Init()
@@ -128,7 +128,7 @@ func TestStacksComponents(t *testing.T) {
 }
 
 func TestOverriddenStacksComponents(t *testing.T) {
-	var expected int = 15
+	var expected int = 14
 
 	config := Config{}
 	config.Init()
@@ -266,12 +266,12 @@ func TestGetComponentOptionsDefault(t *testing.T) {
 	}{
 		{
 			"data",
-			[]string{"fabric"},
+			[]string{"azure", "fabric"},
 			false,
 		},
 		{
 			"dotnet",
-			[]string{"cqrs", "webapi"},
+			[]string{"webapi"},
 			false,
 		},
 		{
@@ -286,12 +286,12 @@ func TestGetComponentOptionsDefault(t *testing.T) {
 		},
 		{
 			"infra",
-			[]string{"aca", "aks", "data", "eks", "template"},
+			[]string{"aca", "aks", "eks", "template"},
 			false,
 		},
 		{
 			"infra",
-			[]string{"aca", "aks", "data", "eks", "keyvault", "template"},
+			[]string{"aca", "aks", "eks", "keyvault", "template"},
 			true,
 		},
 		{

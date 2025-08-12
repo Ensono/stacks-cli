@@ -35,7 +35,7 @@ stages:
             inputs:
               targetType: inline
               script: |
-                taskctl build
+                eirctl build
             env:
               BUILDNUMBER: $(Build.BuildNumber)
 
@@ -99,7 +99,7 @@ stages:
               script: |
                 export GOBIN=$HOME/go/bin
                 export PATH=$PATH:$GOBIN
-                taskctl inttest
+                eirctl inttest
             env:
               BIN_DIR: $(Build.ArtifactStagingDirectory)/bin
               BUILDNUMBER: $(Build.BuildNumber)
@@ -150,7 +150,7 @@ stages:
             inputs:
               targetType: inline
               script: |
-                taskctl release
+                eirctl release
             env:
               STAGE: "release"
               PUBLISH_RELEASE: "true"

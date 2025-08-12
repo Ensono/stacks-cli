@@ -1,0 +1,188 @@
+=== Internal Configuration
+
+The CLI has an internal configuration file that states what Stacks components are available to be scaffolded. The following table shows the components that are currently supported within the CLI.
+
+.Stacks Components
+[cols="1,4,1",options="header"]
+|===
+| Component | Description | Downloader
+| Data Fabric |
+
+Configures Azure Fabric in a subscription with a Fabric Capacity and a Key Vault. The component can also create data pipelines
+
+https://github.com/Ensono/stacks-azure-fabric
+
+| `git`
+
+| Data Azure |
+
+This is a data platform to Azure that deploys all of the components, such as Datalake, Databricks in turn allowing full control of the resources used
+
+https://github.com/Ensono/stacks-azure-data
+
+| `git`
+
+| Dotnet Webapi |
+
+Templates containing the full suite of applications and infrastructure to run simple API's; more complex CQRS API's and Azure functions.
+
+https://www.nuget.org/packages/Ensono.Stacks.Templates
+
+| `nuget`
+
+| Java Webapi |
+
+Creates a project for running a web API using Java. This is based on the Spring Boot framework.
+
+https://github.com/Ensono/stacks-java
+
+| `git`
+
+| Java Webapi CQRS |
+
+Creates a Java Web API project that implements the Command and Query Responsibility Segregation (CQRS) pattern.
+
+https://github.com/Ensono/stacks-java-cqrs
+
+| `git`
+
+| Java Webapi CQRS with Events |
+
+Creates a Java Web API project that implements the Command and Query Responsibility Segregation (CQRS) pattern and events
+
+https://github.com/Ensono/stacks-java-events
+
+| `git`
+
+| Nx Apps |
+
+https://github.com/Ensono/stacks-nx
+
+The Stacks NX Plugins Infra Project extends the foundational principles of the Stacks philosophy, focusing on streamlined deployment processes for Redis instances and facilitating access to AKS clusters through environment variables containing connection strings.
+
+| `git`
+
+| Infra ACA |
+
+https://github.com/Ensono/stacks-infrastructure-aca
+
+Create a project that can deploy the infrastructure for Azure Container Apps
+
+| `git`
+
+| Infra AKS |
+
+https://github.com/Ensono/stacks-infrastructure-aks
+
+Create a project that can deploy the infrastructure for Azure Kubernetes Service
+
+| `git`
+
+| Infra EKS |
+
+https://github.com/Ensono/stacks-infrastructure-eks
+
+Create a project that can deploy the infrastructure for Amazon Elastic Kubernetes Service
+
+| `git`
+
+| Infra Template |
+
+https://github.com/Ensono/stacks-project-template
+
+Creates a blank template from which a new stacks component can be created. Sets up the structure of the project as well as having default values and settings for tools such as Eirctl and Docker
+
+| `git`
+
+|===
+
+However the internal configuration can be updated with the latest version by following the instructions on the <<cli_update_latest>> page. This will pull down the latest configuration file so if new Stacks components have been added they will be available to the CLI.
+
+==== Structure
+
+The following table details the structure in the internal configuration file, which can be used to add new projects locally for testing for example.
+
+[cols="1,2a",options="header"]
+|===
+| Parameter | Description
+| `frameworks` | List of frameworks that the CLI supports. Each framework has a number of commands that need to exist on the machine in order to work. This is used to ensure that these programs are present.
+| `frameworks.name` | Name of the framework that a components requires. This provides a group under which components can collated.
+
+Example: `data`
+
+| `frameworks.commands` | List of commands that need to be available for the specific framework to work.
+| `frameworks.commands.name` | Name of the command required
+
+Example: `dotnet`
+
+| `frameworks.commands.version` | Details about the version of the command that is required
+| `frameworks.commands.version.arguments` | Arguments to pass to the `name` to retrieve the version of the command that is installed
+
+Example: `--version`
+| `frameworks.commands.version.pattern` | Regular expression pattern that is used to match the version of the command against that specified in the `stackscli.yml` file for a project
+
+Example:
+
+[source,go]
+----
+(?P<version>(?P<major>0\|[1-9]\d*)\.(?P<minor>0\|[1-9]\d*)\.(?P<feature>[0-9]{1})(?P<patch>[0-9]{2}))
+----
+
+| `stacks.components` |
+
+List of stacks components that are known to the system
+
+| `stacks.components.<group>_<name>` |
+
+The group and name of the component that make up the main name. So for example, if the group was `dotnet` and the name was `webapi` this would be `stacks.components.dotnet_webapi`
+
+This is used to help identify a component within the system quickly, although they are specified as separate parameters in the body of the configuration type
+
+NOTE: From this point on the details will refer to `stacks.components.dotnet_webapi`
+
+| `stacks.components.dotnet_webapi.group` |
+
+Name of the group that this component belongs to.
+
+Example: `dotnet`
+
+| `stacks.components.dotnet_webapi.name` |
+
+Name of the component.
+
+Example: `webapi`
+
+| `stacks.components.dotnet_webapi.package.type` |
+
+This can be one of `git`, `nuget`, or `filesystem`. This informs the CLI how to download the component so it can be configured for the application.
+
+| `stacks.components.dotnet_webapi.package.url` |
+
+If the type of package is `git`, this is the URL to the Git repository
+
+| `stacks.components.dotnet_webapi.package.name` |
+
+If the type of package is `nuget`, this is the name of the package in Nuget
+
+| `stacks.components.dotnet_webapi.package.path` |
+
+If the type of package is `filesystem`, this is the path to the package on the local filesystem.
+
+NOTE: It is expected that this downloader is only used when developing locally and testing new components to be added to the CLI
+
+| `stacks.components.dotnet_webapi.version` |
+
+The version or branch/tag of the package to download. Only applies to `nuget` and `git` respectively.
+
+| `stacks.components.dotnet_webapi.template_mode` |
+
+This states of template mode is enabled or not. By default this is set to `true` which means the template file for Azure Pipelines will be written out, however if set to false it is expected that the CLI will patch the relevant files. This will be configurred using the `stackscli.yml` file for the project.
+
+| `help`  | List of subcommands within the cli, and the URL for the help pages online
+| `commands` | List of helper commands for the CLI to use.
+
+For example this has a `git` command configured, which consists of multiple commands. This allows the CLI to correctly initialise a new Git project after scaffolding.
+
+|===
+
+A complete listing of the internal configuration file can be be found in the <<static_internal_config>> section of the Appendix.

@@ -8,14 +8,16 @@
 :rouge-style: monokai.sublime
 :table-stripes: even
 
+:example_username: homer
+
 :stackscli_version: 100.98.99
-:taskctl_version: 1.5.1
+:eirctl_version: 0.7.6
 
 = Ensono Stacks CLI Manual
 
 include::usage.adoc[]
 
-include::runtime_config.adoc[]
+include::runtime_config/_index.adoc[]
 
 include::project_settings.adoc[]
 
@@ -36,7 +38,7 @@ include::migration.adoc[]
 <<<
 
 == Appendix
-include::appendix.adoc[]
+include::appendix/_index.adoc[]
 
 <<<
 

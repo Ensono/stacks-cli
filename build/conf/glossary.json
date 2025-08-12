@@ -43,5 +43,25 @@
     "term": "ADO",
     "expansion": "Azure DevOps",
     "description": "A Microsoft service that provides a set of tools for software development, including version control, project management, and build automation."
+  },
+  {
+    "term": "CQRS",
+    "expansion": "Command and Query Responsibility Segregation",
+    "description": "A software architectural pattern that separates read and write operations into distinct models, improving scalability and maintainability."
+  },
+  {
+    "term": "ACA",
+    "expansion": "Azure Container Apps",
+    "description": "A fully managed serverless container service that enables developers to run microservices and containerized applications without managing infrastructure."
+  },
+  {
+    "term": "AKS",
+    "expansion": "Azure Kubernetes Service",
+    "description": "A managed Kubernetes service that simplifies the deployment, management, and operations of Kubernetes clusters in Azure."
+  },
+  {
+    "term": "EKS",
+    "expansion": "Amazon Elastic Kubernetes Service",
+    "description": "A managed Kubernetes service that simplifies the deployment, management, and operations of Kubernetes clusters in AWS."
   }
 ]

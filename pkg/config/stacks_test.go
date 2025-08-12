@@ -93,7 +93,7 @@ func setupTestCase(t *testing.T, configuration []byte) (func(t *testing.T), stri
 
 func TestStacksComponents(t *testing.T) {
 
-	var expected int = 12
+	var expected int = 13
 
 	config := Config{}
 	config.Init()
@@ -128,7 +128,7 @@ func TestStacksComponents(t *testing.T) {
 }
 
 func TestOverriddenStacksComponents(t *testing.T) {
-	var expected int = 14
+	var expected int = 15
 
 	config := Config{}
 	config.Init()
@@ -188,11 +188,11 @@ func TestGetComponentNames(t *testing.T) {
 		override           bool
 	}{
 		{
-			[]string{"dotnet", "infra", "java", "nx"},
+			[]string{"data", "dotnet", "infra", "java", "nx"},
 			false,
 		},
 		{
-			[]string{"dotnet", "golang", "infra", "java", "nx"},
+			[]string{"data", "dotnet", "golang", "infra", "java", "nx"},
 			true,
 		},
 	}
@@ -264,6 +264,11 @@ func TestGetComponentOptionsDefault(t *testing.T) {
 		expectedOptions []string
 		override        bool
 	}{
+		{
+			"data",
+			[]string{"fabric"},
+			false,
+		},
 		{
 			"dotnet",
 			[]string{"cqrs", "webapi"},

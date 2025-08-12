@@ -3,7 +3,7 @@
 # on a local machine as well as in the CLI
 
 # Set the name which will define the build number
-name: 0.4$(Rev:.r)
+name: 0.5$(Rev:.r)
 
 # Set the agent pool that is going to be used for the build
 pool:

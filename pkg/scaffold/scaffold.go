@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	cp "github.com/otiai10/copy"
+
 	"github.com/Ensono/stacks-cli/internal/models"
 	"github.com/Ensono/stacks-cli/internal/util"
 	"github.com/Ensono/stacks-cli/pkg/config"
@@ -161,7 +163,17 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 
 		// copy the repository from the cloned directory to the project working directory
 		// do not copy the git configuration folder
-		util.CopyDirectory(cloneDir, path)
+		// util.CopyDirectory(cloneDir, path)
+		opt := cp.Options{
+			Skip: func(info os.FileInfo, src, dest string) (bool, error) {
+				return strings.HasSuffix(src, ".git"), nil
+			},
+		}
+		err := cp.Copy(cloneDir, path, opt)
+		if err != nil {
+			s.Logger.Errorf("Issue copying files: %s", err.Error())
+		}
+
 	}
 
 	return nil
@@ -252,6 +264,8 @@ func (s *Scaffold) processProject(project config.Project) {
 			s.Config.Input.Directory.CacheDir,
 			s.Config.Input.Directory.TempDir,
 		)
+	case "filesystem", "local":
+		downloader = downloaders.NewFilesystemDownloader(packageInfo.Path, s.Config.Input.Directory.TempDir)
 	}
 
 	downloader.SetLogger(s.Logger)
@@ -394,30 +408,46 @@ func (s *Scaffold) configurePipeline(project *config.Project) {
 
 	for _, pipelineSettings := range pipelineSettingsList {
 
+		// set the logger on the pipeline settings object
+		pipelineSettings.SetLogger(s.Logger)
+
 		// define the replacements object so that all can be passed to the render function
 		// the project is passed in a separate project as it is part of a slice
 		replacements := config.Replacements{}
 		replacements.Input = s.Config.Input
 		replacements.Project = *project
 
-		// attempt to write out the configuration file, unless in DryRun mode
-		if s.Config.Input.Options.DryRun {
-			s.Logger.Warn("Not creating variables template as in DRYRUN mode")
-		} else {
-			msg, err := s.Config.WriteVariablesFile(project, pipelineSettings, replacements)
-
-			if err == nil {
-				if msg == "" {
-					s.Logger.Info("Created pipeline variable file")
-				} else {
-					s.Logger.Warn(msg)
-				}
+		// Get the StacksComponent to check if TemplateMode is enabled
+		key := project.Framework.GetMapKey()
+		component, exists := s.Config.Stacks.Components[key]
+		if !exists {
+			s.Logger.Warnf("No StacksComponent found for framework key: %s", key)
+		} else if component.IsTemplateModeEnabled() {
+			// Only run the template-based variable file creation if TemplateMode is enabled
+			s.Logger.Debugf("TemplateMode is enabled for component: %s", key)
+			
+			// attempt to write out the configuration file, unless in DryRun mode
+			if s.Config.Input.Options.DryRun {
+				s.Logger.Warn("Not creating variables template as in DRYRUN mode")
 			} else {
-				s.Logger.Error(msg)
+				msg, err := s.Config.WriteVariablesFile(project, pipelineSettings, replacements)
+
+				if err == nil {
+					if msg == "" {
+						s.Logger.Info("Created pipeline variable file")
+					} else {
+						s.Logger.Warn(msg)
+					}
+				} else {
+					s.Logger.Error(msg)
+				}
 			}
+		} else {
+			s.Logger.Infof("TemplateMode is disabled for component: %s, skipping variable file creation", key)
 		}
 
 		// perform any addition regex replacements
+		s.Logger.Info("Patching files")
 		errs := pipelineSettings.ReplacePatterns(s.Config, replacements, project.Directory.WorkingDir)
 		if len(errs) > 0 {
 			for _, err := range errs {

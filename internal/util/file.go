@@ -33,19 +33,6 @@ func CopyDirectory(srcDir, dest string) error {
 			return err
 		}
 
-		// TODO: test this without
-		// var gid, uid int
-
-		// if runtime.GOOS != "windows" {
-		// 	//  REMOVING this as syscall is kind of depracated in favour of sys ==> platform specific low level abstraction
-		// 	stat, ok := fileInfo.Sys().(*syscall.Stat_t)
-		// 	if !ok {
-		// 		return fmt.Errorf("failed to get raw syscall.Stat_t data for '%s'", sourcePath)
-		// 	}
-		// 	uid = int(stat.Uid)
-		// 	gid = int(stat.Gid)
-		// }
-
 		switch fileInfo.Mode() & os.ModeType {
 		case os.ModeDir:
 			if err := CreateIfNotExists(destPath, 0755); err != nil {

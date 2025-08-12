@@ -2,7 +2,7 @@
 # by the build
 variables:
   - name: EirctlVersion
-    value: 0.4.48
+    value: 0.7.6
   - name: RepoOwner
     value: Ensono
   - name: RepoName

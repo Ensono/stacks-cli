@@ -10,7 +10,7 @@ The following listing shows the built in template that is used for the variable 
 
 A new setting has been added to the internal configuration called `template_mode` which defaults to `true`. In this mode nothing changes and the template file will be written out to the project as usual. However if this is set to `false` then the internal static file is not written out and the CLI makes the necessary changes directly on the files based on the configuration in the `stackscli.yml` file in the project.
 
-Location: `internal/config/staticFiles/ado_veriable_template.yml`
+Location: `internal/config/staticFiles/ado_variable_template.yml`
 
 .Azure DevOps Variable Template
 [[azdo_variable_template,{listing-caption} {counter:refnum}]]

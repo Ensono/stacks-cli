@@ -149,13 +149,6 @@ stages:
               pathToPublish: $(Build.SourcesDirectory)/outputs/bin
               artifactName: StacksCLI
 
-          # Upload the documentation
-          - task: PublishBuildArtifacts@1
-            displayName: Publish Documentation
-            inputs:
-              pathToPublish: $(Build.SourcesDirectory)/outputs/docs
-              artifactName: docs
-
   - stage: int_tests
     displayName: Integration Tests
     dependsOn:
@@ -187,7 +180,20 @@ stages:
               script: |
                 export GOBIN=$HOME/go/bin
                 export PATH=$PATH:$GOBIN
-                eirctl inttest
+                eirctl test:int
+            env:
+              BIN_DIR: $(Build.ArtifactStagingDirectory)/bin
+              BUILDNUMBER: $(Build.BuildNumber)
+              WORKING_DIR: $(Build.SourcesDirectory)/projects
+
+          - task: Bash@3
+            displayName: Generate Report
+            inputs:
+              targetType: inline
+              script: |
+                export GOBIN=$HOME/go/bin
+                export PATH=$PATH:$GOBIN
+                eirctl test:int:generate_report
             env:
               BIN_DIR: $(Build.ArtifactStagingDirectory)/bin
               BUILDNUMBER: $(Build.BuildNumber)

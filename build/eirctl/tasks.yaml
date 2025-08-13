@@ -1,8 +1,14 @@
 tasks:
-  buildnumber:
+  build:number:
     context: buildenv
     command:
-      - /eirctl/build/scripts/Set-BuildNumber.ps1 $BUILDNUMBER
+      - Update-BuildNumber -BuildNumber $env:BUILD_BUILDNUMBER
+
+  lint:yaml:
+    context: powershell
+    description: Perform YAML linting
+    command:
+      - Invoke-YamlLint -FailOnWarnings $False
 
   clean:
     context: buildenv

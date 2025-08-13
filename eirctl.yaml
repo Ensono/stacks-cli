@@ -5,40 +5,40 @@ import:
 pipelines:
   build:
     - task: clean
-    - task: buildnumber
+    - task: build:number
     - task: _docs
       depends_on:
         - clean
-        - buildnumber
+        - build:number
     - task: test:unit
       depends_on: clean
     - task: _compile
       depends_on:
         - clean
-        - buildnumber
+        - build:number
 
   docs:
-    - task: buildnumber
+    - task: build:number
     - task: _docs:cmd:options
     - task: _docs
       depends_on:
-        - buildnumber
+        - build:number
         - _docs:cmd:options
 
   inttest:
-    - task: buildnumber
+    - task: build:number
     - task: test:int
-      depends_on: buildnumber
+      depends_on: build:number
     - task: test:int:generate_report
       depends_on: test:int
 
   compile:
-    - task: buildnumber
+    - task: build:number
     - task: _compile
-      depends_on: buildnumber
+      depends_on: build:number
 
   release:
-    - task: buildnumber
+    - task: build:number
     - task: _release
       depends_on:
-        - buildnumber
+        - build:number

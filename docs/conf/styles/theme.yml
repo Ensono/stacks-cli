@@ -42,18 +42,18 @@ table:
   caption:
     side: bottom
   head:
-    background-color: #6941eb
-    font-color: #ffffff
+    background-color: "#6941eb"
+    font-color: "#ffffff"
 
 role:
   highlight:
-    background-color: #fe6e69
+    background-color: "#fe6e69"
   notes:
-    background_color: #6941eb
-    font_color: #00ff00
+    background_color: "#6941eb"
+    font_color: "#00ff00"
 
 heading:
-  font-color: #6941eb
+  font-color: "#6941eb"
 
 footer:
   recto:

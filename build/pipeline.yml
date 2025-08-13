@@ -15,11 +15,82 @@ parameters:
     type: boolean
     default: false
 
+  - name: generate_docs
+    type: boolean
+    default: true
+    displayName: Generate Documentation
+
 variables:
   - template: variables.yml
 
 stages:
-  - stage: Build
+  - stage: prelim
+    displayName: Preliminaries
+
+    jobs:
+      - job: version_number
+        displayName: Set Build Number
+        pool:
+          vmImage: $(pool_vm_image)
+
+        steps:
+          - template: templates/setup.yml
+            parameters:
+              EirctlVersion: $(EirctlVersion)
+
+          # Update the build number
+          - task: Bash@3
+            displayName: Set Build Number
+            inputs:
+              targetType: inline
+              script: |
+                eirctl build:number
+
+          - task: Bash@3
+            displayName: Perform YAML linting
+            inputs:
+              targetType: inline
+              script: |
+                eirctl lint:yaml
+
+
+  - stage: docs
+    displayName: Documentation
+    condition: and(succeeded(), eq(${{ parameters.generate_docs }}, true))
+    dependsOn:
+      - prelim
+
+    jobs:
+      - job: generate_docs
+        displayName: Generate Documentation
+        pool:
+          vmImage: $(pool_vm_image)
+
+        steps:
+          - template: templates/setup.yml
+            parameters:
+              EirctlVersion: $(EirctlVersion)
+
+          - task: Bash@3
+            displayName: Generate Documentation
+            inputs:
+              targetType: inline
+              script: |
+                eirctl _docs
+            env:
+              BUILDNUMBER: $(Build.BuildNumber)
+
+          # Upload the documentation as a pipeline artifact
+          - task: PublishBuildArtifacts@1
+            displayName: Publish Documentation
+            inputs:
+              pathToPublish: $(Build.SourcesDirectory)/outputs/docs
+              artifactName: docs
+
+  - stage: build
+    displayName: Build
+    dependsOn:
+      - prelim
 
     jobs:
       - job: Build
@@ -29,15 +100,29 @@ stages:
             parameters:
               EirctlVersion: $(EirctlVersion)
 
-          # Run the tasks to build the application
+          # Clean the environment before running tests and compiling the application
           - task: Bash@3
             displayName: Build & Test
             inputs:
               targetType: inline
               script: |
-                eirctl build
-            env:
-              BUILDNUMBER: $(Build.BuildNumber)
+                eirctl clean
+
+          # Run the Unit tests for the application
+          - task: Bash@3
+            displayName: Run Unit Tests
+            inputs:
+              targetType: inline
+              script: |
+                eirctl test:unit
+
+          # Compile the application
+          - task: Bash@3
+            displayName: Build
+            inputs:
+              targetType: inline
+              script: |
+                eirctl _compile
 
           - task: Bash@3
             displayName: Outputs
@@ -73,7 +158,8 @@ stages:
               artifactName: docs
 
   - stage: IntegrationTests
-    dependsOn: Build
+    dependsOn:
+      - Build
     condition: succeeded()
 
     jobs:
@@ -89,7 +175,7 @@ stages:
           # Install Eirctl for the build to run
           - template: templates/setup.yml
             parameters:
-                EirctlVersion: $(EirctlVersion)
+              EirctlVersion: $(EirctlVersion)
 
           # Run the integration tests
           - task: Bash@3
@@ -113,7 +199,8 @@ stages:
               testRunTitle: IntegrationTests
 
   - stage: Release
-    dependsOn: Build
+    dependsOn:
+      - build
     condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(${{ parameters.pre_release }}, true)))
 
     variables:
@@ -142,7 +229,7 @@ stages:
           # Install Eirctl for the build to run
           - template: templates/setup.yml
             parameters:
-                EirctlVersion: $(EirctlVersion)
+              EirctlVersion: $(EirctlVersion)
 
           # Run the tasks to build the application
           - task: Bash@3

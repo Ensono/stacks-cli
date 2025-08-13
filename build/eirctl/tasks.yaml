@@ -1,6 +1,6 @@
 tasks:
   build:number:
-    context: buildenv
+    context: powershell
     command:
       - Update-BuildNumber -BuildNumber $env:BUILD_BUILDNUMBER
 

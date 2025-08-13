@@ -157,9 +157,10 @@ stages:
               pathToPublish: $(Build.SourcesDirectory)/outputs/docs
               artifactName: docs
 
-  - stage: IntegrationTests
+  - stage: int_tests
+    displayName: Integration Tests
     dependsOn:
-      - Build
+      - build
     condition: succeeded()
 
     jobs:
@@ -200,7 +201,7 @@ stages:
 
   - stage: Release
     dependsOn:
-      - build
+      - int_tests
     condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(${{ parameters.pre_release }}, true)))
 
     variables:

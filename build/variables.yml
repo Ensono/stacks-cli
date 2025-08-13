@@ -17,3 +17,7 @@ variables:
     value: $[counter(join(variables['version_major'], join('-', variables['version_minor'])), 0)]
   - name: version_semver
     value: "$(version_major).$(version_minor).$(version_revision)"
+
+  # Set the pool that will be used for building images
+  - name: pool_vm_image
+    value: ubuntu-24.04

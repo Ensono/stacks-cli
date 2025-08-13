@@ -5,10 +5,6 @@
 # Set the name which will define the build number
 name: 0.5$(Rev:.r)
 
-# Set the agent pool that is going to be used for the build
-pool:
-  vmImage: ubuntu-24.04
-
 parameters:
   - name: pre_release
     displayName: Create a pre-release from a feature branch
@@ -94,6 +90,9 @@ stages:
 
     jobs:
       - job: Build
+        pool:
+          vmImage: $(pool_vm_image)
+
         steps:
           # Install Eirctl for the build to run
           - template: templates/setup.yml
@@ -165,6 +164,8 @@ stages:
 
     jobs:
       - job: IntegrationTests
+        pool:
+          vmImage: $(pool_vm_image)
 
         steps:
           # Download the StacksCLI and the integration_tests
@@ -209,6 +210,8 @@ stages:
 
     jobs:
       - job: CreateGHRelease
+        pool:
+          vmImage: $(pool_vm_image)
 
         steps:
           # Download the necessary artifacts from the previous stage

@@ -7,3 +7,13 @@ variables:
     value: Ensono
   - name: RepoName
     value: stacks-cli
+
+  # Versioning
+  - name: version_major
+    value: 0
+  - name: version_minor
+    value: 5
+  - name: version_revision
+    value: $[counter(join(variables['version_major'], join('-', variables['version_minor'])), 0)]
+  - name: version_semver
+    value: "$(version_major).$(version_minor).$(version_revision)"

@@ -28,7 +28,9 @@ func NewFilesystemDownloader(path string, tempDir string) *Filesystem {
 
 func (f *Filesystem) Get() (string, error) {
 
-	f.logger.Infof("Copying files from: %s", f.Path)
+	if f.logger != nil {
+		f.logger.Infof("Copying files from: %s", f.Path)
+	}
 
 	// copy the repository from the cloned directory to the project working directory
 	// do not copy the git configuration folder

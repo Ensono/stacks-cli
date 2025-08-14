@@ -163,7 +163,6 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 
 		// copy the repository from the cloned directory to the project working directory
 		// do not copy the git configuration folder
-		// util.CopyDirectory(cloneDir, path)
 		opt := cp.Options{
 			Skip: func(info os.FileInfo, src, dest string) (bool, error) {
 				return strings.HasSuffix(src, ".git"), nil

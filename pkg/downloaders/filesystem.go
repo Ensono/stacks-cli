@@ -41,7 +41,9 @@ func (f *Filesystem) Get() (string, error) {
 	}
 	err := cp.Copy(f.Path, f.TempDir, opt)
 	if err != nil {
-		f.logger.Errorf("Issue copying files: %s", err.Error())
+		if f.logger != nil {
+			f.logger.Errorf("Issue copying files: %s", err.Error())
+		}
 	}
 
 	return f.TempDir, err

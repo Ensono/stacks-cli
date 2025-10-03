@@ -8,37 +8,53 @@ The chapter illustrates how to get a development environment up and running and 
 
 === Local Development
 
-NOTE: Due to the use of a task runner, it is not necessary to install Go as a component on your local machine, as the runner will run the build within a Docker container. The only pre-requisite is that Taskctl is installed.
+NOTE: Due to the use of a task runner, it is not necessary to install Go as a component on your local machine, as the runner will run the build within a Docker container. The only pre-requisite is that Eirctl is installed.
 
-==== Install Taskctl
+==== Install Eirctl
 
-https://github.com/taskctl/taskctl[Taskctl] is being used as in independent runner to build and test the code as well as generate this documentation. This means that whatever CI/CD runner is being used only needs to bootstrap the environment to run Taskctl.
+https://github.com/ensono/eirctl[Eirctl] is being used as in independent runner to build and test the code as well as generate this documentation. This means that whatever CI/CD runner is being used only needs to bootstrap the environment to run Eirctl.
 
-Regardless of whether the CLI is being built on a local machine or in a build agent Taskctl needs to be installed.
+Regardless of whether the CLI is being built on a local machine or in a build agent Eirctl needs to be installed.
 
-.Installing Taskctl on different platforms
-[options="header"]
-[cols="a,a,a"]
+.Installing Eirctl on different platforms
+[cols="1a,3a",options="header"]
 |===
-| Platform | Package Manager | Command
-| Linux | - | [source,bash,subs="attributes"]
+| Platform | Command
+| Linux |
+
+[source,bash,subs="+attributes"]
 ----
-curl -sL https://raw.githubusercontent.com/taskctl/taskctl/master/install.sh \| sh
+curl -sL https://github.com/Ensono/eirctl/releases/download/{eirctl_version}/eirctl-linux-amd64 -o /home/{example_username}/bin/eirctl
+chmod +x /home/{example_username}/bin/eirctl
 ----
-| Mac OS | Homebrew | [source,bash,subs="attributes"]
+
+| Mac OS |
+
+[source,bash,subs="+attributes"]
 ----
-brew tap taskctl/taskctl
-brew install taskctl
+curl -sL https://github.com/Ensono/eirctl/releases/download/{eirctl_version}/eirctl-darwin-arm64 -o /home/{example_username}/bin/eirctl
+chmod +x /home/{example_username}/bin/eirctl
 ----
-| Windows | Chocolatey | [source,bash,subs="attributes"]
+
+| Windows |
+
+[source,bash,subs="+attributes"]
 ----
-cd ~/Downloads
-Invoke-RestMethod -Uri https://github.com/taskctl/taskctl/releases/download/v{taskctl_version}/taskctl_{taskctl_version}_windows_amd64.zip -OutFile taskctl.zip
-Expand-Archive -Path taskctl.zip
+New-Item -Type Directory -Path ~/bin
+
+Invoke-RestMethod -Uri https://github.com/Ensono/eirctl/releases/download/{eirctl_version}/eirctl-windows-amd64.exe -OutFile ~/bin/eirctl.exe
+
+# Unblock the file
+Unblock-File -Path ~/bin/eirctl.exe
+
+# Add the bin folder to the path
+[Environment]::SetEnvironmentVariable("PATH", $env:Path + ";c:/Users/{example_username}/bin")
 ----
 |===
 
-In the case of the Azure DevOps build file, Taskctl is being downloaded directly from the release page of the project. This is so that we can control the version that is downloaded.
+NOTE: All of the binaries that are built for Eirctl have AMD64 and ARM64 variants
+
+In the case of the Azure DevOps build file, Eirctl is being downloaded directly from the release page of the project. This is so that we can control the version that is downloaded.
 
 ==== Clone the `stacks-cli` repository
 
@@ -53,7 +69,7 @@ git clone git@github.com:Ensono/stacks-cli.git
 
 ==== Build the CLI
 
-Building the Ensono Stacks CLI is as simple as running the default tasks using Taskctl. The default task is set to perform the following operations:
+Building the Ensono Stacks CLI is as simple as running the default tasks using Eirctl. The default task is set to perform the following operations:
 
 . Execute Tests
 .. Run tests
@@ -65,19 +81,19 @@ As this is the default task list, performing all tests and compiling the code is
 
 [source,bash]
 ----
-taskctl build
+Eirctl build
 ----
 
 The output of the command will be similar to the following.
 
 .Test and compile Ensono Stacks CLI
-image::images/taskctl-compile.png[]
+image::images/Eirctl-compile.png[]
 
 ==== Release
 
 There is a task that performs as GitHub release and uploads the documentation and binaries that have been created.
 
-The release is performed by a PowerShell function in th module, which uses the GitHub API to do the release. By doing it like this Taskctl performs the execution of the script, so it is not done by a propriatry task in the CI/CD build pipeline.
+The release is performed by a PowerShell function in the module, which uses the GitHub API to do the release. By doing it like this Eirctl performs the execution of the script, so it is not done by a propriatry task in the CI/CD build pipeline.
 
 Actioning the release is done by running the command `task release`
 
@@ -89,7 +105,7 @@ All of the necessary parameters can be set using environment variables, which ar
 | Parameter | Environment Variable | Description | Example Value
 | version | VERSION_NUMBER | Version number to be assigned to the release | `0.0.69`
 | commitid | COMMIT_ID | The SHA commit id to be used to set up the release | `0E42486F2`
-| notes | NOTES | Any notes that should be displayed on the release page | 
+| notes | NOTES | Any notes that should be displayed on the release page |
 `This is the latest release of the code`
 | artifactsDir | ARTIFACTS_DIR | Directory that the artifacts to be added as assets to the release are in | `outputs`
 | artifactsList | | List of files that need to be uploaded
@@ -102,7 +118,7 @@ If this is not specified then all of the files in the `artifactsDir` will be upl
 | prerelease | PRERELEASE | Specify if a prerelease should be created. Default: `true` | `true`
 |===
 
-The main build pipeline file has a stage called Release, which downloads the necessary artifacts and then calls the `release` task on Taskctl to perform the release.
+The main build pipeline file has a stage called Release, which downloads the necessary artifacts and then calls the `release` task on Eirctl to perform the release.
 
 ==== Build Documentation
 
@@ -112,13 +128,13 @@ Markdown is great for quick documentation, however by using Asciidoc it is possi
 
 It can also be used to generate Markdown files that are more easily added to static website generators, although Hugo has basic support for Asciidoc.
 
-The Taskctl has setup with three tasks for the documentation:
+The Eirctl has setup with three tasks for the documentation:
 
 . Download the Docker image for creating the documentation
 . Create the PDF document
 . Create the Markdown version of the files
 
-This is run by using the command `taskctl docs`.
+This is run by using the command `Eirctl docs`.
 
 ===== Markdown Generation
 
@@ -127,18 +143,19 @@ Generating the Markdown files is a two step process, the first step is to use `a
 All of these steps are performed by the PowerShell script, `build/scripts/ConvertTo-Markdown.ps1`, which is shown below:
 
 .Convert Asciidoc to Markdown
+[source,powershell]
 [[convert_adoc_to_md_script,{listing-caption} {counter:refnum}]]
 ....
 include::../build/scripts/ConvertTo-Markdown.ps1[]
 ....
 
-This script iterates around the `.adoc` files in the `docs/` directory and performs the conversion to XML and then MD on each one. The intended method of execution of the script is within the `{docs_build_docker_image}` Docker image. The image contains `pandoc`, `asciidoctor`, and `powershell`. The following shows and example of the Docker command executed by Taskctl.
+This script iterates around the `.adoc` files in the `docs/` directory and performs the conversion to XML and then MD on each one. The intended method of execution of the script is within the `{docs_build_docker_image}` Docker image. The image contains `pandoc`, `asciidoctor`, and `powershell`. The following shows and example of the Docker command executed by Eirctl.
 
 .Executing PowerShell script for Markdown creation
 [[convert_adoc_to_md_docker,{listing-caption} {counter:refnum}]]
 [source,bash]
 ----
-docker run -v ${PWD}:/app amidostacks/runner-pwsh-asciidoc:0.4.60-stable pwsh -command /app/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /app/docs/ -output_dir /app/outputs/docs/md
+docker run -v ${PWD}:/app amidostacks/runner-pwsh-asciidoc:0.4.60-stable pwsh -command /eirctl/build/scripts/ConvertTo-Markdown.ps1 -docs_dir /eirctl/docs/ -output_dir /eirctl/outputs/docs/md
 ----
 
 All of the markdown files are then uploaded as artefacts as part of the build.
@@ -158,25 +175,25 @@ The build consists of the following files:
 |===
 | Name | Description
 
-| `azuredevops-taskctl.yml` | Main pipeline file that AzDo uses to run the build
+| `azuredevops-Eirctl.yml` | Main pipeline file that AzDo uses to run the build
 | `azuredevops-vars.yml` | Variable template file containing variables for the build
 |===
 
 ==== Build Pipeline File
 
-The build pipeline for Azure DevOps, `build/azuredevops-taskctl.yml`, has been configured to bootstrap the environment for Taskctl to run. These steps are as follows:
+The build pipeline for Azure DevOps, `build/azuredevops-Eirctl.yml`, has been configured to bootstrap the environment for Eirctl to run. These steps are as follows:
 
-. Install Taskctl
+. Install Eirctl
 . Test and Compile
 .. Configure GOBIN and PATH environment variables
-.. Run build task of Taskctl
+.. Run build task of Eirctl
 . Upload Test results
 . Upload Coverage reports
 . Upload manual
-. Run integration tests by running the `inttest` task of the Taskctl
-. For releases, run release task of Taskctl
+. Run integration tests by running the `inttest` task of the Eirctl
+. For releases, run release task of Eirctl
 
-All of the testing, compilation and documentation has been handled by Taskctl, the parts outside of this are to install Go and Taskctl and to upload build artefacts.
+All of the testing, compilation and documentation has been handled by Eirctl, the parts outside of this are to install Go and Eirctl and to upload build artefacts.
 
 .Build steps
 image::images/azdo_build_steps.png[width=300]

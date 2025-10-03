@@ -6,7 +6,8 @@ Run the following command to scaffold a new Java project based on the Ensono Web
 [cols="a,a"]
 |===
 | Bash | PowerShell
-|[source,bash,subs="attributes"]
+|
+[source,bash,subs="attributes"]
 ----
 stacks-cli scaffold -A {example_area} \
                 --company {example_company} \
@@ -24,7 +25,8 @@ stacks-cli scaffold -A {example_area} \
                 -u {example_project_src_url} \
                 --cmdlog
 ----
-|[source,powershell,subs="attributes"]
+|
+[source,powershell,subs="attributes"]
 ----
 stacks-cli scaffold -A {example_area} `
                 --company {example_company} `
@@ -53,6 +55,7 @@ image::images/example-java-webapi-cmdline.png[]
 As the option to save all the commands that are executed by the CLI has been specified, the `cmdlog.txt` file for the above command is as follows.
 
 .Command log for the Java webapi scaffold
+[source,console]
 ----
 [C:\Users\rseymour\scratch\projects\my-webapi] java -version
 [C:\Users\rseymour\AppData\Local\Temp\stacksclia5d508c255\stacks-java-master] mvn process-resources -f stacksclipom.xml -P copy-devops-resources -P generate-settings-file -Dtarget.dir=C:\Users\rseymour\scratch\projects\my-webapi --quiet
@@ -182,4 +185,3 @@ The resultant project, as stated by the `Project path:` statement in the screens
             └───classes
                 └───local
 ----
-

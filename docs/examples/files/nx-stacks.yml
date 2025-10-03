@@ -18,17 +18,17 @@ input:
         external: example-stacks.com
   pipeline: azdo
   project:
-  - name: website
-    framework:
-      type: nx
-      option: next
-      version: latest
-    sourcecontrol:
-      type: github
-      url: https://github.com/ensonodigital/stacks-nx-next
-    cloud:
-      region: westeurope
-      group: frontend-resources
+    - name: website
+      framework:
+        type: nx
+        option: next
+        version: latest
+      sourcecontrol:
+        type: github
+        url: https://github.com/ensonodigital/stacks-nx-next
+      cloud:
+        region: westeurope
+        group: frontend-resources
   terraform:
     backend:
       storage: kjh56sdfnjnkjn

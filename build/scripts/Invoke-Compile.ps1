@@ -10,7 +10,7 @@ param (
 
     [string]
     # Base directory for all binary builds
-    $BasePath = "/app/outputs/bin",
+    $BasePath = "/eirctl/outputs/bin",
 
     [string]
     # Set the build number
@@ -87,16 +87,16 @@ foreach ($os in $targets) {
 
         # Build up the command to create the CLI binary
         $cmd = 'go build -ldflags "-X github.com/Ensono/stacks-cli/cmd.version={0}" -o {1} {2}' -f
-                    $BuildNumber,
-                    $cli_filename,
-                    $build_vcs
+        $BuildNumber,
+        $cli_filename,
+        $build_vcs
 
         Invoke-Expression -Command $cmd
 
         # Build up the command to build the test
         $cmd = 'go test -ldflags "-X github.com/Ensono/stacks-cli/testing/integration.version={0}" -tags integration -o {1} -c github.com/Ensono/stacks-cli/testing/integration/...' -f
-                    $BuildNumber,
-                    $inttest_filename
+        $BuildNumber,
+        $inttest_filename
 
         Invoke-Expression -Command $cmd
 

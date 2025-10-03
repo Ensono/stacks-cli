@@ -9,6 +9,7 @@ import (
 
 	"github.com/Ensono/stacks-cli/internal/config/staticFiles"
 	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/sirupsen/logrus"
 )
 
 type Pipeline struct {
@@ -17,6 +18,12 @@ type Pipeline struct {
 	Template     []PipelineFile        `mapstructure:"templates"`
 	Items        []string              `mapstructure:"items"`
 	Replacements []PipelineReplacement `mapstructure:"replacements"`
+	Logger       *logrus.Logger        `mapstructure:"-"`
+}
+
+// SetLogger sets the logger for the Pipeline struct
+func (p *Pipeline) SetLogger(logger *logrus.Logger) {
+	p.Logger = logger
 }
 
 type PipelineFile struct {
@@ -120,6 +127,7 @@ func (p *Pipeline) GetSupported() []string {
 // the regex pattern with the specified value
 func (p *Pipeline) ReplacePatterns(config *Config, inputs Replacements, dir string) []error {
 
+	var count int
 	var errs []error
 	var filelist []string
 	errs = make([]error, 0)
@@ -150,15 +158,29 @@ func (p *Pipeline) ReplacePatterns(config *Config, inputs Replacements, dir stri
 		filelist = append(filelist, files...)
 	}
 
+	// Ensure the filelist does not contain duplicates
+	unique := make(map[string]struct{})
+	result := make([]string, 0, len(filelist))
+	for _, f := range filelist {
+		if _, seen := unique[f]; !seen {
+			unique[f] = struct{}{}
+			result = append(result, f)
+		}
+	}
+	filelist = result
+
 	// iterate around all the files that have been set
 	for _, item := range filelist {
 
+		p.Logger.Infof("\t%s", item)
+
 		// read the file into a variable
-		content, err := os.ReadFile(item)
+		contentBytes, err := os.ReadFile(item)
 		if err != nil {
 			errs = append(errs, err)
 			return errs
 		}
+		content := string(contentBytes)
 
 		// iterate around the replacements to get the pattern and the replacement value
 		for _, replacement := range p.Replacements {
@@ -174,17 +196,40 @@ func (p *Pipeline) ReplacePatterns(config *Config, inputs Replacements, dir stri
 
 			// create the regex object from the pattern
 			pattern := fmt.Sprintf(`(?m)%s`, replacement.Pattern)
+			pattern = strings.ReplaceAll(pattern, `\\`, `\`)
 			re, err := regexp.Compile(pattern)
 
 			if err != nil {
 				errs = append(errs, err)
 				continue
 			}
-			content = re.ReplaceAll(content, []byte(replacement_value))
+
+			p.Logger.Debugf("\t\tPattern: %q\n", pattern)
+			p.Logger.Debugf("\t\tReplacement: %q\n", replacement_value)
+
+			// Use ReplaceAllStringFunc for string-based replacement
+			count = 0
+			content = re.ReplaceAllStringFunc(content, func(match string) string {
+				// Find submatches for the current match
+				submatches := re.FindStringSubmatch(match)
+				result := replacement_value
+
+				for i := 1; i < len(submatches); i++ {
+					placeholder := fmt.Sprintf("${%d}", i)
+					result = strings.ReplaceAll(result, placeholder, submatches[i])
+				}
+
+				// increment the counter
+				count++
+
+				return result
+			})
+
+			p.Logger.Infof("\t\t%d replacements made for pattern `%s`", count, pattern)
 		}
 
 		// write out the file
-		err = os.WriteFile(item, content, 0666)
+		err = os.WriteFile(item, []byte(content), 0666)
 		if err != nil {
 			errs = append(errs, err)
 		}

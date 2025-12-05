@@ -207,24 +207,42 @@ func (p *Pipeline) ReplacePatterns(config *Config, inputs Replacements, dir stri
 			p.Logger.Debugf("\t\tPattern: %q\n", pattern)
 			p.Logger.Debugf("\t\tReplacement: %q\n", replacement_value)
 
-			// Use ReplaceAllStringFunc for string-based replacement
+			// Use FindAllStringSubmatchIndex to get all matches and submatches in one pass
 			count = 0
-			content = re.ReplaceAllStringFunc(content, func(match string) string {
-				// Find submatches for the current match
-				submatches := re.FindStringSubmatch(match)
-				result := replacement_value
+			matches := re.FindAllStringSubmatchIndex(content, -1)
+			if len(matches) == 0 {
+				p.Logger.Infof("\t\t%d replacements made for pattern `%s`", count, pattern)
+				continue
+			}
 
-				for i := 1; i < len(submatches); i++ {
+			var resultBuilder strings.Builder
+			lastIndex := 0
+			for _, matchIdx := range matches {
+				// matchIdx[0] and matchIdx[1] are the start and end of the full match
+				start, end := matchIdx[0], matchIdx[1]
+				// Write content before the match
+				resultBuilder.WriteString(content[lastIndex:start])
+
+				// Prepare replacement string
+				result := replacement_value
+				// For each submatch, replace ${i} with the submatch value
+				for i := 1; i < len(matchIdx)/2; i++ {
+					subStart, subEnd := matchIdx[2*i], matchIdx[2*i+1]
+					submatch := ""
+					if subStart != -1 && subEnd != -1 {
+						submatch = content[subStart:subEnd]
+					}
 					placeholder := fmt.Sprintf("${%d}", i)
-					result = strings.ReplaceAll(result, placeholder, submatches[i])
+					result = strings.ReplaceAll(result, placeholder, submatch)
 				}
 
-				// increment the counter
+				resultBuilder.WriteString(result)
 				count++
-
-				return result
-			})
-
+				lastIndex = end
+			}
+			// Write the rest of the content after the last match
+			resultBuilder.WriteString(content[lastIndex:])
+			content = resultBuilder.String()
 			p.Logger.Infof("\t\t%d replacements made for pattern `%s`", count, pattern)
 		}
 

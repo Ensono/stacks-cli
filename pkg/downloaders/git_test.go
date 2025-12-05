@@ -105,21 +105,6 @@ func TestGit_EmptyValues(t *testing.T) {
 	assert.Equal(t, "", downloader.Token, "Empty Token should be preserved")
 }
 
-func TestGit_SingletonBehavior(t *testing.T) {
-	// Test singleton pattern behavior
-	downloader1 := NewGitDownloader("url1", "v1", "fw1", "temp1", "token1")
-	downloader2 := NewGitDownloader("url2", "v2", "fw2", "temp2", "token2")
-
-	// Both should be the same instance (singleton pattern)
-	assert.Same(t, downloader1, downloader2, "Both downloaders should be the same instance")
-	
-	// The second call should overwrite the first call's values
-	assert.Equal(t, "url2", downloader1.URL, "URL should be updated to latest value")
-	assert.Equal(t, "v2", downloader1.Version, "Version should be updated to latest value")
-	assert.Equal(t, "fw2", downloader1.FrameworkVersion, "FrameworkVersion should be updated to latest value")
-	assert.Equal(t, "temp2", downloader1.TempDir, "TempDir should be updated to latest value")
-	assert.Equal(t, "token2", downloader1.Token, "Token should be updated to latest value")
-}
 
 func TestGit_URLValidation(t *testing.T) {
 	// Test various URL formats

@@ -131,20 +131,26 @@ func TestNuget_EmptyValues(t *testing.T) {
 	assert.Equal(t, "", downloader.TempDir, "Empty TempDir should be preserved")
 }
 
-func TestNuget_SingletonBehavior(t *testing.T) {
-	// Test singleton pattern behavior
+func TestNuget_IndependentInstances(t *testing.T) {
+	// Test that each call returns a new, independent instance
 	downloader1 := NewNugetDownloader("name1", "id1", "v1", "cache1", "temp1")
 	downloader2 := NewNugetDownloader("name2", "id2", "v2", "cache2", "temp2")
 
-	// Both should be the same instance (singleton pattern)
-	assert.Same(t, downloader1, downloader2, "Both downloaders should be the same instance")
-	
-	// The second call should overwrite the first call's values
-	assert.Equal(t, "name2", downloader1.Name, "Name should be updated to latest value")
-	assert.Equal(t, "id2", downloader1.ID, "ID should be updated to latest value")
-	assert.Equal(t, "v2", downloader1.Version, "Version should be updated to latest value")
-	assert.Equal(t, "cache2", downloader1.CacheDir, "CacheDir should be updated to latest value")
-	assert.Equal(t, "temp2", downloader1.TempDir, "TempDir should be updated to latest value")
+	// Both should be different instances (no singleton pattern)
+	assert.NotSame(t, downloader1, downloader2, "Each downloader should be a different instance")
+
+	// Each instance should retain its own values
+	assert.Equal(t, "name1", downloader1.Name, "downloader1 Name should match")
+	assert.Equal(t, "id1", downloader1.ID, "downloader1 ID should match")
+	assert.Equal(t, "v1", downloader1.Version, "downloader1 Version should match")
+	assert.Equal(t, "cache1", downloader1.CacheDir, "downloader1 CacheDir should match")
+	assert.Equal(t, "temp1", downloader1.TempDir, "downloader1 TempDir should match")
+
+	assert.Equal(t, "name2", downloader2.Name, "downloader2 Name should match")
+	assert.Equal(t, "id2", downloader2.ID, "downloader2 ID should match")
+	assert.Equal(t, "v2", downloader2.Version, "downloader2 Version should match")
+	assert.Equal(t, "cache2", downloader2.CacheDir, "downloader2 CacheDir should match")
+	assert.Equal(t, "temp2", downloader2.TempDir, "downloader2 TempDir should match")
 }
 
 func TestNuget_URLFormats(t *testing.T) {

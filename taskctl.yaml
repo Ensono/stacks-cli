@@ -27,8 +27,12 @@ pipelines:
 
   inttest:
     - task: buildnumber
-    - task: test:int
+    - task: _compile
       depends_on: buildnumber
+    - task: test:int
+      depends_on:
+        - buildnumber
+        - _compile
     - task: test:int:generate_report
       depends_on: test:int
 

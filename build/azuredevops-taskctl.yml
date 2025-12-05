@@ -2,21 +2,6 @@
 # This is so that the main build and tests can be run in the same way
 # on a local machine as well as in the CLI
 
-# Trigger on main and feature branches
-trigger:
-  branches:
-    include:
-      - main
-      - fix/*
-      - feature/*
-      - chore/*
-
-# PR triggers
-pr:
-  branches:
-    include:
-      - main
-
 # Set the name which will define the build number
 name: 0.4$(Rev:.r)
 

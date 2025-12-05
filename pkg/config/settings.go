@@ -165,7 +165,7 @@ func (s *Settings) CheckCmdVersions(config *Config, logger *logrus.Logger, path 
 
 				// version_segments, err := util.VersionSegments(re, matches)
 				if err != nil {
-					logger.Errorf(err.Error())
+					logger.Errorf("%s", err.Error())
 				}
 
 				if err != nil {
@@ -209,7 +209,7 @@ func (s *Settings) CheckCmdVersions(config *Config, logger *logrus.Logger, path 
 	// if there any errors, log them and then exit
 	if len(resultErrors) > 0 {
 		for _, err := range resultErrors {
-			logger.Errorf(err)
+			logger.Errorf("%s", err)
 		}
 		os.Exit(7)
 	}

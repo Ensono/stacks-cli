@@ -338,7 +338,7 @@ func preRun(ccmd *cobra.Command, args []string) {
 
 	if overrideConfig != "" {
 		msg := App.Help.GetMessage("INT001", overrideConfig)
-		App.Logger.Infof(msg)
+		App.Logger.Infof("%s", msg)
 
 		// add in the internal configuration file to the ConfigFiles slice
 		ConfigFiles = append([]string{overrideConfig}, ConfigFiles...)

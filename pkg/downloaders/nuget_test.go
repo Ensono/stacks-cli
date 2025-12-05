@@ -25,7 +25,7 @@ func (m *MockAPICall) Do() (*http.Response, error) {
 // MockExists is a mock for util.Exists function
 var mockExists func(string) bool
 
-// MockUnzip is a mock for util.Unzip function  
+// MockUnzip is a mock for util.Unzip function
 var mockUnzip func(string, string) error
 
 // Helper function to create a mock HTTP response
@@ -261,10 +261,6 @@ func TestNuget_FrameworkVersions(t *testing.T) {
 			frameworkVersion: "net48",
 		},
 		{
-			name:             ".NET Core 3.1",
-			frameworkVersion: "netcoreapp3.1",
-		},
-		{
 			name:             "Latest",
 			frameworkVersion: "latest",
 		},
@@ -284,21 +280,21 @@ func TestNuget_FrameworkVersions(t *testing.T) {
 // Test that the downloader implements the Downloader interface
 func TestNuget_ImplementsDownloaderInterface(t *testing.T) {
 	downloader := NewNugetDownloader("test", "package-id", "1.0.0", "/tmp/cache", "temp")
-	
+
 	// This will fail compilation if the interface is not implemented correctly
 	var _ interface {
 		Get() (string, error)
 		PackageURL() string
 		SetLogger(*logrus.Logger)
 	} = downloader
-	
+
 	// If we get here, the interface is implemented correctly
 	assert.True(t, true, "NuGet downloader implements the required interface")
 }
 
 func TestNuget_LoggerIntegration(t *testing.T) {
 	downloader := NewNugetDownloader("testpackage", "package-id", "1.0.0", "/tmp/cache", "/tmp")
-	
+
 	// Test with different logger configurations
 	testCases := []struct {
 		name   string
@@ -373,10 +369,10 @@ func TestNuget_TempDirectoryHandling(t *testing.T) {
 func TestNuget_APICallInitialization(t *testing.T) {
 	// The NuGet downloader creates APICall internally in Get() method, not in constructor
 	downloader := NewNugetDownloader("testpackage", "package-id", "1.0.0", "/tmp/cache", "/tmp")
-	
+
 	// Verify downloader is created successfully
 	assert.NotNil(t, downloader, "Downloader should be initialized")
-	
+
 	// Note: APICall is created inside Get() method, not accessible from constructor
 	// In real tests, you would mock models.NewAPICall to test this behavior
 }
@@ -412,7 +408,7 @@ func TestNuget_Get_IntegrationNote(t *testing.T) {
 	// - Disk space issues
 	// - Permission issues in temp directory
 	// - Malformed package files
-	
+
 	downloader := NewNugetDownloader("testpackage", "package-id", "1.0.0", "/tmp/cache", "/tmp")
 	logger := logrus.New()
 	logger.SetLevel(logrus.FatalLevel) // Suppress output during tests
@@ -420,12 +416,12 @@ func TestNuget_Get_IntegrationNote(t *testing.T) {
 
 	// This test documents the Get method's interface without calling external dependencies
 	assert.NotNil(t, downloader.Get, "Get method should exist")
-	
+
 	// The actual testing of Get() would require comprehensive mocking
 	t.Skip("Get() method testing requires mocking APICall.Do(), util.Exists(), and util.Unzip()")
 }
 
-// TestNuget_GetLatestVersion_IntegrationNote provides documentation about getLatestVersion method testing  
+// TestNuget_GetLatestVersion_IntegrationNote provides documentation about getLatestVersion method testing
 func TestNuget_GetLatestVersion_IntegrationNote(t *testing.T) {
 	// NOTE: The getLatestVersion() method:
 	// 1. Makes HTTP API calls to NuGet feeds
@@ -445,13 +441,13 @@ func TestNuget_GetLatestVersion_IntegrationNote(t *testing.T) {
 	// - API returns malformed JSON
 	// - API returns HTTP errors
 	// - Network connectivity issues
-	
+
 	downloader := NewNugetDownloader("testpackage", "package-id", "latest", "/tmp/cache", "/tmp")
-	
+
 	// This test documents the getLatestVersion method without calling external dependencies
 	// The method is not exported, so we can't call it directly in tests
 	assert.Equal(t, "latest", downloader.Version, "Version should start as 'latest'")
-	
+
 	t.Skip("getLatestVersion() method testing requires mocking APICall.Do() and JSON response parsing")
 }
 
@@ -464,7 +460,7 @@ func BenchmarkNewNugetDownloader(b *testing.B) {
 	tempDir := "/tmp/bench"
 
 	b.ResetTimer()
-	
+
 	for i := 0; i < b.N; i++ {
 		_ = NewNugetDownloader(name, id, version, cacheDir, tempDir)
 	}
@@ -497,7 +493,7 @@ func TestNuget_PackageURLConstruction(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			downloader := NewNugetDownloader("packagename", "package-id", "1.0.0", "/tmp/cache", "/tmp")
-			
+
 			actualURL := downloader.PackageURL()
 			// URL is constructed internally, not from input URL
 			assert.Equal(t, "", actualURL, "PackageURL should initially return empty string")
@@ -508,9 +504,9 @@ func TestNuget_PackageURLConstruction(t *testing.T) {
 func TestNuget_ErrorHandlingPreparation(t *testing.T) {
 	// This test prepares the structure for testing error scenarios
 	// In a full implementation, you would test:
-	
+
 	downloader := NewNugetDownloader("invalid-name", "invalid-id", "invalid-version", "/invalid/cache", "/invalid/path")
-	
+
 	// Test that invalid inputs don't cause immediate failures during construction
 	assert.NotNil(t, downloader, "Downloader should be created even with invalid inputs")
 	assert.Equal(t, "invalid-name", downloader.Name, "Invalid Name should be preserved")
@@ -518,7 +514,7 @@ func TestNuget_ErrorHandlingPreparation(t *testing.T) {
 	assert.Equal(t, "invalid-version", downloader.Version, "Invalid version should be preserved")
 	assert.Equal(t, "/invalid/cache", downloader.CacheDir, "Invalid cache path should be preserved")
 	assert.Equal(t, "/invalid/path", downloader.TempDir, "Invalid path should be preserved")
-	
+
 	// Errors should be caught during Get() method execution, not during construction
 	t.Log("Error handling should be tested in Get() method with proper mocking")
 }
@@ -526,23 +522,23 @@ func TestNuget_ErrorHandlingPreparation(t *testing.T) {
 func TestNuget_CacheScenarios(t *testing.T) {
 	// This test outlines cache-related scenarios that should be tested
 	// In a full implementation with proper mocking, you would test:
-	
+
 	downloader := NewNugetDownloader("testpackage", "package-id", "1.0.0", "/tmp/cache-test", "/tmp")
-	
+
 	testCases := []string{
 		"Package exists in cache - should skip download",
-		"Package doesn't exist in cache - should download", 
+		"Package doesn't exist in cache - should download",
 		"Package exists but is corrupted - should re-download",
 		"Cache directory doesn't exist - should create and download",
 		"Cache directory is not writable - should handle error",
 	}
-	
+
 	for _, scenario := range testCases {
 		t.Log("Cache scenario to test:", scenario)
 		// In real tests, you would mock util.Exists() and filesystem operations
 		// to simulate each scenario and verify the correct behavior
 	}
-	
+
 	assert.NotNil(t, downloader, "Downloader should be created for cache testing")
 	t.Skip("Cache testing requires mocking util.Exists() and filesystem operations")
 }

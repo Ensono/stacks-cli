@@ -89,7 +89,6 @@ The NuGet downloader test suite provides extensive coverage for NuGet package do
   - .NET 6.0, 7.0, 8.0 (`net6.0`, `net7.0`, `net8.0`)
   - .NET Standard 2.0, 2.1 (`netstandard2.0`, `netstandard2.1`)
   - .NET Framework 4.8 (`net48`)
-  - .NET Core 3.1 (`netcoreapp3.1`)
   - Latest framework version
 * Note: Framework version is not stored in the actual implementation
 

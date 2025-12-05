@@ -196,6 +196,10 @@ func (p *Pipeline) ReplacePatterns(config *Config, inputs Replacements, dir stri
 
 			// create the regex object from the pattern
 			pattern := fmt.Sprintf(`(?m)%s`, replacement.Pattern)
+
+			// The following replacement handles file paths from Windows machines
+			// The path C:\Users\anon will be read in as C:\\Users\\anon, which fails any matching
+			// By replacing these literal double backslashes with single backslashes, the regex can match correctly
 			pattern = strings.ReplaceAll(pattern, `\\`, `\`)
 			re, err := regexp.Compile(pattern)
 

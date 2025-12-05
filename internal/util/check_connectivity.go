@@ -1,6 +1,7 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -16,7 +17,7 @@ func CheckConnectivity(target string) error {
 	// check that the address can be resolved
 	_, err = net.LookupIP(target)
 	if err != nil {
-		return fmt.Errorf(msg)
+		return errors.New(msg)
 	}
 
 	// check that the address can be contacted
@@ -25,7 +26,7 @@ func CheckConnectivity(target string) error {
 		return err
 	}
 	if resp.StatusCode > 299 {
-		return fmt.Errorf(msg)
+		return errors.New(msg)
 	}
 
 	return err

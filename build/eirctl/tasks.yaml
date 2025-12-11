@@ -28,7 +28,8 @@ tasks:
     command: |
       gem install rqrcode:2.2.0
       /eirctl/build/scripts/Build-Glossary.ps1
-      Build-Documentation -Config /eirctl/docs/conf/docs.json
+      /eirctl/build/scripts/Set-DocVariables.ps1
+      Build-Documentation -Config /eirctl/docs/conf/docs.gen.json
 
   _docs:cmd:options:
     description: Generates documentation for the command options

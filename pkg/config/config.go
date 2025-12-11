@@ -305,6 +305,11 @@ func (config *Config) fs() billy.Filesystem {
 	return config.Filesystem
 }
 
+// GetFilesystem returns the configured filesystem, initialising the default if needed.
+func (config *Config) GetFilesystem() billy.Filesystem {
+	return config.fs()
+}
+
 // ExecuteCommand executes the command and arguments that have been supplied to the function
 func (config *Config) ExecuteCommand(path string, logger *logrus.Logger, command string, arguments string, show bool, force bool) (string, error) {
 

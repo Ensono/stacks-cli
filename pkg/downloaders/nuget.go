@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
 	"github.com/Ensono/stacks-cli/internal/models"
 	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/go-git/go-billy/v5"
+	"github.com/go-git/go-billy/v5/osfs"
 	"github.com/sirupsen/logrus"
 )
 
@@ -22,9 +25,10 @@ type Nuget struct {
 	CacheDir         string
 
 	// define private properties
-	url    string
-	latest bool
-	logger *logrus.Logger
+	url        string
+	latest     bool
+	logger     *logrus.Logger
+	Filesystem billy.Filesystem
 }
 
 type NugetResponse struct {
@@ -63,6 +67,31 @@ func NewNugetDownloader(name string, id string, version string, cacheDir string,
 	}
 }
 
+func (n *Nuget) fs() billy.Filesystem {
+	if n.Filesystem != nil {
+		return n.Filesystem
+	}
+
+	return osfs.New("/")
+}
+
+func (n *Nuget) ensureTempDir() error {
+	if n.TempDir == "" {
+		return nil
+	}
+	if err := util.RemoveAll(n.fs(), n.TempDir); err != nil {
+		return err
+	}
+	return n.ensureDir(n.TempDir)
+}
+
+func (n *Nuget) ensureDir(dir string) error {
+	if dir == "" {
+		return nil
+	}
+	return n.fs().MkdirAll(dir, os.ModePerm)
+}
+
 // Get downloads the specified, or latest, version of the named package from Nuget
 func (n *Nuget) Get() (string, error) {
 
@@ -83,6 +112,14 @@ func (n *Nuget) Get() (string, error) {
 
 	// output information about the version being used
 	n.logger.Infof("Using package version: %s", n.Version)
+
+	// ensure directories exist
+	if err := n.ensureDir(n.CacheDir); err != nil {
+		return "", err
+	}
+	if err := n.ensureTempDir(); err != nil {
+		return "", err
+	}
 
 	// get the data from the Nuget API
 	err, statusCode := ac.Do("GET")
@@ -121,6 +158,9 @@ func (n *Nuget) Get() (string, error) {
 	// but ensure that there is a top level dir to work with in the tempDir as
 	// all projects get unpacked into here
 	unpackDir := filepath.Join(n.TempDir, strings.ToLower(n.Name))
+	if err := n.ensureDir(unpackDir); err != nil {
+		return "", err
+	}
 	_, err = util.Unzip(downloadPath, unpackDir)
 	if err != nil {
 		return "", err

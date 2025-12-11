@@ -140,7 +140,7 @@ func (suite *ArgsSuite) TestProject() {
 				suite.T().Fatalf("Problem analysing file: %v", err)
 			}
 
-			t.Logf(file.Name())
+			t.Logf("%s", file.Name())
 
 			if info.IsDir() {
 				list = append(list, file.Name())
@@ -148,6 +148,12 @@ func (suite *ArgsSuite) TestProject() {
 		}
 
 		t.Logf("Files: %s", strings.Join(list, ", "))
+
+		// Check that directories were found before trying to access them
+		if len(list) == 0 {
+			suite.Assert.Fail("No project directories found in src/api - expected at least one directory namespaced with company name")
+			return
+		}
 
 		// Check that the dirname begins with %company%
 		pattern := fmt.Sprintf("^%s.*$", suite.Company)

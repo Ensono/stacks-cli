@@ -1,0 +1,12 @@
+=== Exit Codes
+
+The following table shows the exit codes that the CLI will emit on an error.
+
+[options="header",cols="1,5"]
+|===
+| Exit Code | Description
+| 1 | Unable to read in the internal configuration. If this occurs then there is an issue with the published CLI
+| 2 | Occurs when the CLI is not able to read in the override file for the internal configuration
+| 3 | When using the `scaffold` command and the Azure DevOps file has been specified and it cannot be read in
+| 4 | After all the parsing of the command line options and arguments, it cannot be read properly
+|===

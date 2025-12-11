@@ -204,9 +204,17 @@ func (config *Config) RenderTemplate(name string, tmpl string, input Replacement
 	// declare var to hold the rendered string
 	var rendered bytes.Buffer
 
+	// create a function map that passes in functions to the template that
+	// can be used to run simple string operations from within the template
+	funcMap := template.FuncMap{
+		"toLower": strings.ToLower,
+		"toUpper": strings.ToUpper,
+		"trim":    strings.TrimSpace,
+	}
+
 	// create an object of the template
 	// if it fails then return with an error
-	t, err := template.New(name).Parse(tmpl)
+	t, err := template.New(name).Funcs(funcMap).Parse(tmpl)
 
 	if err != nil {
 		return "", err
@@ -234,6 +242,16 @@ func (config *Config) SetDefaultValues() {
 		internal := config.Input.Network.Base.Domain.External
 		internal = strings.Replace(internal, domainutil.DomainSuffix(internal), "internal", -1)
 		config.Input.Network.Base.Domain.Internal = internal
+	}
+
+	// Set default TemplateMode to true for all StacksComponents where it hasn't been explicitly set
+	for key, component := range config.Stacks.Components {
+		// If TemplateMode is nil (not set in config), set it to true (default)
+		if component.TemplateMode == nil {
+			trueValue := true
+			component.TemplateMode = &trueValue
+			config.Stacks.Components[key] = component
+		}
 	}
 
 	// Set the currentdirectory to the path that the CLI is currently running in

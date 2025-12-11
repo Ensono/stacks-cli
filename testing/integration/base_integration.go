@@ -278,7 +278,7 @@ func (suite *BaseIntegration) CreateDirs(dirs []string) {
 	}
 
 	if len(errors) > 0 {
-		suite.T().Fatalf(strings.Join(errors, "\n"))
+		suite.T().Fatalf("%s", strings.Join(errors, "\n"))
 	}
 }
 

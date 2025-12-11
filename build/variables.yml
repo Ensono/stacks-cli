@@ -1,0 +1,23 @@
+# This file holds the variables that will be consumed
+# by the build
+variables:
+  - name: EirctlVersion
+    value: 0.9.7
+  - name: RepoOwner
+    value: Ensono
+  - name: RepoName
+    value: stacks-cli
+
+  # Versioning
+  - name: version_major
+    value: 0
+  - name: version_minor
+    value: 5
+  - name: version_revision
+    value: $[counter(join(variables['version_major'], join('-', variables['version_minor'])), 0)]
+  - name: version_semver
+    value: "$(version_major).$(version_minor).$(version_revision)"
+
+  # Set the pool that will be used for building images
+  - name: pool_vm_image
+    value: ubuntu-24.04

@@ -1,0 +1,4 @@
+== Glossary
+
+[cols="1,2,2",options="header"]
+include::../local/glossary_table.adoc[]

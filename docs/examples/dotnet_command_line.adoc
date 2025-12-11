@@ -6,7 +6,8 @@ Run the following command to create the new project in the working directory, wh
 [cols="a,a"]
 |===
 | Bash | PowerShell
-|[source,bash,subs="attributes"]
+|
+[source,bash,subs="attributes"]
 ----
 stacks-cli scaffold -A {example_area} \
                 --company {example_company} \
@@ -23,7 +24,8 @@ stacks-cli scaffold -A {example_area} \
                 -V {example_dotnet_framework_version} \
                 --cmdlog
 ----
-|[source,powershell,subs="attributes"]
+|
+[source,powershell,subs="attributes"]
 ----
 stacks-cli scaffold -A {example_area} `
                 --company {example_company} `

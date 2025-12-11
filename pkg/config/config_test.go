@@ -8,23 +8,26 @@ import (
 	"testing"
 
 	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/go-git/go-billy/v5"
+	"github.com/go-git/go-billy/v5/memfs"
 	yaml "github.com/goccy/go-yaml"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
-func setupConfigTests(t *testing.T) (func(t *testing.T), string) {
-	// create a temporary directory
-	tempDir := t.TempDir()
+func setupConfigTests(t *testing.T) (func(t *testing.T), billy.Filesystem, string) {
+	fs := memfs.New()
+	dir := "/workspace"
 
-	deferFunc := func(t *testing.T) {
-		err := os.RemoveAll(tempDir)
-		if err != nil {
-			t.Logf("[ERROR] Unable to remove dir: %v", err)
-		}
+	if err := fs.MkdirAll(dir, os.ModePerm); err != nil {
+		t.Fatalf("unable to prepare workspace: %v", err)
 	}
 
-	return deferFunc, tempDir
+	return func(t *testing.T) {
+		if err := util.RemoveAll(fs, dir); err != nil {
+			t.Logf("[ERROR] Unable to remove dir: %v", err)
+		}
+	}, fs, dir
 }
 
 func TestGetVersionWithDefaultVersionNumber(t *testing.T) {
@@ -100,15 +103,17 @@ func TestTemplateString(t *testing.T) {
 
 func TestWriteVariableTemplate(t *testing.T) {
 
-	// setup the environment
-	cleanup, dir := setupConfigTests(t)
-	defer cleanup(t)
+	fs := memfs.New()
+	config := Config{
+		Filesystem: fs,
+	}
+	config.Init()
 
-	// create the necesssary objects
+	workingDir := "/workspace"
 	project := Project{
 		Name: "config_test",
 		Directory: Directory{
-			WorkingDir: dir,
+			WorkingDir: workingDir,
 		},
 	}
 
@@ -122,15 +127,13 @@ func TestWriteVariableTemplate(t *testing.T) {
 		File: files,
 	}
 	replacements := Replacements{}
-	config := Config{}
-	config.Init()
 
 	// call the method to create the variable file
 	msg, err1 := config.WriteVariablesFile(&project, pipeline, replacements)
 
 	// check to see if the file exists
-	path := filepath.Join(dir, "build/azDevOps/azure/azuredevops-vars.yml")
-	_, err2 := os.Stat(path)
+	path := filepath.Join(workingDir, "build/azDevOps/azure/azuredevops-vars.yml")
+	_, err2 := fs.Stat(path)
 
 	assert.Equal(t, "", msg)
 	assert.Equal(t, nil, err1)
@@ -233,10 +236,17 @@ func TestSetDefaultValueWorkingDir(t *testing.T) {
 func TestWriteCmdLog(t *testing.T) {
 
 	// setup the environment
-	cleanup, dir := setupConfigTests(t)
+	cleanup, fs, dir := setupConfigTests(t)
 	defer cleanup(t)
 
-	config := Config{}
+	config := Config{
+		Filesystem: fs,
+		Input: InputConfig{
+			Directory: Directory{
+				WorkingDir: dir,
+			},
+		},
+	}
 	config.Init()
 
 	// check for empty error when the cmdlog is not enabled
@@ -252,19 +262,17 @@ func TestWriteCmdLog(t *testing.T) {
 	// write out something to the cmdlog
 	err = config.WriteCmdLog(dir, "my-command args")
 
-	// determine if the file exists
-	cmdlogExists := util.Exists(config.Self.CmdLogPath)
+	// check that the file exists
+	_, statErr := fs.Stat(config.Self.CmdLogPath)
+	assert.Equal(t, nil, statErr)
 
 	// get the content of the cmdlog so it can be checked to be what is expected
 	expected := fmt.Sprintf("[%s] my-command args\n", dir)
-	actual, _ := os.ReadFile(config.Self.CmdLogPath)
+	actual, readErr := util.ReadFile(fs, config.Self.CmdLogPath)
 
-	assert.Equal(t, nil, err)                 // ensure no errors
-	assert.Equal(t, true, cmdlogExists)       // file exists
+	assert.Equal(t, nil, err) // ensure no errors
+	assert.Equal(t, nil, readErr)
 	assert.Equal(t, expected, string(actual)) // check that the contents of the is as expected
-
-	// remove the cmdlog file from the machine
-	_ = os.Remove(config.Self.CmdLogPath)
 
 }
 
@@ -330,7 +338,7 @@ func TestSave(t *testing.T) {
 	// setup the environment
 	// this creates a temporary directory into which the configuration
 	// can be saved
-	cleanup, dir := setupConfigTests(t)
+	cleanup, fs, dir := setupConfigTests(t)
 	defer cleanup(t)
 
 	// create the test table to work with
@@ -387,6 +395,7 @@ func TestSave(t *testing.T) {
 
 	for _, table := range tables {
 		conf := table.conf
+		conf.Filesystem = fs
 		path, res := conf.Save(table.usedConfigFile)
 
 		if res == table.test && path != table.savedFile {
@@ -395,7 +404,7 @@ func TestSave(t *testing.T) {
 
 		// check to see if the path exists
 		if path != "" {
-			if _, err := os.Stat(path); os.IsNotExist(err) {
+			if _, err := fs.Stat(path); err != nil {
 				t.Error("Saved configuration file cannot be found")
 			}
 		}
@@ -604,14 +613,19 @@ func TestForce(t *testing.T) {
 
 func TestExecuteCommand(t *testing.T) {
 
-	// Create a logger
-	config := Config{}
+	cleanup, fs, dir := setupConfigTests(t)
+	defer cleanup(t)
+
+	config := Config{
+		Filesystem: fs,
+		Input: InputConfig{
+			Directory: Directory{
+				WorkingDir: dir,
+			},
+		},
+	}
 	config.Init()
 	logger := log.New()
-
-	// setup the environment
-	cleanup, dir := setupConfigTests(t)
-	defer cleanup(t)
 
 	// create the command and arguments that need to be run
 	command := "echo"

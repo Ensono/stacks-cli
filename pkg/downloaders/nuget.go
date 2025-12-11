@@ -13,8 +13,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var nuget = &Nuget{}
-
 type Nuget struct {
 	Name             string
 	ID               string
@@ -50,17 +48,19 @@ type NugetItemCatalogEntry struct {
 }
 
 func NewNugetDownloader(name string, id string, version string, cacheDir string, tempDir string) *Nuget {
-	nuget.Name = name
-	nuget.ID = id
-	nuget.Version = version
-	nuget.CacheDir = cacheDir
-	nuget.TempDir = tempDir
-
-	if nuget.Version == "" || strings.ToLower(nuget.Version) == "latest" {
-		nuget.latest = true
+	latest := false
+	if version == "" || strings.ToLower(version) == "latest" {
+		latest = true
 	}
 
-	return nuget
+	return &Nuget{
+		Name:     name,
+		ID:       id,
+		Version:  version,
+		CacheDir: cacheDir,
+		TempDir:  tempDir,
+		latest:   latest,
+	}
 }
 
 // Get downloads the specified, or latest, version of the named package from Nuget
@@ -184,7 +184,7 @@ func (n *Nuget) getLatestVersion(ac *models.APICall) error {
 	var data map[string][]string
 
 	// return of not looking for latest
-	if !nuget.latest {
+	if !n.latest {
 		return err
 	}
 

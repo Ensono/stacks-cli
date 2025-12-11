@@ -1,6 +1,7 @@
 package util
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -10,13 +11,10 @@ func CheckConnectivity(target string) error {
 
 	var err error
 
-	// define the error that will be displayed if either of the checks fail
-	msg := fmt.Sprintf("Cannot connect to '%s', is the machine offline?", target)
-
 	// check that the address can be resolved
 	_, err = net.LookupIP(target)
 	if err != nil {
-		return fmt.Errorf(msg)
+		return fmt.Errorf("cannot connect to '%s', is the machine offline?: %w", target, err)
 	}
 
 	// check that the address can be contacted
@@ -25,7 +23,7 @@ func CheckConnectivity(target string) error {
 		return err
 	}
 	if resp.StatusCode > 299 {
-		return fmt.Errorf(msg)
+		return errors.New("cannot connect to '" + target + "', is the machine offline?")
 	}
 
 	return err

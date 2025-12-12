@@ -337,11 +337,11 @@ func preRun(ccmd *cobra.Command, args []string) {
 	}
 
 	if overrideConfig != "" {
-		App.Logger.Infof("Found config override file: %s", overrideConfig)
+		msg := App.Help.GetMessage("INT001", overrideConfig)
+		App.Logger.Infof(msg)
 
 		// add in the internal configuration file to the ConfigFiles slice
 		ConfigFiles = append([]string{overrideConfig}, ConfigFiles...)
-
 	}
 
 	// set the urls to use to open the web based help for a command

@@ -2,13 +2,13 @@ package filter
 
 import (
 	"bytes"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
 
 	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/go-git/go-billy/v5"
 	"gopkg.in/yaml.v2"
 )
 
@@ -65,19 +65,15 @@ func (y *yamlSubset) String() string {
 	return string(y.Buffer())
 }
 
-func (y *yamlSubset) WriteFile(path string, perm uint32) error {
-
-	// ensure that the directory for the file already exists
-	basepath := filepath.Dir(path)
-	err := util.CreateIfNotExists(basepath, fs.FileMode(perm))
-	if err != nil {
-		return err
+func (y *yamlSubset) WriteFile(bfs billy.Filesystem, path string, perm uint32) error {
+	if pathDir := filepath.Dir(path); pathDir != "" && pathDir != "." {
+		if err := bfs.MkdirAll(pathDir, os.FileMode(perm)); err != nil {
+			return err
+		}
 	}
 
 	buf := y.Buffer()
-	err = os.WriteFile(path, buf, 0666)
-
-	return err
+	return util.WriteFile(bfs, path, buf, 0666)
 }
 
 // FilterStruct filters a struct based on a list of filters

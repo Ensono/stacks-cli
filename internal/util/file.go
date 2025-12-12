@@ -384,9 +384,20 @@ func getFileListRecursive(pattern string) ([]string, error) {
 		suffixPattern := filepath.ToSlash(suffix)
 
 		// Check if the file matches the suffix pattern
+		// First try matching the full relative path
 		matched, err := filepath.Match(suffixPattern, rel)
 		if err != nil {
 			return err
+		}
+
+		// If suffix pattern starts with *, also try matching just the filename
+		// This handles cases like **/*.yaml where we want to match files in subdirectories
+		if !matched && strings.HasPrefix(suffixPattern, "*") {
+			filename := filepath.Base(rel)
+			matched, err = filepath.Match(suffixPattern, filename)
+			if err != nil {
+				return err
+			}
 		}
 
 		if matched {

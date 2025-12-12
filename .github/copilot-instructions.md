@@ -101,6 +101,18 @@ type Replacements struct {
 }
 ```
 
+## Key Patterns
+
+### Logging
+
+- Uses logrus for structured logging,
+- Generate methods using the `App.Help` singleton,
+
+```go
+msg := App.Help.GetMessage("INT001", overrideConfig)
+App.Logger.Infof(msg)
+```
+
 ## Critical Development Workflows
 
 ### Building ⚠️ IMPORTANT

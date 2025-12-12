@@ -237,7 +237,6 @@ func (suite *BaseIntegration) RunCommand(command string, arguments string, ignor
 
 	// configure the exec command to execute the command
 	out, err := exec.Command(cmd, args...).Output()
-	suite.T().Logf("Command Output:\n%s", string(out))
 	if err != nil && !ignore {
 		suite.T().Errorf("Error running command: %v", err)
 	}

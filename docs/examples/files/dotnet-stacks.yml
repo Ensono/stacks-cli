@@ -18,19 +18,19 @@ input:
         external: example-stacks.com
   pipeline: azdo
   project:
-  - name: my-webapi
-    framework:
-      type: dotnet
-      option: cqrs
-      version: latest
-      properties:
-      - -e EventHub
-    sourcecontrol:
-      type: github
-      url: https://github.com/ensonodigital/my-webapi
-    cloud:
-      region: westeurope
-      group: mywebapi-resources
+    - name: my-webapi
+      framework:
+        type: dotnet
+        option: cqrs
+        version: latest
+        properties:
+          - -e EventHub
+      sourcecontrol:
+        type: github
+        url: https://github.com/ensonodigital/my-webapi
+      cloud:
+        region: westeurope
+        group: mywebapi-resources
   terraform:
     backend:
       storage: kjh56sdfnjnkjn

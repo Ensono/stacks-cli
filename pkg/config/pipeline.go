@@ -9,6 +9,7 @@ import (
 
 	"github.com/Ensono/stacks-cli/internal/config/staticFiles"
 	"github.com/Ensono/stacks-cli/internal/util"
+	"github.com/sirupsen/logrus"
 )
 
 type Pipeline struct {
@@ -17,6 +18,12 @@ type Pipeline struct {
 	Template     []PipelineFile        `mapstructure:"templates"`
 	Items        []string              `mapstructure:"items"`
 	Replacements []PipelineReplacement `mapstructure:"replacements"`
+	Logger       *logrus.Logger        `mapstructure:"-"`
+}
+
+// SetLogger sets the logger for the Pipeline struct
+func (p *Pipeline) SetLogger(logger *logrus.Logger) {
+	p.Logger = logger
 }
 
 type PipelineFile struct {
@@ -120,6 +127,7 @@ func (p *Pipeline) GetSupported() []string {
 // the regex pattern with the specified value
 func (p *Pipeline) ReplacePatterns(config *Config, inputs Replacements, dir string) []error {
 
+	var count int
 	var errs []error
 	var filelist []string
 	errs = make([]error, 0)
@@ -150,15 +158,29 @@ func (p *Pipeline) ReplacePatterns(config *Config, inputs Replacements, dir stri
 		filelist = append(filelist, files...)
 	}
 
+	// Ensure the filelist does not contain duplicates
+	unique := make(map[string]struct{})
+	result := make([]string, 0, len(filelist))
+	for _, f := range filelist {
+		if _, seen := unique[f]; !seen {
+			unique[f] = struct{}{}
+			result = append(result, f)
+		}
+	}
+	filelist = result
+
 	// iterate around all the files that have been set
 	for _, item := range filelist {
 
+		p.Logger.Infof("\t%s", item)
+
 		// read the file into a variable
-		content, err := os.ReadFile(item)
+		contentBytes, err := os.ReadFile(item)
 		if err != nil {
 			errs = append(errs, err)
 			return errs
 		}
+		content := string(contentBytes)
 
 		// iterate around the replacements to get the pattern and the replacement value
 		for _, replacement := range p.Replacements {
@@ -174,17 +196,62 @@ func (p *Pipeline) ReplacePatterns(config *Config, inputs Replacements, dir stri
 
 			// create the regex object from the pattern
 			pattern := fmt.Sprintf(`(?m)%s`, replacement.Pattern)
+
+			// The following replacement handles file paths from Windows machines
+			// The path C:\Users\anon will be read in as C:\\Users\\anon, which fails any matching
+			// By replacing these literal double backslashes with single backslashes, the regex can match correctly
+			pattern = strings.ReplaceAll(pattern, `\\`, `\`)
 			re, err := regexp.Compile(pattern)
 
 			if err != nil {
 				errs = append(errs, err)
 				continue
 			}
-			content = re.ReplaceAll(content, []byte(replacement_value))
+
+			p.Logger.Debugf("\t\tPattern: %q\n", pattern)
+			p.Logger.Debugf("\t\tReplacement: %q\n", replacement_value)
+
+			// Use FindAllStringSubmatchIndex to get all matches and submatches in one pass
+			count = 0
+			matches := re.FindAllStringSubmatchIndex(content, -1)
+			if len(matches) == 0 {
+				p.Logger.Infof("\t\t%d replacements made for pattern `%s`", count, pattern)
+				continue
+			}
+
+			var resultBuilder strings.Builder
+			lastIndex := 0
+			for _, matchIdx := range matches {
+				// matchIdx[0] and matchIdx[1] are the start and end of the full match
+				start, end := matchIdx[0], matchIdx[1]
+				// Write content before the match
+				resultBuilder.WriteString(content[lastIndex:start])
+
+				// Prepare replacement string
+				result := replacement_value
+				// For each submatch, replace ${i} with the submatch value
+				for i := 1; i < len(matchIdx)/2; i++ {
+					subStart, subEnd := matchIdx[2*i], matchIdx[2*i+1]
+					submatch := ""
+					if subStart != -1 && subEnd != -1 {
+						submatch = content[subStart:subEnd]
+					}
+					placeholder := fmt.Sprintf("${%d}", i)
+					result = strings.ReplaceAll(result, placeholder, submatch)
+				}
+
+				resultBuilder.WriteString(result)
+				count++
+				lastIndex = end
+			}
+			// Write the rest of the content after the last match
+			resultBuilder.WriteString(content[lastIndex:])
+			content = resultBuilder.String()
+			p.Logger.Infof("\t\t%d replacements made for pattern `%s`", count, pattern)
 		}
 
 		// write out the file
-		err = os.WriteFile(item, content, 0666)
+		err = os.WriteFile(item, []byte(content), 0666)
 		if err != nil {
 			errs = append(errs, err)
 		}

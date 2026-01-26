@@ -33,19 +33,6 @@ func CopyDirectory(srcDir, dest string) error {
 			return err
 		}
 
-		// TODO: test this without
-		// var gid, uid int
-
-		// if runtime.GOOS != "windows" {
-		// 	//  REMOVING this as syscall is kind of depracated in favour of sys ==> platform specific low level abstraction
-		// 	stat, ok := fileInfo.Sys().(*syscall.Stat_t)
-		// 	if !ok {
-		// 		return fmt.Errorf("failed to get raw syscall.Stat_t data for '%s'", sourcePath)
-		// 	}
-		// 	uid = int(stat.Uid)
-		// 	gid = int(stat.Gid)
-		// }
-
 		switch fileInfo.Mode() & os.ModeType {
 		case os.ModeDir:
 			if err := CreateIfNotExists(destPath, 0755); err != nil {
@@ -341,6 +328,7 @@ func GetFileContent(path string) ([]byte, error) {
 }
 
 // GetFileList returns a list of files that match the specified pattern
+// Supports recursive globbing with ** pattern
 func GetFileList(pattern string, parent string) ([]string, error) {
 	var err error
 	var filelist []string
@@ -350,8 +338,74 @@ func GetFileList(pattern string, parent string) ([]string, error) {
 		pattern = filepath.Join(parent, pattern)
 	}
 
+	// check if pattern contains ** for recursive matching
+	if strings.Contains(pattern, "**") {
+		return getFileListRecursive(pattern)
+	}
+
 	// perform a glob pattern match on the pattern to get the files
 	filelist, err = filepath.Glob(pattern)
 
 	return filelist, err
+}
+
+// getFileListRecursive handles recursive globbing patterns with **
+func getFileListRecursive(pattern string) ([]string, error) {
+	var matches []string
+
+	// Split pattern at ** to get prefix and suffix
+	parts := strings.Split(pattern, "**")
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("invalid pattern: %s", pattern)
+	}
+
+	prefix := strings.TrimSuffix(parts[0], string(filepath.Separator))
+	suffix := strings.TrimPrefix(parts[1], string(filepath.Separator))
+
+	// Walk the directory tree starting from prefix
+	err := filepath.WalkDir(prefix, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// Skip if it's a directory
+		if d.IsDir() {
+			return nil
+		}
+
+		// Get the relative path from the prefix
+		rel, err := filepath.Rel(prefix, path)
+		if err != nil {
+			return err
+		}
+
+		// Convert path separators to forward slashes for consistent matching
+		rel = filepath.ToSlash(rel)
+		suffixPattern := filepath.ToSlash(suffix)
+
+		// Check if the file matches the suffix pattern
+		// First try matching the full relative path
+		matched, err := filepath.Match(suffixPattern, rel)
+		if err != nil {
+			return err
+		}
+
+		// If suffix pattern starts with *, also try matching just the filename
+		// This handles cases like **/*.yaml where we want to match files in subdirectories
+		if !matched && strings.HasPrefix(suffixPattern, "*") {
+			filename := filepath.Base(rel)
+			matched, err = filepath.Match(suffixPattern, filename)
+			if err != nil {
+				return err
+			}
+		}
+
+		if matched {
+			matches = append(matches, path)
+		}
+
+		return nil
+	})
+
+	return matches, err
 }

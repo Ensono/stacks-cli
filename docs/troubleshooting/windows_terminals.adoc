@@ -6,7 +6,10 @@ NOTE: This is not applicable when running the CLI in Windows Subsystem for Linux
 
 This becomes a problem when the `interactive` sub-command is run in Git Bash (or equivalent) because the `\` is interpreted as the escape character, which can lead to this:
 
-`stacks-cli scaffold -c C:\Users\auser\answers.yaml` --> `stacks-cli scaffold -c c:Usersauseranswers.yaml``
+[source,powershell]
+----
+stacks-cli scaffold -c C:\Users\auser\answers.yaml` --> `stacks-cli scaffold -c c:\Users\auser\answers.yaml
+----
 
 Indeed this can become worse if the escape character preceded a `t` for example, in which case the shell would interpret that as a tab.
 

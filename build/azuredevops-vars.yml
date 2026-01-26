@@ -1,9 +1,0 @@
-# This file holds the variables that will be consumed
-# by the build
-variables:
-  - name: TaskctlVersion
-    value: 1.5.1 
-  - name: RepoOwner
-    value: Ensono
-  - name: RepoName
-    value: stacks-cli

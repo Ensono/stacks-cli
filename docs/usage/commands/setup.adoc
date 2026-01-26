@@ -38,15 +38,11 @@ Setting values in a project file is just a case of moving into the directory in 
 |====
 |
 [source,powershell]
-|---
 cd workspaces/projects/myproject
 stackscli setup update --project website
-|---
 |
 [source,powershell]
-|---
 stackscli setup update --project website -w workspaces/projects/myproject
-|---
 |====
 
 The result will be a file in a the directory `workspaces/projects/.stackscli/config.yml`.
@@ -66,6 +62,7 @@ stackscli setup list
 .List out the configuration files
 image::images/stackscli-setup-list.png[]
 
+[#cli_update_latest]
 ===== Latest
 
 The way in which the CLI knows about the projects it can scaffold is by an embedded configuration file. As the Ensono Stacks ecosystem grows and new projects are added, the CLI will need to be updated to know about these new projects. The `latest` command will download the latest configuration file from the Ensono Stacks repository and place it in the correct location.

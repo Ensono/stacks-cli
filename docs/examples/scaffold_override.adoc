@@ -13,9 +13,9 @@ stacks:
         url: https://github.com/ensonodigital/stacks-dotnet-v2
         type: git
 
-    infra_data:
-      group: infra
-      name: data
+    data_azure:
+      group: data
+      name: azure
       package:
         url: https://github.com/ensonodigital/stacks-infra-data
         type: git

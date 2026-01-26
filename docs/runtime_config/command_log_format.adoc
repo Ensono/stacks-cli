@@ -1,0 +1,11 @@
+=== Command Log Format
+
+If the command log has been enabled, using `--cmdlog`, a file with all the commands that have been run during the scaffolding operation will be generated. The format of this file is as follows:
+
+`[<DIR>] <CMD> <ARGS>`
+
+The <DIR> shows in which directory the command has been run in. Please note that this directory may have been deleted after the CLI has been run as it was temporary.
+
+The <CMD> and <ARGS> show the command that was run and the arguments that were passed to it.
+
+NOTE: On Windows based machines the <CMD> will be prefixed with `cmd /C` which tells the CLI how to run the command. PowerShell has not yet been used as it is easy to customise the shell and those customisations may cause the CLI to fail when running the commands.

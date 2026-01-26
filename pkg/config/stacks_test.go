@@ -188,11 +188,11 @@ func TestGetComponentNames(t *testing.T) {
 		override           bool
 	}{
 		{
-			[]string{"dotnet", "infra", "java", "nx"},
+			[]string{"data", "dotnet", "infra", "java", "nx"},
 			false,
 		},
 		{
-			[]string{"dotnet", "golang", "infra", "java", "nx"},
+			[]string{"data", "dotnet", "golang", "infra", "java", "nx"},
 			true,
 		},
 	}
@@ -265,8 +265,13 @@ func TestGetComponentOptionsDefault(t *testing.T) {
 		override        bool
 	}{
 		{
+			"data",
+			[]string{"azure", "fabric"},
+			false,
+		},
+		{
 			"dotnet",
-			[]string{"cqrs", "webapi"},
+			[]string{"webapi"},
 			false,
 		},
 		{
@@ -281,12 +286,12 @@ func TestGetComponentOptionsDefault(t *testing.T) {
 		},
 		{
 			"infra",
-			[]string{"aca", "aks", "data", "eks", "template"},
+			[]string{"aca", "aks", "eks", "template"},
 			false,
 		},
 		{
 			"infra",
-			[]string{"aca", "aks", "data", "eks", "keyvault", "template"},
+			[]string{"aca", "aks", "eks", "keyvault", "template"},
 			true,
 		},
 		{

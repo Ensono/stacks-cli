@@ -1,0 +1,63 @@
+=== Configuration File
+
+The following shows an example of a configuration file that can be passed to the command.
+
+.CLI Configuration File
+[[cli_configuration_file,{listing-caption} {counter:refum}]]
+[source,yaml]
+----
+project:
+- name: tigerfest
+  framework:
+    option: webapi
+    version: latest
+  platform:
+    type: aks
+  sourcecontrol:
+    type: github
+    url: https://github.com/russellseymour/my-new-project.git
+
+pipeline: azdo
+
+cloud:
+  platform: azure
+  region: ukwest
+  group: a-new-resource-group
+
+business:
+  company: MyCompany
+  domain: core
+  component: infra
+
+terraform:
+  backend:
+    storage: adfsdafsdfsdf
+    group: Stacks-Ancillary-Resources
+    container: tfstate
+
+network:
+  base:
+    domain:
+      external: mydomain.com
+
+log:
+  level: info
+
+options:
+  cmdlog: false
+
+stacks:
+  dotnet:
+    webapi:
+      url: https://github.com/Ensono/stacks-dotnet
+      trunk: master
+----
+
+Note that when using the configuration file it is possible to specify multiple projects to be configured. This allows several projects to be setup at the same time, without having to run the command multiple times. Each project will be created within the specified working directory.
+
+If this file was called `conf.yml` the command to run to consume the file would be:
+
+[source,bash]
+----
+.\stacks-cli.exe scaffold -c .\local\conf.yml
+----

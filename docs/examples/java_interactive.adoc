@@ -5,9 +5,7 @@ As with the .NET example, it is possible to create a configuration file interact
 NOTE: The examples shown here have been run in WSL on Windows 11.
 
 [source,bash]
----
 stacks-cli interactive
----
 
 The values specified in the example are the ones as show in the configuration table and are the same as the settings used in the Java example fo scaffolding from the command line.
 

@@ -3,15 +3,21 @@
 :table-stripes: even
 :listing-caption: Listing
 :icons: font
+:icon-set: font-awesome
+:source-highlighter: rouge
+:rouge-style: monokai.sublime
+:table-stripes: even
+
+:example_username: homer
 
 :stackscli_version: 100.98.99
-:taskctl_version: 1.5.1
+:eirctl_version: 0.9.7
 
 = Ensono Stacks CLI Manual
 
 include::usage.adoc[]
 
-include::runtime_config.adoc[]
+include::runtime_config/_index.adoc[]
 
 include::project_settings.adoc[]
 
@@ -25,5 +31,15 @@ include::templating.adoc[]
 
 include::testing.adoc[]
 
+<<<
+
+include::migration.adoc[]
+
+<<<
+
 == Appendix
-include::appendix.adoc[]
+include::appendix/_index.adoc[]
+
+<<<
+
+include::glossary.adoc[]

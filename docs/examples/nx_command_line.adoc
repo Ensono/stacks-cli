@@ -6,7 +6,8 @@ Run the following command to scaffold a new Nx project based on the Ensono Digit
 [cols="a,a"]
 |===
 | Bash | PowerShell
-|[source,bash,subs="attributes"]
+|
+[source,bash,subs="attributes"]
 ----
 stacks-cli scaffold -A {example_nx_area} \
                 --company {example_company} \
@@ -24,10 +25,11 @@ stacks-cli scaffold -A {example_nx_area} \
                 -u {example_project_src_url} \
                 -C azure \
                 -G website-resources \
-                -R westeurope \                
+                -R westeurope \
                 --cmdlog
 ----
-|[source,powershell,subs="attributes"]
+|
+[source,powershell,subs="attributes"]
 ----
 stacks-cli scaffold -A {example_nx_area} `
                 --company {example_company} `
@@ -59,9 +61,9 @@ image::images/example-nx-nextjs-cmdline.png[]
 As the option to save all the commands that are executed by the CLI has been specified, the `cmdlog.txt` file for the above command is as follows.
 
 .Command log for a new Nx NextJS project
+[source,console]
 ----
 [/var/folders/_p/zqfl7d1j5sz9w_cnbp2djv7m0000gn/T/stackscli1ea0182df6/stacks-nx-main] npx --yes @ensono-stacks/create-stacks-workspace@latest website --dir=/Users/russells/scratch/projects/website --nxVersion=latest --preset=next --business.company=Ensono --business.domain=frontend --business.component=ui --cloud.platform=azure --cloud.region=westeurope --cloud.group=website-resources --pipeline=azdo --terraform.group=supporting-group --terraform.storage=kjh56sdfnjnkjn --terraform.container=my-webapi --vcs.type=github --vcs.url=https://github.com/my-company/my-webapi --overwrite --skipGit --no-nxCloud --no-interactive
 [/Users/russells/scratch/projects/website] git init
 [/Users/russells/scratch/projects/website] git remote add origin https://github.com/my-company/my-webapi
 ----
-

@@ -13,6 +13,8 @@ import (
 	"github.com/Ensono/stacks-cli/internal/constants"
 	"github.com/Ensono/stacks-cli/internal/util"
 	"github.com/bobesa/go-domain-util/domainutil"
+	"github.com/go-git/go-billy/v5"
+	"github.com/go-git/go-billy/v5/osfs"
 	yaml "github.com/goccy/go-yaml"
 	"github.com/sirupsen/logrus"
 )
@@ -33,6 +35,7 @@ type Config struct {
 	FrameworkDefs []FrameworkDef `mapstructure:"frameworks" yaml:"frameworks"`
 	Input         InputConfig    `mapstructure:"input" yaml:"input"`
 	Internal      Internal
+	Filesystem    billy.Filesystem
 	Help          Help `mapstructure:"help"`
 	Replace       []ReplaceConfig
 	Self          SelfConfig
@@ -42,6 +45,7 @@ type Config struct {
 
 func (c *Config) Init() {
 	c.Internal.AddFiles()
+	c.fs()
 }
 
 // Check checks the configuration and ensures that there are some projects
@@ -122,8 +126,8 @@ func (c *Config) Save(usedConfig string) (string, error) {
 	}
 
 	// write out the file with the correct permissions, this is so that on Linux the file can be read
-	fileMode := int(0644)
-	err = os.WriteFile(savedConfigFile, data, os.FileMode(fileMode))
+	fs := c.fs()
+	err = util.WriteFile(fs, savedConfigFile, data, 0o644)
 	if err != nil {
 		return savedConfigFile, fmt.Errorf("problem writing configuration to file: %s", err.Error())
 	}
@@ -180,16 +184,9 @@ func (config *Config) WriteVariablesFile(project *Project, pipelineSettings Pipe
 		return fmt.Sprintf("Problem rendering variable template file: %s", err.Error()), err
 	}
 
-	// get the dirname of the path and ensure it exists
-	// this should not be needed in normal operation as the file structure should already exist
-	dir := filepath.Dir(variableFile)
-	_, err = os.Stat(dir)
-	if os.IsNotExist(err) {
-		err = os.MkdirAll(dir, 0755)
-		fmt.Printf("%v", err)
-	}
+	fs := config.fs()
 
-	err = os.WriteFile(variableFile, []byte(rendered), 0666)
+	err = util.WriteFile(fs, variableFile, []byte(rendered), 0o666)
 	if err != nil {
 		return fmt.Sprintf("Problem writing out variable file: %s", err.Error()), err
 	}
@@ -204,9 +201,17 @@ func (config *Config) RenderTemplate(name string, tmpl string, input Replacement
 	// declare var to hold the rendered string
 	var rendered bytes.Buffer
 
+	// create a function map that passes in functions to the template that
+	// can be used to run simple string operations from within the template
+	funcMap := template.FuncMap{
+		"toLower": strings.ToLower,
+		"toUpper": strings.ToUpper,
+		"trim":    strings.TrimSpace,
+	}
+
 	// create an object of the template
 	// if it fails then return with an error
-	t, err := template.New(name).Parse(tmpl)
+	t, err := template.New(name).Funcs(funcMap).Parse(tmpl)
 
 	if err != nil {
 		return "", err
@@ -236,6 +241,16 @@ func (config *Config) SetDefaultValues() {
 		config.Input.Network.Base.Domain.Internal = internal
 	}
 
+	// Set default TemplateMode to true for all StacksComponents where it hasn't been explicitly set
+	for key, component := range config.Stacks.Components {
+		// If TemplateMode is nil (not set in config), set it to true (default)
+		if component.TemplateMode == nil {
+			trueValue := true
+			component.TemplateMode = &trueValue
+			config.Stacks.Components[key] = component
+		}
+	}
+
 	// Set the currentdirectory to the path that the CLI is currently running in
 	cwd, _ := os.Getwd()
 	config.Self.CmdLogPath = filepath.Join(config.Input.Directory.WorkingDir, "cmdlog.txt")
@@ -258,19 +273,41 @@ func (config *Config) WriteCmdLog(path string, cmd string) error {
 		return err
 	}
 
+	fs := config.fs()
+
+	// ensure the directory for the command log exists
+	cmdDir := filepath.Dir(config.Self.CmdLogPath)
+	if cmdDir != "" && cmdDir != "." {
+		if err := fs.MkdirAll(cmdDir, os.ModePerm); err != nil {
+			return err
+		}
+	}
+
 	// get a reference to the file, either to create or append to the file
-	f, err := os.OpenFile(config.Self.CmdLogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	f, err := fs.OpenFile(config.Self.CmdLogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
 	// write out the cmd to the file
-	if _, err := f.WriteString(fmt.Sprintf("[%s] %s\n", path, cmd)); err != nil {
+	if _, err := f.Write([]byte(fmt.Sprintf("[%s] %s\n", path, cmd))); err != nil {
 		return err
 	}
 
 	return err
+}
+
+func (config *Config) fs() billy.Filesystem {
+	if config.Filesystem == nil {
+		config.Filesystem = osfs.New("/")
+	}
+	return config.Filesystem
+}
+
+// GetFilesystem returns the configured filesystem, initialising the default if needed.
+func (config *Config) GetFilesystem() billy.Filesystem {
+	return config.fs()
 }
 
 // ExecuteCommand executes the command and arguments that have been supplied to the function

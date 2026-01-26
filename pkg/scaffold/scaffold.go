@@ -14,13 +14,16 @@ import (
 	"github.com/Ensono/stacks-cli/pkg/config"
 	"github.com/Ensono/stacks-cli/pkg/downloaders"
 	"github.com/Ensono/stacks-cli/pkg/interfaces"
+	"github.com/go-git/go-billy/v5"
+	"github.com/go-git/go-billy/v5/osfs"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
 type Scaffold struct {
-	Config *config.Config
-	Logger *logrus.Logger
+	Config     *config.Config
+	Logger     *logrus.Logger
+	Filesystem billy.Filesystem
 }
 
 // New allocates a new ScaffoldPointer with the given config.
@@ -29,6 +32,16 @@ func New(conf *config.Config, logger *logrus.Logger) *Scaffold {
 		Config: conf,
 		Logger: logger,
 	}
+}
+
+func (s *Scaffold) fs() billy.Filesystem {
+	if s.Filesystem != nil {
+		return s.Filesystem
+	}
+	if s.Config.Filesystem != nil {
+		return s.Config.Filesystem
+	}
+	return osfs.New("/")
 }
 
 // Run performs the operations of the scaffolding sub command
@@ -375,7 +388,7 @@ func (s *Scaffold) setProjectDirs(project *config.Project) error {
 		if s.Config.Force() {
 			s.Logger.Warnf("Removing existing project directory: %s", project.Directory.WorkingDir)
 
-			err = os.RemoveAll(project.Directory.WorkingDir)
+			err = util.RemoveAll(s.fs(), project.Directory.WorkingDir)
 			return err
 		} else {
 
@@ -424,7 +437,7 @@ func (s *Scaffold) configurePipeline(project *config.Project) {
 		} else if component.IsTemplateModeEnabled() {
 			// Only run the template-based variable file creation if TemplateMode is enabled
 			s.Logger.Debugf("TemplateMode is enabled for component: %s", key)
-			
+
 			// attempt to write out the configuration file, unless in DryRun mode
 			if s.Config.Input.Options.DryRun {
 				s.Logger.Warn("Not creating variables template as in DRYRUN mode")
@@ -514,7 +527,7 @@ func (s *Scaffold) cleanup() {
 		s.Logger.Info("Performing cleanup")
 		s.Logger.Infof(" - removing temporary directory: %s", s.Config.Input.Directory.TempDir)
 
-		err := os.RemoveAll(s.Config.Input.Directory.TempDir)
+		err := util.RemoveAll(s.fs(), s.Config.Input.Directory.TempDir)
 		if err != nil {
 			s.Logger.Fatalf("Unable to remove temporary directory: %s", err.Error())
 		}

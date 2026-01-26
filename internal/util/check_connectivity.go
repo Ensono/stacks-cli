@@ -10,7 +10,6 @@ func CheckConnectivity(target string) error {
 
 	var err error
 
-	// define the error that will be displayed if either of the checks fail
 	msg := fmt.Sprintf("Cannot connect to '%s', is the machine offline?", target)
 
 	// check that the address can be resolved

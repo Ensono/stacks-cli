@@ -33,6 +33,7 @@ func (s *Setup) Upsert() error {
 	var err error
 	var path string
 	var perm uint32
+	fs := s.Config.GetFilesystem()
 
 	// configure variable to hold the path to the file after the basedir has been determined
 	var slug []string = []string{constants.ConfigFileDir, fmt.Sprintf("%s.yml", constants.ConfigName)}
@@ -88,7 +89,7 @@ func (s *Setup) Upsert() error {
 	// Filter the configuration object and write out to the file
 	filter := filter.New()
 	filter.Filter(s.Config.Input, append(dotted, "business.company"))
-	err = filter.WriteFile(path, perm)
+	err = filter.WriteFile(fs, path, perm)
 
 	return err
 

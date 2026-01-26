@@ -27,6 +27,7 @@ func New(conf *config.Config, logger *logrus.Logger) *Export {
 // configuration files to the specified directory
 func (e *Export) Run() error {
 	var err error
+	fs := e.Config.GetFilesystem()
 
 	// determine if the path has been set, is relative or absolute
 	// if the specified path is relative prepend the cwd to the path
@@ -35,7 +36,7 @@ func (e *Export) Run() error {
 	}
 
 	// Check that the path exists
-	err = util.CreateIfNotExists(e.Config.Input.Directory.Export, os.ModePerm)
+	err = fs.MkdirAll(e.Config.Input.Directory.Export, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("unable to create export directory: %s", e.Config.Input.Directory.Export)
 	}
@@ -61,7 +62,7 @@ func (e *Export) Run() error {
 		e.Logger.Infof("\t%s - %s", name, filename)
 
 		if !e.Config.Input.Options.DryRun {
-			err = os.WriteFile(filename, e.Config.Internal.GetFileContent(name), os.ModePerm)
+			err = util.WriteFile(fs, filename, e.Config.Internal.GetFileContent(name), os.ModePerm)
 
 			if err != nil {
 				e.Logger.Error(err.Error())

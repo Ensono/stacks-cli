@@ -15,10 +15,11 @@ The CLI has a command called completion which can configure the local shell with
 For each of the different shells, the command `stacks-cli <SHELL> -h` can be used which will show the command to be used to export the script into the profile for the shell.
 
 .Loading completions into the shell for each new session
+[options="header"]
 |===
-| Shell | PowerShell | Linux | MacOS 
+| Shell | PowerShell | Linux | MacOS
 | `bash` | | `stacks-cli completion bash > /etc/bash_completion.d/stacks-cli` | `stacks-cli completion bash > /usr/local/etc/bash_completion.d/stacks-cli`
 | `fish` | 2+| `stacks-cli completion fish > ~/.config/fish/completions/stacks-cli.fish`
 | `powershell` 3+| `stacks-cli completion powershell \| Out-String \| Invoke-Expression \| Out-File -FilePath $PROFILE -Append`
-| `zsh` | | `stacks-cli completion zsh > "${fpath[1]}/_stacks-cli"` | `stacks-cli completion zsh > /usr/local/share/zsh/site-functions/_stacks-cli` 
+| `zsh` | | `stacks-cli completion zsh > "${fpath[1]}/_stacks-cli"` | `stacks-cli completion zsh > /usr/local/share/zsh/site-functions/_stacks-cli`
 |===

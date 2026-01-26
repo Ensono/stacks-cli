@@ -69,7 +69,7 @@ As has been seen with the scaffolding command and the command line examples, the
     |   |   |-- azuredevops-runner.yaml
     |   |   |-- azuredevops-stages.yaml
     |   |   `-- azuredevops-vars.yaml
-    |   `-- taskctl
+    |   `-- Eirctl
     |       |-- contexts.yaml
     |       `-- tasks.yaml
     |-- commitlint.config.js

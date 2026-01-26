@@ -8,13 +8,15 @@ A number of items are embedded using this technique.
 
 The following listing shows the built in template that is used for the variable template if one is not set in the project settings file.
 
+A new setting has been added to the internal configuration called `template_mode` which defaults to `true`. In this mode nothing changes and the template file will be written out to the project as usual. However if this is set to `false` then the internal static file is not written out and the CLI makes the necessary changes directly on the files based on the configuration in the `stackscli.yml` file in the project.
+
 Location: `internal/config/staticFiles/ado_variable_template.yml`
 
 .Azure DevOps Variable Template
 [[azdo_variable_template,{listing-caption} {counter:refnum}]]
-[source,yaml,subs="attributes"]
+[source,yaml]
 ----
-include::../internal/config/staticFiles/ado_variable_template.yml[]
+include::../../internal/config/staticFiles/ado_variable_template.yml[]
 ----
 
 NOTE: This can be overriden on the command line, when using the `scaffold` command, with the `--adovariables` option to specify the path to the variables file to us.
@@ -27,11 +29,12 @@ Location: `internal/config/staticFiles/banner.txt`
 
 .Banner text
 [[banner_text,{listing-caption} {counter:refnum}]]
-[source,txt,subs="attributes"]
+[source,txt]
 ----
-include::../internal/config/staticFiles/banner.txt[]
+include::../../internal/config/staticFiles/banner.txt[]
 ----
 
+[#static_internal_config]
 ==== Internal Configuration
 
 There are a number of settings that are hard hardcoded into the CLI. These include:
@@ -45,26 +48,13 @@ There are a number of settings that are hard hardcoded into the CLI. These inclu
 * Online Help
 * Commands
 
-All of these are defined in one file which is included at build time. However all of the values can be overridden at run time using the `--internalconfig` argument.
+All of these are defined in one file which is included at build time. The CLI now has the ability to look at files in a the users home directory in `.stackscli` and if a file called `internal_config.yml` file is found this will be read in and merged with the internal configuration.
 
 Location: `internal/config/staticFiles/config.yml`
 
 .Internal configuration
 [[internal_config,{listing-caption} {counter:refnum}]]
-[source,yaml,subs="attributes"]
-++++
-include::../internal/config/staticFiles/config.yml[]
-++++
-
-=== Exit Codes
-
-The following table shows the exit codes that the CLI will emit on an error.
-
-[options="header",cols="1,5"]
-|===
-| Exit Code | Description
-| 1 | Unable to read in the internal configuration. If this occurs then there is an issue with the published CLI
-| 2 | Occurs when the CLI is not able to read in the override file for the internal configuration
-| 3 | When using the `scaffold` command and the Azure DevOps file has been specified and it cannot be read in
-| 4 | After all the parsing of the command line options and arguments, it cannot be read properly
-|===
+[source,yaml]
+----
+include::../../internal/config/staticFiles/config.yml[]
+----

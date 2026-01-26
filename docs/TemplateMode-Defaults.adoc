@@ -1,0 +1,150 @@
+= TemplateMode Default Behavior
+:toc: left
+:icons: font
+:source-highlighter: rouge
+
+This document describes the default behavior for the `TemplateMode` field in `StacksComponent` configurations.
+
+== Overview
+
+The `TemplateMode` field in `StacksComponent` now defaults to `true` when not explicitly specified in the configuration file. This ensures that components use template mode by default while still allowing explicit control when needed.
+
+== Behavior
+
+=== Not Specified (Default)
+
+When `templateMode` is not specified in the configuration:
+
+[source,yaml]
+----
+stacks:
+  components:
+    dotnet_webapi:
+      group: dotnet
+      name: webapi
+      package:
+        url: https://github.com/example/stacks-dotnet
+        version: main
+        type: git
+      # templateMode not specified - defaults to true
+----
+
+*Result*: `TemplateMode` will be set to `true`
+
+=== Explicitly Set to false
+
+When `templateMode` is explicitly set to `false`:
+
+[source,yaml]
+----
+stacks:
+  components:
+    dotnet_webapi:
+      group: dotnet
+      name: webapi
+      package:
+        url: https://github.com/example/stacks-dotnet
+        version: main
+        type: git
+      templateMode: false
+----
+
+*Result*: `TemplateMode` will remain `false`
+
+=== Explicitly Set to true
+
+When `templateMode` is explicitly set to `true`:
+
+[source,yaml]
+----
+stacks:
+  components:
+    dotnet_webapi:
+      group: dotnet
+      name: webapi
+      package:
+        url: https://github.com/example/stacks-dotnet
+        version: main
+        type: git
+      templateMode: true
+----
+
+*Result*: `TemplateMode` will remain `true`
+
+== Implementation Details
+
+=== When Defaults Are Applied
+
+The default values are applied in the `SetDefaultValues()` method of the `Config` struct, which is called:
+
+. After configuration files are loaded
+. Before the application processes the components
+. As part of the `Check()` method during configuration validation
+
+=== Accessing TemplateMode Values
+
+==== Direct Access (Advanced)
+
+[source,go]
+----
+component := config.Stacks.Components["component_name"]
+if component.TemplateMode != nil {
+    isEnabled := *component.TemplateMode
+}
+----
+
+==== Recommended Helper Method
+
+[source,go]
+----
+component := config.Stacks.Components["component_name"]
+isEnabled := component.IsTemplateModeEnabled() // Returns true by default if not set
+----
+
+The `IsTemplateModeEnabled()` helper method is the recommended way to check the TemplateMode value as it handles the nil case correctly.
+
+== Migration Guide
+
+=== Existing Configurations
+
+* *No changes required*: Existing configurations that don't specify `templateMode` will now default to `true`
+* *Explicit `false` values*: Configurations that explicitly set `templateMode: false` will continue to work as expected
+* *Explicit `true` values*: Configurations that explicitly set `templateMode: true` will continue to work as expected
+
+=== Code Changes
+
+If your code previously checked `TemplateMode` directly, consider using the new helper method:
+
+.*Before:*
+[source,go]
+----
+// This could be problematic if TemplateMode is nil
+if component.TemplateMode {
+    // handle template mode
+}
+----
+
+.*After:*
+[source,go]
+----
+// This safely handles the nil case with proper default
+if component.IsTemplateModeEnabled() {
+    // handle template mode
+}
+----
+
+== Testing
+
+The implementation includes comprehensive tests that verify:
+
+* Default behavior when `templateMode` is not specified
+* Preservation of explicit `false` values
+* Preservation of explicit `true` values
+* Helper method behavior in all cases
+
+Run tests with:
+
+[source,bash]
+----
+go test -run TestStacksComponent -v
+----

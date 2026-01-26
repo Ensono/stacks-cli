@@ -1,0 +1,17 @@
+=== Settings
+
+The following tables show the configuration options that are available at the root level and the command level.
+
+include::global_options.adoc[]
+
+include::completion_options.adoc[]
+
+include::interactive_options.adoc[]
+
+include::setup_options.adoc[]
+
+include::scaffold_options.adoc[]
+
+include::export_options.adoc[]
+
+include::version_options.adoc[]

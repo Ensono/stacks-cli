@@ -342,7 +342,6 @@ func preRun(ccmd *cobra.Command, args []string) {
 
 		// add in the internal configuration file to the ConfigFiles slice
 		ConfigFiles = append([]string{overrideConfig}, ConfigFiles...)
-
 	}
 
 	// set the urls to use to open the web based help for a command

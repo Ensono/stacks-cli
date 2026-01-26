@@ -35,6 +35,7 @@ func (suite *ArgsSuite) SetupSuite() {
 		"--company":     suite.Company,
 		"--component":   component,
 		"--domain":      domain,
+		"-C":            cloud,
 		"-F":            framework,
 		"-n":            suite.Project,
 		"-p":            pipeline,
@@ -108,7 +109,7 @@ func (suite *ArgsSuite) TestProject() {
 
 	// ensure that the devops variable template exists
 	suite.T().Run("Azure DevOps variable template file exist", func(t *testing.T) {
-		path := filepath.Join(suite.ProjectPath, "build", "azDevOps", "azure", "air-api-vars.yml")
+		path := filepath.Join(suite.ProjectPath, "build", "azDevOps", "azure", "ci-vars.yml")
 		exists := util.Exists(path)
 
 		suite.Assert.Equal(true, exists, "Project should exist: %s", "Azure DevOps variable template file should exist: %s", path)
@@ -126,7 +127,7 @@ func (suite *ArgsSuite) TestProject() {
 	suite.T().Run("Ensure project files have been named correctly", func(t *testing.T) {
 		var list []string
 
-		basedir := filepath.Join(suite.ProjectPath, "src", "api")
+		basedir := filepath.Join(suite.ProjectPath, "src", "simple-api", "src", "api")
 		files, _ := os.ReadDir(basedir)
 
 		t.Logf("Reading dir: %s", basedir)
@@ -140,7 +141,7 @@ func (suite *ArgsSuite) TestProject() {
 				suite.T().Fatalf("Problem analysing file: %v", err)
 			}
 
-			t.Logf(file.Name())
+			t.Logf("%s", file.Name())
 
 			if info.IsDir() {
 				list = append(list, file.Name())
@@ -148,6 +149,12 @@ func (suite *ArgsSuite) TestProject() {
 		}
 
 		t.Logf("Files: %s", strings.Join(list, ", "))
+
+		// Check that directories were found before trying to access them
+		if len(list) == 0 {
+			suite.Assert.Fail("No project directories found in src/api - expected at least one directory namespaced with company name")
+			return
+		}
 
 		// Check that the dirname begins with %company%
 		pattern := fmt.Sprintf("^%s.*$", suite.Company)

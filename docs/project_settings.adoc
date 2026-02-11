@@ -83,6 +83,7 @@ If the path specified is not absolute, the path to the project is prepended to t
 
 Several glob patterns can be specified |
 
+[source,yaml]
 ----
 items:
  - build/**/*.yaml
@@ -96,6 +97,7 @@ This would find all files that have the `.yaml` extension in all the subfolders 
 
 It is a list of patterns and the associated value. Before a value is replaced, any tokens in the value are substituted.|
 
+[source,yaml]
 ----
 replacements:
   - pattern: ^.*myvalue$
@@ -202,7 +204,7 @@ To achieve this the `or` template function needs to be used. This function takes
 The following listing shows a snippet of the project settings file for a project.
 
 .Setting default value using Go template
-[source=yaml,linenum]
+[source,yaml,linenums]
 ----
 - action: cmd
   cmd: dotnet

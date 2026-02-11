@@ -1,0 +1,19 @@
+== Runtime Configuration
+
+Configuration for the CLI can be performed in several ways:
+
+  - On the command line
+  - Using environment variables
+  - Using a configuration file (YAML or JSON)
+
+When using a configuration file it is possible to setup more than one project.
+
+include::environment_variables.adoc[]
+
+include::settings.adoc[]
+
+include::command_log_format.adoc[]
+
+include::configuration_file.adoc[]
+
+include::internal_config.adoc[]

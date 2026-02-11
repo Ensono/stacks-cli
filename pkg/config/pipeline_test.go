@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -116,6 +117,7 @@ func TestReplacePatterns(t *testing.T) {
 	pipeline := Pipeline{
 		File:         list,
 		Replacements: replacements,
+		Logger:       logrus.New(),
 	}
 
 	// call the function
@@ -174,6 +176,7 @@ func TestReplacePatternsWithNoReplace(t *testing.T) {
 	pipeline := Pipeline{
 		File:         list,
 		Replacements: replacements,
+		Logger:       logrus.New(),
 	}
 
 	// call the function
@@ -233,6 +236,7 @@ func TestReplacePatternsUsingRegex(t *testing.T) {
 	pipeline := Pipeline{
 		Items:        list,
 		Replacements: replacements,
+		Logger:       logrus.New(),
 	}
 
 	// call the function

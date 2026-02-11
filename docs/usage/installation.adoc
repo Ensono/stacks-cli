@@ -12,19 +12,22 @@ The CLI is built for different platforms, and this is denoted in the filename of
 .2+| AMD64
 (Intel Chip)
 | MacOS
-|
+a|
+[source,bash]
 ----
 curl https://github.com/Ensono/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-darwin-amd64-{stackscli_version} -o /usr/local/bin/stacks-cli
 ----
 | Linux
 a|
+[source,bash]
 ----
 curl https://github.com/Ensono/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-linux-amd64-{stackscli_version} -o /usr/local/bin/stacks-cli
 ----
 | ARM64
 (Apple Silicon)
 | MacOS
-|
+a|
+[source,bash]
 ----
 curl https://github.com/Ensono/stacks-cli/releases/download/v{stackscli_version}/stacks-cli-darwin-arm64-{stackscli_version} -o /usr/local/bin/stacks-cli
 ----
@@ -33,7 +36,7 @@ curl https://github.com/Ensono/stacks-cli/releases/download/v{stackscli_version}
 
 After the CLI has been downloaded, it needs to be made executable. This can be done using the following command:
 
-[source,console,subs="attributes"]
+[source,bash,console,subs="attributes"]
 ----
 # Download the binary to a location in the PATH
 ## Mac OS

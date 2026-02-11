@@ -1,0 +1,45 @@
+contexts:
+  buildenv:
+    container:
+      name: ensono/eir-golang
+      shell: pwsh
+      shell_args:
+        - -Command
+    envfile:
+      exclude:
+        - gopath
+        - sourceversionmessage
+        - posh_azure_subscription
+
+  inttestenv:
+    container:
+      name: ensono/eir-dotnet
+      shell: pwsh
+      shell_args:
+        - -Command
+    envfile:
+      exclude:
+        - sourceversionmessage
+        - posh_azure_subscription
+
+  docsenv:
+    container:
+      name: ensono/eir-asciidoctor
+      shell: pwsh
+      shell_args:
+        - -Command
+    envfile:
+      exclude:
+        - sourceversionmessage
+        - posh_azure_subscription
+
+  powershell:
+    container:
+      name: ensono/eir-infrastructure
+      shell: pwsh
+      shell_args:
+        - -Command
+    envfile:
+      exclude:
+        - sourceversionmessage
+        - posh_azure_subscription

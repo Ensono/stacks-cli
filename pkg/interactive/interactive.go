@@ -2,7 +2,6 @@ package interactive
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/Ensono/stacks-cli/internal/models"
@@ -67,11 +66,12 @@ func (i *Interactive) Run() error {
 	}
 
 	// write the data out to the file
-	err = os.WriteFile(path, data, 0666)
+	fs := i.Config.GetFilesystem()
+	err = util.WriteFile(fs, path, data, 0666)
 
 	// output information about what to run next
 	helpText := fmt.Sprintf(`To scaffold the new projects, run the following command
-	
+
 stacks-cli scaffold -c %s`, path)
 	i.Logger.Info(helpText)
 

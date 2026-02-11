@@ -12,6 +12,7 @@ The commands for each of the supported frameworks are as follows:
 [options="header"]
 |===
 | Framework | Commands
+| data | `git`
 | dotnet | `dotnet`, `git`
 | java | `git`, `java`, `mvn`
 | nx | `git`, `node`, `npx`

@@ -2,7 +2,7 @@
 
 In order to download and use the Ensono Stacks CLI tool, there are some programs that are required. The following table shows what is required and in what circumstance.
 
-[cols="1,2,4,1a"]
+[cols="1,2,4,1a",options="header"]
 |===
 | Name | Scenario | Description | CLI Aware
 | `curl` | All (Linux, Mac OS) | Used to download the `stacks-cli` binary |

@@ -15,8 +15,8 @@ func setupFileTests(t *testing.T) (func(t *testing.T), string) {
 
 	// create a slice of the files that need to be created
 	files := []string{
-		"build/taskctl/contexts.yaml",
-		"build/azureDevops/pipeline.yaml",
+		"build/eirctl/contexts.yaml",
+		"build/pipeline.yaml",
 	}
 
 	// iterate around the files and create them in the tempDir
@@ -56,11 +56,11 @@ func TestGetFileList(t *testing.T) {
 		expected int
 	}{
 		{
-			"build/taskctl/contexts.yaml",
+			"build/eirctl/contexts.yaml",
 			1,
 		},
 		{
-			"build/taskctl/*.yaml",
+			"build/eirctl/*.yaml",
 			1,
 		},
 		{

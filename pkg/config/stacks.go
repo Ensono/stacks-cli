@@ -94,7 +94,7 @@ func (p *Package) Normalize() string {
 	}
 
 	// ensure that the type of the repo is correct
-	validTypes := []string{"git", "nuget", "filesystem", "local"}
+	validTypes := []string{"git", "nuget", "filesystem", "local", "zip"}
 	if !util.SliceContains(validTypes, p.Type) {
 		msg = fmt.Sprintf("Specified type of '%s' is invalid, please check your configuration", p.Type)
 	}

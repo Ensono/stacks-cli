@@ -310,6 +310,28 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 					Options: config.Stacks.GetComponentOptions(qType),
 					Default: "aks",
 					Help:    "A number of projects support different infrastructure. By answering this question, the CLI will prepare the project, if applicable, to the chosen cloud.",
+					Description: func(value string, index int) string {
+						switch value {
+						case "aca":
+							return "Azure Container Apps"
+						case "aks":
+							return "Azure Kubernetes Service"
+						case "alz_management":
+							return "Azure Platform Landing Zone - Management"
+						case "alz_connectivity_hub_spoke":
+							return "Azure Platform Landing Zone - Connectivity (Hub/Spoke)"
+						case "alz_connectivity_virtual_wan":
+							return "Azure Platform Landing Zone - Connectivity (Virtual WAN)"
+						case "alz_identity":
+							return "Azure Platform Landing Zone - Identity"
+						case "eks":
+							return "Amazon Elastic Kubernetes Service"
+						case "template":
+							return "Project Template"
+						default:
+							return ""
+						}
+					},
 				},
 				Validate: survey.Required,
 			},

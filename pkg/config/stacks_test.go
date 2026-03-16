@@ -360,3 +360,137 @@ func TestGetComponentOptionsDefault(t *testing.T) {
 	}
 
 }
+
+func TestNormalize(t *testing.T) {
+
+	tables := []struct {
+		name        string
+		pkg         Package
+		expectedMsg string
+		expectedTyp string
+	}{
+		{
+			"valid git type",
+			Package{Type: "git", URL: "https://github.com/example/repo"},
+			"",
+			"git",
+		},
+		{
+			"valid nuget type",
+			Package{Type: "nuget", Name: "Ensono.Stacks.Templates"},
+			"",
+			"nuget",
+		},
+		{
+			"valid filesystem type",
+			Package{Type: "filesystem", Path: "/tmp/templates"},
+			"",
+			"filesystem",
+		},
+		{
+			"valid local type",
+			Package{Type: "local", Path: "/tmp/templates"},
+			"",
+			"local",
+		},
+		{
+			"valid zip type",
+			Package{Type: "zip", URL: "https://github.com/example/repo/releases/download/module.zip"},
+			"",
+			"zip",
+		},
+		{
+			"empty type defaults to github",
+			Package{Type: ""},
+			"Specified type of 'github' is invalid, please check your configuration",
+			"github",
+		},
+		{
+			"invalid type returns error message",
+			Package{Type: "invalid"},
+			"Specified type of 'invalid' is invalid, please check your configuration",
+			"invalid",
+		},
+	}
+
+	for _, table := range tables {
+		t.Run(table.name, func(t *testing.T) {
+			msg := table.pkg.Normalize()
+
+			if msg != table.expectedMsg {
+				t.Errorf("Expected message %q, got %q", table.expectedMsg, msg)
+			}
+
+			if table.pkg.Type != table.expectedTyp {
+				t.Errorf("Expected type %q, got %q", table.expectedTyp, table.pkg.Type)
+			}
+		})
+	}
+}
+
+func TestGetComponentPackageRef(t *testing.T) {
+
+	tables := []struct {
+		name     string
+		stacks   Stacks
+		key      string
+		expected string
+	}{
+		{
+			"git type returns URL",
+			Stacks{Components: map[string]StacksComponent{
+				"java_webapi": {Group: "java", Name: "webapi", Package: Package{Type: "git", URL: "https://github.com/example/repo"}},
+			}},
+			"java_webapi",
+			"https://github.com/example/repo",
+		},
+		{
+			"nuget type returns Name",
+			Stacks{Components: map[string]StacksComponent{
+				"dotnet_webapi": {Group: "dotnet", Name: "webapi", Package: Package{Type: "nuget", Name: "Ensono.Stacks.Templates"}},
+			}},
+			"dotnet_webapi",
+			"Ensono.Stacks.Templates",
+		},
+		{
+			"filesystem type returns Path",
+			Stacks{Components: map[string]StacksComponent{
+				"local_module": {Group: "local", Name: "module", Package: Package{Type: "filesystem", Path: "/tmp/templates"}},
+			}},
+			"local_module",
+			"/tmp/templates",
+		},
+		{
+			"local type returns Path",
+			Stacks{Components: map[string]StacksComponent{
+				"local_module": {Group: "local", Name: "module", Package: Package{Type: "local", Path: "/tmp/templates"}},
+			}},
+			"local_module",
+			"/tmp/templates",
+		},
+		{
+			"zip type returns URL",
+			Stacks{Components: map[string]StacksComponent{
+				"infra_alz_management": {Group: "infra", Name: "alz_management", Package: Package{Type: "zip", URL: "https://github.com/example/repo/releases/download/management.zip"}},
+			}},
+			"infra_alz_management",
+			"https://github.com/example/repo/releases/download/management.zip",
+		},
+		{
+			"unknown key returns empty string",
+			Stacks{Components: map[string]StacksComponent{}},
+			"nonexistent_key",
+			"",
+		},
+	}
+
+	for _, table := range tables {
+		t.Run(table.name, func(t *testing.T) {
+			result := table.stacks.GetComponentPackageRef(table.key)
+
+			if result != table.expected {
+				t.Errorf("Expected %q, got %q", table.expected, result)
+			}
+		})
+	}
+}

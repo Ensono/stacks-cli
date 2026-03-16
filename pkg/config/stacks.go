@@ -33,6 +33,8 @@ func (s *Stacks) GetComponentPackageRef(name string) string {
 		result = pkg.Name
 	case "filesystem", "local":
 		result = pkg.Path
+	case "zip":
+		result = pkg.URL
 	}
 
 	return result

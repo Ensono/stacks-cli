@@ -280,15 +280,26 @@ func (s *Scaffold) processProject(project config.Project) {
 		downloader = downloaders.NewFilesystemDownloader(packageInfo.Path, s.Config.Input.Directory.TempDir)
 	case "zip":
 
+		// render the URL through the template engine so that variables such as
+		// the framework version can be resolved in the URL
+		replacements := config.Replacements{}
+		replacements.Input = s.Config.Input
+		replacements.Project = project
+		renderedURL, renderErr := s.Config.RenderTemplate("zip_url", packageInfo.URL, replacements)
+		if renderErr != nil {
+			s.Logger.Errorf("Unable to resolve zip URL template: %s", renderErr.Error())
+			return
+		}
+
 		// check that the URL is valid, if not skip this project and move onto the next one
-		_, err = url.ParseRequestURI(packageInfo.URL)
+		_, err = url.ParseRequestURI(renderedURL)
 		if err != nil {
 			s.Logger.Errorf("Unable to download framework option as URL is invalid: %s", err.Error())
 			return
 		}
 
 		downloader = downloaders.NewZipDownloader(
-			packageInfo.URL,
+			renderedURL,
 			packageInfo.Version,
 			s.Config.Input.Directory.CacheDir,
 			s.Config.Input.Directory.TempDir,

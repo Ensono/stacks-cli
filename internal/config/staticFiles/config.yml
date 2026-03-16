@@ -117,6 +117,34 @@ stacks:
         version: master
         type: git
 
+    infra_alz_management:
+      group: infra
+      name: alz_management
+      package:
+        url: https://github.com/Ensono/stacks-azure-platform-landing-zone/releases/download/v{{ .Project.Framework.Version }}/management-landing-zone-{{ .Project.Framework.Version }}.zip
+        type: zip
+
+    infra_alz_connectivity_hub_spoke:
+      group: infra
+      name: alz_connectivity_hub_spoke
+      package:
+        url: https://github.com/Ensono/stacks-azure-platform-landing-zone/releases/download/v{{ .Project.Framework.Version }}/connectivity-landing-zone-hub-spoke-{{ .Project.Framework.Version }}.zip
+        type: zip
+
+    infra_alz_connectivity_virtual_wan:
+      group: infra
+      name: alz_connectivity_virtual_wan
+      package:
+        url: https://github.com/Ensono/stacks-azure-platform-landing-zone/releases/download/v{{ .Project.Framework.Version }}/connectivity-landing-zone-virtual-wan-{{ .Project.Framework.Version }}.zip
+        type: zip
+
+    infra_alz_identity:
+      group: infra
+      name: alz_identity
+      package:
+        url: https://github.com/Ensono/stacks-azure-platform-landing-zone/releases/download/v{{ .Project.Framework.Version }}/identity-landing-zone-{{ .Project.Framework.Version }}.zip
+        type: zip
+
     infra_eks:
       group: infra
       name: eks

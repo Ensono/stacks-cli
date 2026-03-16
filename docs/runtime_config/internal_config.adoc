@@ -78,6 +78,38 @@ Create a project that can deploy the infrastructure for Azure Kubernetes Service
 
 | `git`
 
+| Infra ALZ Management |
+
+https://github.com/Ensono/stacks-azure-platform-landing-zone
+
+Create a project that can deploy an Azure Platform Landing Zone for Management.
+
+| `zip`
+
+| Infra ALZ Connectivity (Hub/Spoke) |
+
+https://github.com/Ensono/stacks-azure-platform-landing-zone
+
+Create a project that can deploy an Azure Platform Landing Zone for Connectivity, using a Hub and Spoke network topology.
+
+| `zip`
+
+| Infra ALZ Connectivity (Virtual WAN) |
+
+https://github.com/Ensono/stacks-azure-platform-landing-zone
+
+Create a project that can deploy an Azure Platform Landing Zone for Connectivity, using a Virtual WAN network topology.
+
+| `zip`
+
+| Infra ALZ Identity |
+
+https://github.com/Ensono/stacks-azure-platform-landing-zone
+
+Create a project that can deploy an Azure Platform Landing Zone for Identity.
+
+| `zip`
+
 | Infra EKS |
 
 https://github.com/Ensono/stacks-infrastructure-eks
@@ -154,11 +186,11 @@ Example: `webapi`
 
 | `stacks.components.dotnet_webapi.package.type` |
 
-This can be one of `git`, `nuget`, or `filesystem`. This informs the CLI how to download the component so it can be configured for the application.
+This can be one of `git`, `nuget`, `filesystem`, or `zip`. This informs the CLI how to download the component so it can be configured for the application.
 
 | `stacks.components.dotnet_webapi.package.url` |
 
-If the type of package is `git`, this is the URL to the Git repository
+If the type of package is `git`, this is the URL to the Git repository. If the type is `zip`, this is the URL to the zip archive (supports Go template variables for versioned downloads).
 
 | `stacks.components.dotnet_webapi.package.name` |
 

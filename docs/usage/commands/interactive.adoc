@@ -124,8 +124,12 @@ Which type of infrastructure is required?
 
 * ACA
 * AKS
-* Data
+* ALZ Management
+* ALZ Connectivity (Hub/Spoke)
+* ALZ Connectivity (Virtual WAN)
+* ALZ Identity
 * EKS
+* Template
 
 | infra | aks | `input.project[0].framework.type`
 

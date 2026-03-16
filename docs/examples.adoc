@@ -49,7 +49,7 @@ In previous versions of the CLI, this has been referred to as the domain, but it
 | framework_option | `{example_framework_option}` | The option within the framework being created.
 
 For `dotnet` or `java` the options are `webapi`, `cqrs` or `events`.
-For `infra` the options are `aks`.
+For `infra` the options are `aca`, `aks`, `alz_management`, `alz_connectivity_hub_spoke`, `alz_connectivity_virtual_wan`, `alz_identity`, `eks`, or `template`.
 |===
 
 === .NET

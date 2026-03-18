@@ -351,7 +351,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				Name: "source_control_type",
 				Prompt: &survey.Select{
 					Message: "Please select the source control system being used",
-					Options: []string{"github", "azure_repos"},
+					Options: []string{"azure_repos", "github"},
 					Default: "github",
 					Help:    "This is the centralised source control that should be used",
 				},

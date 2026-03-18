@@ -65,6 +65,17 @@ dotnet = `dotnet` |
 | `applyProperties` | State if the properties that were defined in the `stacks.yml` file for the project should be applied to this command
 
 Default is `false` | true | `true`, `false`
+| `pipeline` | Restrict this operation so it only runs when the selected pipeline type matches the specified value. If empty, the operation runs for any pipeline selection. The comparison is case-insensitive. | `azdo` | `azdo`, `gha`
+| `exclude` | A list of glob patterns (using `**` for recursive matching) that identify files and directories to skip when the action is `copy`. Useful for excluding pipeline files for a CI system that is not being used. |
+
+[source,yaml]
+----
+exclude:
+  - .github/**
+  - build/azdo/**
+----
+
+| Any valid doublestar glob pattern
 |===
 
 The follow table shows the values that can be assigned to the pipeline list.

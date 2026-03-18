@@ -14,6 +14,7 @@ import (
 	"github.com/Ensono/stacks-cli/pkg/config"
 	"github.com/Ensono/stacks-cli/pkg/downloaders"
 	"github.com/Ensono/stacks-cli/pkg/interfaces"
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-billy/v5/osfs"
 	"github.com/sirupsen/logrus"
@@ -175,10 +176,30 @@ func (s *Scaffold) PerformOperation(operation config.Operation, project *config.
 	case "copy":
 
 		// copy the repository from the cloned directory to the project working directory
-		// do not copy the git configuration folder
+		// do not copy the git configuration folder or excluded patterns
 		opt := cp.Options{
 			Skip: func(info os.FileInfo, src, dest string) (bool, error) {
-				return strings.HasSuffix(src, ".git"), nil
+				if strings.HasSuffix(src, ".git") {
+					return true, nil
+				}
+				if len(operation.Exclude) > 0 {
+					rel, relErr := filepath.Rel(cloneDir, src)
+					if relErr != nil {
+						return false, nil
+					}
+					// normalise to forward slashes for consistent pattern matching
+					rel = filepath.ToSlash(rel)
+					for _, pattern := range operation.Exclude {
+						matched, matchErr := doublestar.Match(pattern, rel)
+						if matchErr != nil {
+							return false, fmt.Errorf("invalid exclude pattern '%s': %w", pattern, matchErr)
+						}
+						if matched {
+							return true, nil
+						}
+					}
+				}
+				return false, nil
 			},
 		}
 		err := cp.Copy(cloneDir, path, opt)
@@ -373,6 +394,12 @@ func (s *Scaffold) processProject(project config.Project) {
 
 			// output information about the operation being performed
 			s.Logger.Info(op.Description)
+
+			// skip if operation is restricted to a specific pipeline that doesn't match
+			if op.Pipeline != "" && !strings.EqualFold(op.Pipeline, s.Config.Input.Pipeline) {
+				s.Logger.Infof("Skipping operation: not applicable for pipeline '%s'", s.Config.Input.Pipeline)
+				continue
+			}
 
 			// determine if this operation should be run by checking the tags
 			if s.shouldRun(op.Tags, project.Framework.Option) {

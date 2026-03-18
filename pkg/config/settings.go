@@ -41,6 +41,8 @@ type Operation struct {
 	Description     string   `mapstructure:"desc"`
 	ApplyProperties bool     `mapstructure:"applyProperties"`
 	Tags            []string `mapstructure:"tags"`
+	Exclude         []string `mapstructure:"exclude"`
+	Pipeline        string   `mapstructure:"pipeline"`
 }
 
 type SettingsFramework struct {

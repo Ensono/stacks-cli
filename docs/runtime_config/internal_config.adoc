@@ -66,7 +66,7 @@ The Stacks NX Plugins Infra Project extends the foundational principles of the S
 
 https://github.com/Ensono/stacks-infrastructure-aca
 
-Create a project that can deploy the infrastructure for Azure Container Apps
+Creates a project that can deploy the infrastructure for Azure Container Apps
 
 | `git`
 
@@ -74,7 +74,7 @@ Create a project that can deploy the infrastructure for Azure Container Apps
 
 https://github.com/Ensono/stacks-infrastructure-aks
 
-Create a project that can deploy the infrastructure for Azure Kubernetes Service
+Creates a project that can deploy the infrastructure for Azure Kubernetes Service
 
 | `git`
 
@@ -82,7 +82,7 @@ Create a project that can deploy the infrastructure for Azure Kubernetes Service
 
 https://github.com/Ensono/stacks-azure-platform-landing-zone
 
-Create a project that can deploy an Azure Platform Landing Zone for Management.
+Creates a project that can deploy the infrastructure for an Azure Platform Landing Zone for Management
 
 | `zip`
 
@@ -90,7 +90,7 @@ Create a project that can deploy an Azure Platform Landing Zone for Management.
 
 https://github.com/Ensono/stacks-azure-platform-landing-zone
 
-Create a project that can deploy an Azure Platform Landing Zone for Connectivity, using a Hub and Spoke network topology.
+Creates a project that can deploy the infrastructure for an Azure Platform Landing Zone for Connectivity, using a Hub and Spoke network topology
 
 | `zip`
 
@@ -98,7 +98,7 @@ Create a project that can deploy an Azure Platform Landing Zone for Connectivity
 
 https://github.com/Ensono/stacks-azure-platform-landing-zone
 
-Create a project that can deploy an Azure Platform Landing Zone for Connectivity, using a Virtual WAN network topology.
+Creates a project that can deploy the infrastructure for an Azure Platform Landing Zone for Connectivity, using a Virtual WAN network topology
 
 | `zip`
 
@@ -106,7 +106,7 @@ Create a project that can deploy an Azure Platform Landing Zone for Connectivity
 
 https://github.com/Ensono/stacks-azure-platform-landing-zone
 
-Create a project that can deploy an Azure Platform Landing Zone for Identity.
+Creates a project that can deploy the infrastructure for an Azure Platform Landing Zone for Identity.
 
 | `zip`
 

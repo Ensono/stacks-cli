@@ -66,8 +66,9 @@ Core scaffolding logic in [scaffold.go](../pkg/scaffold/scaffold.go) processes p
    - `init` - Operations run in the temp/clone directory
    - `setup` - Operations run in the working directory
 4. **Operations**: Two action types:
-   - `copy` - Direct file copying from template to target directory
+   - `copy` - Direct file copying from template to target directory (supports `exclude` glob patterns to skip files, e.g. `.github/**`)
    - `cmd` - Execute framework commands with Go template expansion
+   - Operations can be restricted to a specific pipeline type via the `pipeline` field (e.g. `azdo` or `gha`)
 
 **Critical**: All user inputs and file paths go through Go template processing - ensure proper escaping!
 

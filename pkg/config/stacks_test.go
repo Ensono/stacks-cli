@@ -395,7 +395,7 @@ func TestNormalize(t *testing.T) {
 		},
 		{
 			"valid zip type",
-			Package{Type: "zip", URL: "https://github.com/example/repo/releases/download/module.zip"},
+			Package{Type: "zip", URL: "https://github.com/example/repo/releases/download/v1.0.0/module-1.0.0.zip"},
 			"",
 			"zip",
 		},
@@ -471,10 +471,10 @@ func TestGetComponentPackageRef(t *testing.T) {
 		{
 			"zip type returns URL",
 			Stacks{Components: map[string]StacksComponent{
-				"infra_alz_management": {Group: "infra", Name: "alz_management", Package: Package{Type: "zip", URL: "https://github.com/example/repo/releases/download/management.zip"}},
+				"infra_alz_management": {Group: "infra", Name: "alz_management", Package: Package{Type: "zip", URL: "https://github.com/example/repo/releases/download/v1.0.0/management-1.0.0.zip"}},
 			}},
 			"infra_alz_management",
-			"https://github.com/example/repo/releases/download/management.zip",
+			"https://github.com/example/repo/releases/download/v1.0.0/management-1.0.0.zip",
 		},
 		{
 			"unknown key returns empty string",

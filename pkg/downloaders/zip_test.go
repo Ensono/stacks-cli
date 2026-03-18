@@ -15,7 +15,7 @@ import (
 )
 
 func TestNewZipDownloader(t *testing.T) {
-	testURL := "https://github.com/example/repo/releases/download/v1.0.0/module.zip"
+	testURL := "https://github.com/example/repo/releases/download/v1.0.0/module-1.0.0.zip"
 	testVersion := "v1.0.0"
 	testCacheDir := "/tmp/cache"
 	testTempDir := "/tmp/test"
@@ -42,7 +42,7 @@ func TestZip_SetLogger(t *testing.T) {
 }
 
 func TestZip_PackageURL(t *testing.T) {
-	testURL := "https://github.com/example/repo/releases/download/v1.0.0/module.zip"
+	testURL := "https://github.com/example/repo/releases/download/v1.0.0/module-1.0.0.zip"
 	downloader := NewZipDownloader(testURL, "v1.0.0", "cache", "temp", "")
 
 	url := downloader.PackageURL()
@@ -92,7 +92,7 @@ func createTestZip(t *testing.T, zipPath string, files map[string]string) {
 func TestZip_Get_Success(t *testing.T) {
 	// Create a test zip file to serve
 	serverDir := t.TempDir()
-	zipPath := filepath.Join(serverDir, "module.zip")
+	zipPath := filepath.Join(serverDir, "module-1.0.0.zip")
 	createTestZip(t, zipPath, map[string]string{
 		"my-module/main.tf":      "resource \"azurerm_resource_group\" \"example\" {}",
 		"my-module/variables.tf": "variable \"name\" { type = string }",
@@ -109,7 +109,7 @@ func TestZip_Get_Success(t *testing.T) {
 	tempDir := filepath.Join(t.TempDir(), "temp")
 
 	downloader := NewZipDownloader(
-		fmt.Sprintf("%s/module.zip", server.URL),
+		fmt.Sprintf("%s/module-1.0.0.zip", server.URL),
 		"v1.0.0",
 		cacheDir,
 		tempDir,
@@ -125,7 +125,7 @@ func TestZip_Get_Success(t *testing.T) {
 	assert.NotEmpty(t, dir, "Get should return a directory path")
 
 	// Verify the cached zip file exists
-	assert.FileExists(t, filepath.Join(cacheDir, "module.zip"), "Zip file should be cached")
+	assert.FileExists(t, filepath.Join(cacheDir, "module-1.0.0.zip"), "Zip file should be cached")
 
 	// Verify extracted files exist (util.Unzip returns the first subdirectory)
 	assert.FileExists(t, filepath.Join(dir, "main.tf"), "main.tf should be extracted")
@@ -145,7 +145,7 @@ func TestZip_Get_CachedFile(t *testing.T) {
 
 	require.NoError(t, os.MkdirAll(cacheDir, 0755))
 
-	zipPath := filepath.Join(cacheDir, "module.zip")
+	zipPath := filepath.Join(cacheDir, "module-1.0.0.zip")
 	createTestZip(t, zipPath, map[string]string{
 		"my-module/main.tf": "# cached module",
 	})
@@ -159,7 +159,7 @@ func TestZip_Get_CachedFile(t *testing.T) {
 	defer server.Close()
 
 	downloader := NewZipDownloader(
-		fmt.Sprintf("%s/module.zip", server.URL),
+		fmt.Sprintf("%s/module-1.0.0.zip", server.URL),
 		"v1.0.0",
 		cacheDir,
 		tempDir,
@@ -227,7 +227,7 @@ func TestZip_Get_WithToken(t *testing.T) {
 	expectedToken := "ghp_test_token_12345"
 
 	serverDir := t.TempDir()
-	zipPath := filepath.Join(serverDir, "module.zip")
+	zipPath := filepath.Join(serverDir, "module-1.0.0.zip")
 	createTestZip(t, zipPath, map[string]string{
 		"my-module/main.tf": "# private module",
 	})
@@ -243,7 +243,7 @@ func TestZip_Get_WithToken(t *testing.T) {
 	tempDir := filepath.Join(t.TempDir(), "temp")
 
 	downloader := NewZipDownloader(
-		fmt.Sprintf("%s/module.zip", server.URL),
+		fmt.Sprintf("%s/module-1.0.0.zip", server.URL),
 		"v1.0.0",
 		cacheDir,
 		tempDir,
@@ -262,7 +262,7 @@ func TestZip_Get_WithToken(t *testing.T) {
 func TestZip_Get_MultipleModulesInZip(t *testing.T) {
 	// Simulate a mono-repo release artifact with multiple modules
 	serverDir := t.TempDir()
-	zipPath := filepath.Join(serverDir, "modules.zip")
+	zipPath := filepath.Join(serverDir, "modules-1.0.0.zip")
 	createTestZip(t, zipPath, map[string]string{
 		"infra-modules/networking/main.tf":      "# networking module",
 		"infra-modules/networking/variables.tf": "# networking vars",
@@ -280,7 +280,7 @@ func TestZip_Get_MultipleModulesInZip(t *testing.T) {
 	tempDir := filepath.Join(t.TempDir(), "temp")
 
 	downloader := NewZipDownloader(
-		fmt.Sprintf("%s/modules.zip", server.URL),
+		fmt.Sprintf("%s/modules-1.0.0.zip", server.URL),
 		"v1.0.0",
 		cacheDir,
 		tempDir,

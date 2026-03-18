@@ -12,8 +12,8 @@ The following table details the questions that will be asked and what they are u
 .Initial Configuration Questions
 [cols="2,2a,1,1",options=header]
 |===
-| Question | Description | Example | Config file field 
-| 
+| Question | Description | Example | Config file field
+|
 What is the name of your company?
 | This is used to help name resources in the chosen cloud platform. | Ensono | `input.business.company`
 
@@ -40,7 +40,7 @@ Which cloud is Ensono Stacks being setup in?
 * Azure
  | azure | `input.cloud.platform`
 
-| 
+|
 Which group is the Terraform state being saved in?
 | This is the resource group that contains the storage account for the Terraform state.
 | `stacks-ancillary-resources` | `input.terraform.backend.group`
@@ -57,11 +57,11 @@ For AWS S3 Buckets this is the name of the folder to use.   | tfstate  | `input.
 
 |
 What is the external domain of the solution?
-| The domain that the projects will be accessible on. This needs to be a domain that is already registered and can be used. 
+| The domain that the projects will be accessible on. This needs to be a domain that is already registered and can be used.
 
 *NOTE*: this value is required but is not used on data projects. | stacks.ensono.com | `input.network.base.domain.external`
 
-| 
+|
 What is the internal domain of the solution?
 | The internal domain of the application. If not specified this will be derived from the external domain.
 So if `stacks.ensono.com` is used then the internal will be `stacks.ensono.internal`. | stacks.ensono.internal | `input.network.base.domain.internal`
@@ -88,7 +88,7 @@ The questions in the following table will be asked as many times as the number o
 [cols="3,3a,1,1,2",options=header]
 |===
 | Question | Description | Applicable | Example | Config file field
-| 
+|
 What is the project name?
 | The name of the project to created. | pre | docsAPI | `input.project[0].name`
 
@@ -118,9 +118,9 @@ Specify any additional framework properties. (Use a comma to separate each one).
 
 This is dependent on the framework that has been chosen. Multiple options can be specified by separating the options with a comma | dotnet, java | | `input.project[0].properties[]`
 
-| 
+|
 Which type of infrastructure is required?
-| A number of projects support different infrastructure. By answering this question, the CLI will prepare the project, if applicable, to the chosen cloud. 
+| A number of projects support different infrastructure. By answering this question, the CLI will prepare the project, if applicable, to the chosen cloud.
 
 * ACA
 * AKS
@@ -128,6 +128,7 @@ Which type of infrastructure is required?
 * ALZ Connectivity (Hub/Spoke)
 * ALZ Connectivity (Virtual WAN)
 * ALZ Identity
+* Data
 * EKS
 * Template
 
@@ -135,7 +136,7 @@ Which type of infrastructure is required?
 
 |
 Which version of the framework option do you require?
-| There are a number of different versions of the frameworks that can be used. Specify the one that is required. 
+| There are a number of different versions of the frameworks that can be used. Specify the one that is required.
 
 For the chosen framework the version comes from the GitHub version. `latest` is a shortcut to the most recent version fo the component. | post | latest | `input.project[0].framework.version`
 

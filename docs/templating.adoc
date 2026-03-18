@@ -30,14 +30,13 @@ The following table shows all of the tokens that can be used in a template strin
 | `.Project.Name` | Name of the project as specified by the user | my-project
 | `.Project.Framework.Option` | Framework option that has been chosen | webapi
 | `.Project.Framework.Version` | Version of the specified option to download | latest
-| `.Project.Framework.Properties` | Extra properties that can be set by the user and can be used as configuration items | `-E servicebus` 
+| `.Project.Framework.Properties` | Extra properties that can be set by the user and can be used as configuration items | `-E servicebus`
 | `.Project.Platform.Type` | Type of platform being deployed to | aks
-| `.Project.SourceControl.Type` | Type of source control that will be used for the final project | github
+| `.Project.SourceControl.Type` | Type of source control that will be used for the final project | github, azure_repos
 | `.Project.SourceControl.URL` | URL to the remote repository | https://github.com/example/fred
 | `.Project.SettingsFile` | Path to the settings file used to setup the project | `stackscli.yml`
-| `.Project.Directory.TempDir` | Full path to the temporary directory for the project | 
-| `.Project.Directory.WorkingDir` | Full path to the directory for the final project | 
+| `.Project.Directory.TempDir` | Full path to the temporary directory for the project |
+| `.Project.Directory.WorkingDir` | Full path to the directory for the final project |
 | `.Project.Cloud.Region` | Cloud region resources should be setup in | ukwest
 | `.Project.Cloud.Group` | Group that the resources should be collated in | my-resource-group
 |===
-

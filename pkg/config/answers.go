@@ -351,7 +351,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				Name: "source_control_type",
 				Prompt: &survey.Select{
 					Message: "Please select the source control system being used",
-					Options: []string{"github"},
+					Options: []string{"github", "azure_repos"},
 					Default: "github",
 					Help:    "This is the centralised source control that should be used",
 				},
@@ -361,7 +361,7 @@ func (a *Answers) getProjectQuestions(qType string, config *Config) []*survey.Qu
 				Name: "source_control_url",
 				Prompt: &survey.Input{
 					Message: "What is the URL of the remote repository?",
-					Help:    "When the project is scaffolded and configured as a Git repo, it will add in the origin to this URL.",
+					Help:    "When the project is scaffolded and configured as a Git repo, it will add in the origin to this URL. For GitHub use https://github.com/org/repo. For Azure Repos use https://dev.azure.com/org/project/_git/repo.",
 				},
 				Validate: survey.Required,
 			},

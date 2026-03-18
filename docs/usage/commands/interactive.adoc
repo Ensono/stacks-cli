@@ -145,11 +145,14 @@ Please select the source control system being used?
 | This is the centralised source control that should be used.
 
 * GitHub
+* Azure Repos
  | post | github | `input.project[0].sourcecontrol.type`
 
 |
 What is the URL of the remote repository?
-| When the project is scaffolded and configured as a Git repo, it will add in the `origin` to this URL. | post | https://github.com/ensono/stacks-cli | `input.project[0].sourcecontrol.url`
+| When the project is scaffolded and configured as a Git repo, it will add in the `origin` to this URL.
+
+For GitHub use `\https://github.com/org/repo`. For Azure Repos use `\https://dev.azure.com/org/project/_git/repo`. | post | https://github.com/ensono/stacks-cli | `input.project[0].sourcecontrol.url`
 
 |
 Which cloud region should be used?

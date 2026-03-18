@@ -7,7 +7,7 @@
 .2+^| `--name`, `-n` ^| icon:check[fw] | NAME |  |
 4+| Name of the project to create
 .2+^| `--sourcecontrol` ^| icon:times[fw] | SOURCECONTROL | github |
-4+| Type of source control being used
+4+| Type of source control being used (`github`, `azure_repos`)
 .2+^| `--sourcecontrolurl`, `-u` ^| icon:check[fw] | SOURCECONTROLURL |  |
 4+| Url of the remote for source control
 .2+^| `--projectsettingsfile` ^| icon:check[fw] | PROJECTSETTINGSFILE |  |

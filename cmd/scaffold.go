@@ -77,7 +77,7 @@ func init() {
 	scaffoldCmd.Flags().StringVar(&cacheDir, "cachedir", defaultCacheDir, "Cache directory to be used for all downloads")
 
 	scaffoldCmd.Flags().StringVarP(&project_name, "name", "n", "", "Name of the project to create")
-	scaffoldCmd.Flags().StringVar(&project_vcs_type, "sourcecontrol", "github", "Type of source control being used")
+	scaffoldCmd.Flags().StringVar(&project_vcs_type, "sourcecontrol", "github", "Type of source control being used (github, azure_repos)")
 	scaffoldCmd.Flags().StringVarP(&project_vcs_url, "sourcecontrolurl", "u", "", "Url of the remote for source control")
 	scaffoldCmd.Flags().StringVar(&project_settings_file, "projectsettingsfile", "", "Path to a settings file to use for the project")
 

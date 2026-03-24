@@ -204,7 +204,7 @@ NOTE: It is expected that this downloader is only used when developing locally a
 
 | `stacks.components.dotnet_webapi.version` |
 
-The version or branch/tag of the package to download. Only applies to `nuget` and `git` respectively.
+The version or branch/tag of the package to download. Only applies to `nuget` and `git` respectively. For `zip` packages with GitHub release URLs containing template variables (e.g. `{{ .Project.Framework.Version }}`), specifying `latest` or leaving blank will automatically resolve the latest GitHub release tag.
 
 | `stacks.components.dotnet_webapi.template_mode` |
 

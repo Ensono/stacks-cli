@@ -301,6 +301,23 @@ func (s *Scaffold) processProject(project config.Project) {
 		downloader = downloaders.NewFilesystemDownloader(packageInfo.Path, s.Config.Input.Directory.TempDir)
 	case "zip":
 
+		// if the framework version is "latest" or empty, and the URL is a GitHub releases URL,
+		// resolve the latest release tag from the GitHub API
+		if project.Framework.Version == "" || strings.EqualFold(project.Framework.Version, "latest") {
+			if parts := strings.SplitN(packageInfo.URL, "/releases/", 2); len(parts) == 2 {
+				// extract the base repo URL (everything before /releases/)
+				// and strip any Go template expressions that may be in the owner/repo path
+				repoURL := parts[0]
+				resolved, resolveErr := util.GetGitHubLatestReleaseTag(repoURL, s.Config.Input.Options.Token)
+				if resolveErr != nil {
+					s.Logger.Errorf("Unable to resolve latest release version: %s", resolveErr.Error())
+					return
+				}
+				s.Logger.Infof("Resolved latest release version: %s", resolved)
+				project.Framework.Version = resolved
+			}
+		}
+
 		// render the URL through the template engine so that variables such as
 		// the framework version can be resolved in the URL
 		replacements := config.Replacements{}

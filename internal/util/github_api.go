@@ -99,3 +99,33 @@ func BuildGitHubAPIUrl(repoUrl string, ref string, trunk string, archive bool, t
 
 	return url
 }
+
+// GetGitHubLatestReleaseTag resolves the latest release tag for a GitHub repository URL.
+// It strips the "v" prefix from the tag if present, returning just the version number.
+func GetGitHubLatestReleaseTag(repoURL string, token string) (string, error) {
+
+	ownerRepoName := strings.Replace(repoURL, "https://github.com/", "", -1)
+	ownerRepoName = strings.TrimSuffix(ownerRepoName, "/")
+
+	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", ownerRepoName)
+
+	return getLatestReleaseTagFromURL(apiURL, token)
+}
+
+// getLatestReleaseTagFromURL calls the given API URL and extracts the tag_name,
+// stripping the "v" prefix if present
+func getLatestReleaseTagFromURL(apiURL string, token string) (string, error) {
+
+	data, err := CallHTTPAPI(apiURL, token)
+	if err != nil {
+		return "", fmt.Errorf("unable to get latest release: %s", err.Error())
+	}
+
+	tagName, ok := data["tag_name"]
+	if !ok || tagName == nil {
+		return "", fmt.Errorf("no release tag found in API response")
+	}
+
+	version := strings.TrimPrefix(tagName.(string), "v")
+	return version, nil
+}
